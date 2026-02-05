@@ -20,7 +20,7 @@ Git, IDE, program, algoritmus, strojový kód, zdrojový kód
 
 ## Přednáška
 
-TBA (základní pojmy, základní git)
+TODO: odkaz na online prezentaci (základní pojmy, základní git)
 
 ## Seminář
 

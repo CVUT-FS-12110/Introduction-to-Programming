@@ -2,8 +2,8 @@
 
 ## Témata
 
-1. [Compilation, versioning and IDEs](topics/compilation-versioning-ides/README.md)
-1. [Algorithm design basics](topics/algorithm-design-basics/README.md)
+1. [Kompilace a verzování](topics/compilation-versioning-ides/README.md)
+1. [Základy algoritmizace](topics/algorithm-design-basics/README.md)
 1.
 1.
 1.
