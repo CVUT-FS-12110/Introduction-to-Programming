@@ -1,40 +1,47 @@
-# Algorithm Design Basics
+# Základy návrhu algoritmů
 
-Objectives
+## Prerekvizity
+- Schonpost používat Git
+- Schopnost používat nějaké IDE pro psaní a testování Pythoních programů
 
-- Translate real-world problems into step-by-step solutions.
-- Write clear pseudocode and draw simple flowcharts.
-- Evaluate basic algorithm correctness and simple performance intuition.
+## Cíle
 
-Description
+- Převádět reálné problémy na řešení krok za krokem.
+- Psát srozumitelný pseudokód a kreslit jednoduché vývojové diagramy.
+- Posuzovat základní správnost algoritmů a mít jednoduchou intuici 
+  o jejich výkonu.
 
-Students will practice algorithmic thinking: defining problems, decomposing tasks, and expressing solutions with pseudocode and flowcharts. Emphasis is on clarity, correctness, and simple complexity reasoning (big-O intuition) for everyday programming problems. (38 words)
+## Klíčová slova
 
-Outline
+Algoritmizace, UML, Big-O
 
-1. Problem specification and inputs/outputs
-2. Pseudocode conventions
-3. Flowchart components and mapping to code
-4. Common patterns: loops, conditionals, divide-and-conquer
-5. Basic complexity intuition and correctness checks
+## Přednáška
 
-Exercises
+TODO: odkaz na online prezentaci (základní operace v programování, big-O UML diagramy)
 
-- Short coding exercise: Implement linear search in a list and write pseudocode + a flowchart for it.
-- Mini-project: Design two approaches to a small problem (e.g., finding duplicates); implement, compare correctness and performance on sample inputs.
 
-Sample Code (Python)
+## Seminář
 
-```python
-# linear search
-def linear_search(arr, x):
-    for i, v in enumerate(arr):
-        if v == x:
-            return i
-    return -1
-```
+Studenti si procvičí algoritmické myšlení: definování problému,
+rozklad úloh a vyjadřování řešení pomocí pseudokódu a vývojových
+diagramů. Důraz je kladen na srozumitelnost, správnost a základní úvahy o časové složitosti (intuice big-O) pro běžné programátorské úlohy.
 
-Resources
+### Osnova
 
-- Introduction to Algorithms (CLRS) — selected intro chapters
+1. Specifikace problému a vstupy/výstupy
+2. Konvence pseudokódu
+3. Prvky vývojových diagramů a jejich převod do kódu
+4. Běžné vzory: cykly, podmínky, rozděl a panuj
+5. Základní intuice složitosti a kontrola správnosti
+
+## Cvičení
+
+- Krátké programovací cvičení: Implementujte lineární vyhledávání v seznamu a napište k němu pseudokód a vývojový diagram.
+- Mini-projekt: Navrhněte dva přístupy k malému problému (např. hledání duplicit), implementujte je a porovnejte správnost a výkon na vzorových vstupech.
+
+
+
+## Zdroje
+
+- Introduction to Algorithms (CLRS) — vybrané kapitoly
 - Flowchart tutorial: https://www.lucidchart.com/pages/what-is-a-flowchart
