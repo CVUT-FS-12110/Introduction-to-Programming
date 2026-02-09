@@ -26,6 +26,10 @@ Studenti si procvičí algoritmické myšlení: definování problému,
 rozklad úloh a vyjadřování řešení pomocí pseudokódu a vývojových
 diagramů. Důraz je kladen na srozumitelnost, správnost a základní úvahy o časové složitosti (intuice big-O) pro běžné programátorské úlohy.
 
+Úkoly na seminář:
+1. [Průměrná hodnota z čísel](examples/average_value/README.md)
+1. [Nakreslení přímky ze zadaného vektoru](examples/line_slope_asci/README.md)
+
 ### Osnova
 
 1. Specifikace problému a vstupy/výstupy

@@ -1,0 +1,19 @@
+@startuml
+title Average Value Computation (N is constant)
+
+start
+:Initialize N = 5;
+:Initialize total = 0;
+:Print "Enter N numbers";
+
+:i = 1;
+while (i <= N?) is (yes)
+  :Read value x;
+  :total = total + x;
+  :i = i + 1;
+endwhile (no)
+
+:average = total / N;
+:Print average;
+stop
+@enduml

@@ -1,0 +1,40 @@
+@startuml
+title Draw Line Given by Vector (Direct Rendering)
+
+start
+
+:Initialize SIZE = 20;
+
+:Read x_end;
+:Read y_end;
+
+:y = SIZE;
+while (y >= 0?) is (yes)
+
+  :x = 0;
+  while (x <= SIZE?) is (yes)
+
+    if (x_end == 0?) then (yes)
+      if (x == 0?) then (yes)
+        :Print "#";
+      else (no)
+        :Print ".";
+      endif
+    else (no)
+      if (abs(y * x_end - x * y_end)\n<= max(x_end, y_end) / 2?) then (yes)
+        :Print "#";
+      else (no)
+        :Print ".";
+      endif
+    endif
+
+    :x = x + 1;
+  endwhile (no)
+
+  :Print newline;
+  :y = y - 1;
+
+endwhile (no)
+
+stop
+@enduml
