@@ -45,4 +45,4 @@ diagramů. Důraz je kladen na srozumitelnost, správnost a základní úvahy o 
 ## Zdroje
 
 - Introduction to Algorithms (CLRS) — vybrané kapitoly
-- Flowchart tutorial: https://www.lucidchart.com/pages/what-is-a-flowchart
+- [PlantUML Activity Diagram (beta)](https://plantuml.com/activity-diagram-beta)

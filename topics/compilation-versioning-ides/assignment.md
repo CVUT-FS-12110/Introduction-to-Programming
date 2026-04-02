@@ -1,4 +1,11 @@
-## Úkoly
+# Úkol GIT
+
+## Co a jak odevzdat
+
+- Odkaz na váš **veřejný GitHub repozitář**.
+- Odevzdejte v systému moodle.
+
+## Úkol 1
 
 Postupujte přesně v daném pořadí.
 
@@ -13,7 +20,38 @@ Postupujte přesně v daném pořadí.
 - Proveďte sloučení (merge) větve **`dev`** do větve **`main`** / **`master`** přímo na GitHubu.
 - Vytvořte **release** repozitáře s názvem **`v0.1`** (tag může být také `v0.1`).
 
-## Co a jak odevzdat
+## Úkol 2
 
-- Odkaz na váš **veřejný GitHub repozitář**.
-- Odevzdejte v systému moodle.
+Tento úkol navazuje na **Úkol 1**. Pracujte ve
+stejném repozitáři `progintro`. Cílem je naučit se
+pracovat s větvemi a vyřešit konflikt při slučování.
+
+Postupujte podle kroků:
+
+1. Ujistěte se, že jste ve větvi **`main`** / **`master`** a máte aktuální verzi repozitáře.
+
+2. Vytvořte novou větev s názvem **`conflict-test`** a přepněte se do ní.
+
+3. V této větvi upravte soubor `README.md`:
+   - změňte nebo přepište jeden konkrétní řádek (např. přidejte vlastní text).
+
+4. Změny commitněte.
+
+5. Přepněte se zpět do větve **`main`** / **`master`**.
+
+6. Ve stejné části souboru `README.md` proveďte jinou změnu (upravit stejný řádek jako v předchozí větvi).
+
+7. Změny commitněte.
+
+8. Pokuste se sloučit větev **`conflict-test`** do **`main`** / **`master`**.
+
+9. Vznikne konflikt:
+   - otevřete soubor `README.md`,
+   - ručně upravte obsah tak, aby dával smysl (zachovejte nebo vhodně spojte změny),
+   - odstraňte konfliktní značky (`<<<<<<<`, `=======`, `>>>>>>>`).
+
+10. Po vyřešení konfliktu:
+    - přidejte soubor do stage,
+    - dokončete merge commit.
+
+11. Výsledek odešlete na GitHub.
