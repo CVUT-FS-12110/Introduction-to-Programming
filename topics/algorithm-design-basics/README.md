@@ -40,10 +40,7 @@ diagramů. Důraz je kladen na srozumitelnost, správnost a základní úvahy o 
 
 ## Cvičení
 
-- Krátké programovací cvičení: Implementujte lineární vyhledávání v seznamu a napište k němu pseudokód a vývojový diagram.
-- Mini-projekt: Navrhněte dva přístupy k malému problému (např. hledání duplicit), implementujte je a porovnejte správnost a výkon na vzorových vstupech.
-
-
+[Vypracujte úlohy na tomto odkazu](tasks/tasks.md)
 
 ## Zdroje
 
