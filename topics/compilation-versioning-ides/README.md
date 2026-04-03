@@ -42,7 +42,7 @@ Cvičení má dvě části
 
 ### Git workflow
 
-Úkol je popsán na [tomhle odkazu](assignment.md)
+Úkol a domací příprava je popsána na [tomhle odkazu](assignment.md)
 
 ### Ukázkový kód (Python)
 

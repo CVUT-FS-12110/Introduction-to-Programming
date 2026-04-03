@@ -39,98 +39,34 @@ Vaším úkolem je pro následující programy nakreslit **UML activity diagram 
 
 ## Zadání úloh
 
-### Úloha 1
+### Cvičná úloha na domací přípravu
 ```Python
-numbers = [3, 8, 1, 6, 5]
-
-sum_even = 0
-sum_odd = 0
-
-for n in numbers:
-    if n % 2 == 0:
-        sum_even += n
-    else:
-        sum_odd += n
-
-print("Even:", sum_even)
-print("Odd:", sum_odd)
-```
-
-### Úloha 2
-```Python
-numbers = [4, 9, 2, 7, 6, 3, 8]
+numbers = [5, 2, 8, 1, 6, 3]
 
 i = 0
+count = 0
 total = 0
 
 while i < len(numbers):
     n = numbers[i]
 
-    if n == 7:
+    if n == 1:
         break
 
     if n % 2 == 0:
         total += n
+        count += 1
 
     i += 1
 
-print(total)
+print("Count:", count)
+print("Total:", total)
 ```
+Ukázkové řešení úlohy:
 
-### Úloha 3
-```Python
-numbers = [5, 12, 7, 18, 3, 10, 6]
+![Activity diagram](activity.png)
 
-i = 0
-total = 0
 
-while i < len(numbers):
-    n = numbers[i]
+### Úlohy na cvičení
 
-    if n < 0:
-        i += 1
-        continue
-
-    for j in range(n):
-        if j > 5:
-            break
-
-        if j % 2 == 0:
-            total += j
-        else:
-            total -= j
-
-    if total > 20:
-        break
-
-    i += 1
-
-print(total)
-```
-
-### Úloha 4
-
-```Python
-numbers = [4, 7, 2, 9, 5]
-
-total = 0
-
-for n in numbers:
-    partial = 0
-
-    for i in range(1, n + 1):
-        if i % 2 == 0:
-            partial += i
-        else:
-            partial -= i
-
-        if partial > 3:
-            break
-
-    if partial < 0:
-        total += 1
-    else:
-        total += partial
-
-print(total)
-```
+Budou ukázany na cvičení.

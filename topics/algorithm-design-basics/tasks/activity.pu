@@ -1,0 +1,38 @@
+@startuml
+start
+
+:inicializace: i, count, total;
+note right
+i = 0
+count = 0
+total = 0
+end note
+
+while (i < len(numbers)?) is (ano)
+    :n = numbers[i];
+
+    if (n == 1?) then (ano)
+        break
+    else (ne)
+    endif
+
+    if (n % 2 == 0?) then (ano)
+        :update count a total;
+        note right
+        total = total + n
+        count = count + 1
+        end note
+    else (ne)
+    endif
+
+    :i = i + 1;
+endwhile (ne)
+
+:print count a total;
+note right
+print("Count:", count)
+print("Total:", total)
+end note
+
+stop
+@enduml

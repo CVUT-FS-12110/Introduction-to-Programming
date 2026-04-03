@@ -40,7 +40,7 @@ diagramů. Důraz je kladen na srozumitelnost, správnost a základní úvahy o 
 
 ## Cvičení
 
-[Vypracujte úlohy na tomto odkazu](tasks/tasks.md)
+[Domácí příprava a úkoly](tasks/tasks.md)
 
 ## Zdroje
 

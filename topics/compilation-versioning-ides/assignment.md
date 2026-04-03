@@ -1,4 +1,10 @@
-# Úkol GIT
+# Cvičení GIT
+
+## Domácí příprava
+
+- vyzkoušejte si úkol vyřešit doma (repozitář si pojmenujte jinak)
+- na hodině budete pracovat z nuly dle instrukcí
+- domácí příprava vás má připravit na rychlé řešení úkolů
 
 ## Co a jak odevzdat
 
@@ -6,7 +12,6 @@
 - Odevzdejte v systému moodle.
 
 ## Úkol 1
-
 Postupujte přesně v daném pořadí.
 
 - Vytvořte **veřejný repozitář na GitHubu** (nebo ekvivalentní službě) s názvem `progintro` ve svém účtu.
