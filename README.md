@@ -16,10 +16,12 @@
 1. Funkce
 1. Objekty
 1. [Práce se soubory - čtení a zápis](topics/file-handling-and-file-io/README.md)
-1. 
+1. [Používání knihoven a dokumentování kódu](topics/libraries-and-documentation/README.md)
+   - Úvod do práce s knihovnami
+   - Úvod do dokumentování kódu pomocí docstringů
 1. [Ukládání a serializace dat](topics/data-storage-and-serialization/README.md)
 1.
-1.
+1. Sdílené proměnné a komunikace mezi částmi programu
 1.
 1.
 
