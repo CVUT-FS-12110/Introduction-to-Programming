@@ -21,6 +21,10 @@ Přehled serializace dat pro ukládání a přenos: JSON, CSV a jednoduché
 binární formáty. Studenti se naučí ukládat strukturovaná data,
 znovu je načítat a uvažovat o kompromisu mezi čitelností a velikostí dat.
 
+Podklady:
+
+- [Seminář](seminar.md)
+
 ### Osnova
 
 1. Formáty: základy JSON, CSV, binární formáty (pickle)
@@ -31,8 +35,9 @@ znovu je načítat a uvažovat o kompromisu mezi čitelností a velikostí dat.
 
 ## Cvičení
 
-- Krátké programovací cvičení: Uložte seznam slovníků do formátu JSON a znovu jej načtěte.
-- Mini-projekt: Implementujte jednoduchý nástroj pro export/import dat, který převádí dataset mezi formáty CSV a JSON.
+Úkol pro domácí přípravu je [zde](assignment.md).
+
+Úkoly pro samostatnou práci na cvičení jsou [zde](tasks.md).
 
 
 Příklad: uložení a načtení JSON
