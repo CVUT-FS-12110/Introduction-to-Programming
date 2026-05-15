@@ -20,20 +20,10 @@
    - Úvod do práce s knihovnami
    - Úvod do dokumentování kódu pomocí docstringů
 1. [Ukládání a serializace dat](topics/data-storage-and-serialization/README.md)
-1.
+1. Základní principy testování
 1. Sdílené proměnné a komunikace mezi částmi programu
-1.
-1.
+1. Běžně používané datové typy a třídy
+1. Analýza výstupů programu (profiling)
 
 
 
-
-## Repository LEGACY structure
-
-Tyhle foldery půjdou pryč později
-
-- [Lectures](./#lectures) (přednášky) - Frontal lectures covering theoretical background
-- [Seminars](./#seminars) (semináře) - Guided practical exercises with step-by-step instructions
-- [Labs](./#labs) (cvičení) - Independent practical exercises for students to solve
-
-[Legacy material](./legacy) - resources from other courses which might be useful for integration
