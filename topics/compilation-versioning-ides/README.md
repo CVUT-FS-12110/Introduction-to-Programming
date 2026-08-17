@@ -59,5 +59,7 @@ Pokud vám zbude čas, věnujte ho pochopení a vylepšení programu výše.
 
 ## Zdroje
 
-- Git (https://git-scm.com/book/en/v2)
-- Python: https://docs.python.org/3/
+- [Pro Git, 2nd Edition](https://git-scm.com/book/en/v2)
+- [Dokumentace jazyka Python](https://docs.python.org/3/)
+- [Python Developer's Guide – compiler](https://devguide.python.org/internals/compiler/)
+- [GNU Compiler Collection – dokumentace](https://gcc.gnu.org/onlinedocs/)

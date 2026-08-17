@@ -1,0 +1,473 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+
+% Sdílená šablona používá standardní Latin Modern Sans a nevyžaduje externí fonty.
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+
+\title{Kompilace kódu a verzování}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}
+\institute{}
+\date{}
+\renewcommand{\headlineA}{}
+\renewcommand{\headlineB}{}
+\renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\newcommand{\flowbox}[1]{\node[draw=CodeBlue,very thick,rounded corners,fill=SoftGray,
+  minimum height=1.1cm,minimum width=2.7cm,align=center] {#1};}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:03
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Co je \term{program}, \term{algoritmus} a \term{programovací jazyk}?
+    \item Jak se ze zdrojového kódu stane běžící program?
+    \item Jak se liší \term{kompilace} a \term{interpretace}?
+    \item K čemu slouží \term{IDE} a online běhové prostředí?
+    \item Proč verzujeme a jak Git přemýšlí o historii projektu?
+  \end{itemize}
+\end{frame}
+
+% 0:03--0:05
+\begin{frame}{Co je algoritmus?}
+  \begin{block}{Algoritmus}
+    Konečný a jednoznačný postup, který převádí vstup na požadovaný výstup.
+  \end{block}
+  \begin{itemize}
+    \item Popisuje \textbf{řešení problému}, ne konkrétní zápis v jazyce.
+    \item Musí mít srozumitelné kroky a po konečném počtu kroků skončit.
+    \item Tentýž algoritmus lze zapsat slovně, diagramem nebo programem.
+  \end{itemize}
+\end{frame}
+
+% 0:05--0:07
+\begin{frame}{Co je program?}
+  \begin{block}{Program}
+    Zápis algoritmu a souvisejících dat v podobě, kterou lze vykonat počítačem.
+  \end{block}
+  \begin{itemize}
+    \item \term{Programovací jazyk} určuje povolenou syntax a význam konstrukcí.
+    \item \term{Zdrojový kód} je text vytvořený programátorem.
+    \item Procesor přímo vykonává až \term{strojové instrukce}.
+  \end{itemize}
+\end{frame}
+
+% 0:07--0:09
+\begin{frame}{Proč počítač nespustí zdrojový kód přímo?}
+  \centering
+  \begin{tikzpicture}[node distance=1.2cm,>=Latex]
+    \node[draw=CodeBlue,very thick,rounded corners,fill=SoftGray,minimum height=1.1cm,
+      minimum width=2.7cm,align=center] (source) {Zdrojový\\kód};
+    \node[draw=CodeBlue,very thick,rounded corners,fill=SoftGray,minimum height=1.1cm,
+      minimum width=3.2cm,right=of source,align=center] (translator) {Překlad nebo\\interpretace};
+    \node[draw=CodeBlue,very thick,rounded corners,fill=SoftGray,minimum height=1.1cm,
+      minimum width=2.7cm,right=of translator,align=center] (cpu) {Instrukce\\procesoru};
+    \draw[->,very thick] (source) -- (translator);
+    \draw[->,very thick] (translator) -- (cpu);
+  \end{tikzpicture}
+  \vspace{0.7cm}
+  \begin{itemize}
+    \item Zdrojový jazyk je navržen především pro lidi.
+    \item Procesor rozumí instrukční sadě konkrétní architektury.
+    \item Mezi nimi musí existovat překladač nebo běhové prostředí.
+  \end{itemize}
+\end{frame}
+
+% 0:09--0:12
+\begin{frame}{Co je kompilace?}
+  \begin{block}{Kompilace}
+    Překlad zdrojového kódu do jiné reprezentace před jeho spuštěním.
+  \end{block}
+  \begin{itemize}
+    \item Kompilátor odhaluje část chyb ještě před spuštěním.
+    \item Překlad může probíhat v několika navazujících krocích.
+    \item Výsledný program může být závislý na operačním systému a procesoru.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Jak vypadá překladový řetězec?}
+  \centering
+  \begin{tikzpicture}[node distance=0.65cm,>=Latex]
+    \node[draw,rounded corners,fill=SoftGray] (src) {zdrojový kód};
+    \node[draw,rounded corners,fill=SoftGray,right=of src] (compiler) {kompilátor};
+    \node[draw,rounded corners,fill=SoftGray,right=of compiler] (obj) {objektový kód};
+    \node[draw,rounded corners,fill=SoftGray,right=of obj] (linker) {linker};
+    \node[draw,rounded corners,fill=SoftGray,right=of linker] (exe) {spustitelný soubor};
+    \draw[->] (src)--(compiler); \draw[->] (compiler)--(obj);
+    \draw[->] (obj)--(linker); \draw[->] (linker)--(exe);
+  \end{tikzpicture}
+  \vspace{0.8cm}
+  \begin{itemize}
+    \item Každý nástroj řeší jinou část převodu programu.
+    \item Konkrétní řetězec závisí na jazyce, překladači a platformě.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Co vytváří kompilátor?}
+  \begin{block}{Objektový kód}
+    Přeložená podoba jedné části programu, která ještě nemusí být samostatně spustitelná.
+  \end{block}
+  \begin{itemize}
+    \item Obsahuje strojové instrukce a data pro cílovou platformu.
+    \item Může stále odkazovat na funkce nebo data definovaná jinde.
+    \item Větší projekt se obvykle překládá po samostatných částech.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Co dělá linker?}
+  \begin{block}{Linker neboli sestavovací program}
+    Spojuje objektové soubory a knihovny do výsledného programu.
+  \end{block}
+  \begin{itemize}
+    \item Vyhledá, kde jsou definované používané funkce a proměnné.
+    \item Propojí odkazy mezi jednotlivými částmi programu.
+    \item Ohlásí chybu, pokud potřebná definice chybí nebo je nejednoznačná.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Co je knihovna?}
+  \begin{block}{Knihovna}
+    Znovupoužitelný soubor již připraveného kódu, který program využívá.
+  \end{block}
+  \begin{itemize}
+    \item \term{Statická knihovna}: potřebné části se vloží do programu při linkování.
+    \item \term{Dynamická knihovna}: načte se při spuštění nebo až během běhu.
+    \item Knihovna není samostatná aplikace; poskytuje funkce jiným programům.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Co se děje při spuštění?}
+  \begin{itemize}
+    \item Operační systém načte spustitelný soubor do paměti.
+    \item \term{Loader} připraví program a potřebné dynamické knihovny.
+    \item Runtime inicializuje prostředí, které program potřebuje.
+    \item Řízení přejde na vstupní bod programu.
+  \end{itemize}
+  \begin{alertblock}{Spustitelný neznamená přenositelný}
+    Soubor vytvořený pro jednu platformu nemusí fungovat na jiné.
+  \end{alertblock}
+\end{frame}
+
+% 0:12--0:15
+\begin{frame}{Co je interpretace?}
+  \begin{block}{Interpretace}
+    Interpret načítá program a zajišťuje vykonávání jeho instrukcí za běhu.
+  \end{block}
+  \begin{itemize}
+    \item Ke spuštění potřebujeme zdrojový kód a vhodný interpret/runtime.
+    \item Chyba se může projevit až při vykonání problematické části programu.
+    \item Typický příklad uživatelského pohledu: \texttt{python program.py}.
+  \end{itemize}
+  \begin{alertblock}{Pozor}
+    „Interpretovaný jazyk“ neznamená, že uvnitř neprobíhá žádný překlad.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Interpret a virtuální stroj}
+  \begin{itemize}
+    \item \term{Interpret} zajišťuje vykonávání programu za běhu.
+    \item \term{Virtuální stroj} vykonává instrukce mezireprezentace, například bytecode.
+    \item Stejná mezireprezentace může běžet na více platformách s vhodným runtime.
+  \end{itemize}
+  \begin{block}{Názvy popisují vrstvy, ne vždy celý jazyk}
+    Jeden jazyk může mít více implementací s odlišným způsobem vykonávání.
+  \end{block}
+\end{frame}
+
+% 0:15--0:18
+\begin{frame}{Kompilace, nebo interpretace?}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+      \textbf{Překlad před spuštěním}
+      \begin{itemize}
+        \item vzniká cílový kód,
+        \item více práce předem,
+        \item často rychlý běh.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \textbf{Překlad během běhu}
+      \begin{itemize}
+        \item nutné běhové prostředí,
+        \item snadná přenositelnost,
+        \item pružná práce s programem.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.5cm}
+  \begin{block}{V praxi jde o spektrum}
+    Jazyky a implementace mohou kombinovat kompilaci, bytecode, virtuální stroj i JIT překlad.
+  \end{block}
+\end{frame}
+
+% 0:18--0:20
+\begin{frame}{Kde je v tomto obrazu Python?}
+  \begin{itemize}
+    \item Python je \term{programovací jazyk}; CPython je jeho běžná implementace.
+    \item CPython typicky překládá zdrojový kód do \term{bytecode}.
+    \item Bytecode vykonává virtuální stroj uvnitř Python runtime.
+  \end{itemize}
+  \centering
+  \vspace{0.5cm}
+  \begin{tikzpicture}[node distance=0.9cm,>=Latex]
+    \node[draw,rounded corners,fill=SoftGray] (py) {\texttt{program.py}};
+    \node[draw,rounded corners,fill=SoftGray,right=of py] (bc) {bytecode};
+    \node[draw,rounded corners,fill=SoftGray,right=of bc] (vm) {Python VM};
+    \node[draw,rounded corners,fill=SoftGray,right=of vm] (out) {výsledek};
+    \draw[->] (py)--(bc); \draw[->] (bc)--(vm); \draw[->] (vm)--(out);
+  \end{tikzpicture}
+\end{frame}
+
+% 0:20--0:22
+\begin{frame}{Co je runtime?}
+  \begin{block}{Běhové prostředí (runtime)}
+    Služby a pravidla potřebná při spuštění programu.
+  \end{block}
+  \begin{itemize}
+    \item načtení programu a knihoven,
+    \item správa paměti a objektů,
+    \item vstup, výstup a komunikace s operačním systémem,
+    \item zpracování běhových chyb.
+  \end{itemize}
+  \vspace{0.3cm}
+  \textbf{Jazyk} je specifikace; \textbf{implementace} a runtime ji uskutečňují.
+\end{frame}
+
+% 0:22--0:25
+\begin{frame}{Chyby před spuštěním}
+  \begin{itemize}
+    \item \term{Syntaktická chyba}: zápis neodpovídá pravidlům jazyka.
+    \item \term{Překladová chyba}: program nelze převést do cílové podoby.
+    \item \term{Linkovací chyba}: některou požadovanou definici nelze najít nebo propojit.
+  \end{itemize}
+  \begin{block}{Výhoda včasné kontroly}
+    Část problémů lze najít ještě dříve, než program dostane vstup a začne pracovat.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Chyby během a po spuštění}
+  \begin{itemize}
+    \item \term{Běhová chyba}: problém vznikne až během vykonávání.
+    \item \term{Logická chyba}: program běží, ale dává nesprávný výsledek.
+  \end{itemize}
+  \begin{alertblock}{Důležitý rozdíl}
+    Úspěšný překlad ani spuštění nedokazují, že program řeší správný problém.
+  \end{alertblock}
+\end{frame}
+
+% 0:25--0:27
+\begin{frame}{Co je IDE?}
+  \begin{block}{IDE --- integrované vývojové prostředí}
+    Aplikace, která spojuje nástroje pro tvorbu a zkoumání programu.
+  \end{block}
+  \begin{itemize}
+    \item editor kódu a navigace v projektu,
+    \item zvýraznění syntaxe a průběžná analýza,
+    \item spuštění, sestavení a práce s runtime,
+    \item debugger, testy, terminál a integrace verzování.
+  \end{itemize}
+\end{frame}
+
+% 0:27--0:29
+\begin{frame}{Textový editor, nebo IDE?}
+  \begin{itemize}
+    \item \term{Textový editor}: především úprava souborů; další nástroje doplňujeme.
+    \item \term{IDE}: ucelené prostředí s přednastaveným workflow projektu.
+  \end{itemize}
+  \begin{block}{Volba nástroje}
+    Nástroj mění způsob práce, nikoli význam programu ani pravidla jazyka.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Notebook a cloudové prostředí}
+  \begin{itemize}
+    \item \term{Notebook}: dokument kombinující text, kód a jednotlivé výstupy.
+    \item \term{Cloudové IDE / Colab}: běh na vzdáleném počítači přes prohlížeč.
+    \item Výhodou je rychlý začátek; omezením může být závislost na službě a připojení.
+  \end{itemize}
+\end{frame}
+
+% 0:29--0:31
+\begin{frame}{Proč verzovat?}
+  \begin{itemize}
+    \item Víme, \textbf{co}, \textbf{kdo} a \textbf{proč} změnil.
+    \item Můžeme porovnat stavy projektu a vrátit se ke starší verzi.
+    \item Více lidí může bezpečně rozvíjet tentýž projekt.
+    \item Experiment lze oddělit od stabilní práce.
+  \end{itemize}
+  \begin{alertblock}{Složky \texttt{final}, \texttt{final2}, \texttt{opravdu-final}}
+    Kopie souborů nejsou spolehlivá historie: chybí vztahy, autor, důvod změny i možnost rozumného sloučení.
+  \end{alertblock}
+\end{frame}
+
+% 0:31--0:33
+\begin{frame}{Co je Git?}
+  \begin{block}{Git}
+    Distribuovaný systém správy verzí, který uchovává historii projektu jako propojené snímky.
+  \end{block}
+  \begin{itemize}
+    \item \term{Repozitář} obsahuje soubory projektu i jejich historii.
+    \item Každý klon má obvykle úplnou lokální historii.
+    \item Většina operací funguje lokálně, bez připojení k serveru.
+    \item Git není totéž co GitHub: Git je nástroj, GitHub je hostingová služba.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Git ukládá snímky, ne názvy verzí}
+  \begin{itemize}
+    \item Každý commit představuje snímek stavu sledovaných souborů.
+    \item Nezměněný obsah Git nemusí ukládat znovu; odkáže na existující data.
+    \item Commity jsou propojené a vytvářejí historii projektu.
+  \end{itemize}
+  \centering
+  \vspace{0.5cm}
+  \texttt{A --- B --- C --- D}
+\end{frame}
+
+% 0:33--0:36
+\begin{frame}{Jak Git vidí změnu?}
+  \centering
+  \begin{tikzpicture}[node distance=0.9cm,>=Latex]
+    \node[draw,rounded corners,fill=SoftGray,minimum width=2.6cm] (work) {pracovní strom};
+    \node[draw,rounded corners,fill=SoftGray,minimum width=2.6cm,right=of work] (stage) {staging area};
+    \node[draw,rounded corners,fill=SoftGray,minimum width=2.6cm,right=of stage] (repo) {repozitář};
+    \draw[->,very thick] (work)--node[above]{\texttt{add}}(stage);
+    \draw[->,very thick] (stage)--node[above]{\texttt{commit}}(repo);
+  \end{tikzpicture}
+  \vspace{0.8cm}
+  \begin{itemize}
+    \item \term{Modified}: soubor je změněný v pracovním stromu.
+    \item \term{Staged}: konkrétní podoba změny je vybraná pro další commit.
+    \item \term{Committed}: snímek je bezpečně uložený v lokální historii.
+  \end{itemize}
+\end{frame}
+
+% 0:36--0:38
+\begin{frame}{Co je commit?}
+  \begin{block}{Commit}
+    Pojmenovaný snímek projektu s autorem, časem, zprávou a odkazem na předchozí historii.
+  \end{block}
+  \begin{itemize}
+    \item Zachycuje jeden smysluplný krok vývoje.
+    \item Identifikuje jej hash odvozený z jeho obsahu a metadat.
+    \item Dobrá zpráva vysvětluje záměr změny, nejen jména souborů.
+  \end{itemize}
+  \vspace{0.3cm}
+  \centering
+  \texttt{A --- B --- C} \hspace{0.4cm} \textcolor{CodeBlue}{$\leftarrow$ historie snímků}
+\end{frame}
+
+% 0:38--0:40
+\begin{frame}{Co je větev?}
+  \term{Větev (branch)} je pohyblivý ukazatel na commit; umožňuje rozvíjet více linií historie.\par
+  \vspace{0.25cm}
+  \centering
+  \begin{tikzpicture}[>=Latex]
+    \node[circle,draw,fill=SoftGray] (a) at (0,0) {A};
+    \node[circle,draw,fill=SoftGray] (b) at (1.7,0) {B};
+    \node[circle,draw,fill=SoftGray] (c) at (3.4,0) {C};
+    \node[circle,draw,fill=SoftGray] (d) at (5.1,0) {D};
+    \node[circle,draw,fill=SoftGray] (x) at (3.4,-1.0) {X};
+    \draw[->] (a)--(b); \draw[->] (b)--(c); \draw[->] (c)--(d);
+    \draw[->] (b)--(x);
+    \node[above=0.15cm of d] {\texttt{main}};
+    \node[below=0.15cm of x] {\texttt{experiment}};
+  \end{tikzpicture}
+  \vspace{0.15cm}
+  \begin{itemize}
+    \item Vytvoření větve nekopíruje celý projekt.
+    \item \term{Merge} znovu propojí dvě linie vývoje.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Co je merge a konflikt?}
+  \begin{itemize}
+    \item \term{Merge} spojí změny ze dvou linií historie.
+    \item Nezávislé změny Git často sloučí automaticky.
+    \item \term{Konflikt} vznikne, když nelze bezpečně rozhodnout, kterou podobu zachovat.
+    \item Konflikt není porucha Gitu; je to rozhodnutí, které musí udělat člověk.
+  \end{itemize}
+\end{frame}
+
+% 0:40--0:42
+\begin{frame}{Lokální a vzdálený repozitář}
+  \begin{itemize}
+    \item \term{Lokální repozitář}: pracovní kopie a historie na našem počítači.
+    \item \term{Vzdálený repozitář}: další kopie historie, často na GitHubu.
+    \item \texttt{clone}: vytvoří lokální kopii vzdáleného repozitáře.
+    \item \texttt{push}: zveřejní lokální commity; \texttt{pull}: převezme vzdálené změny.
+  \end{itemize}
+  \begin{alertblock}{Častý omyl}
+    Commit ukládá změnu lokálně. Teprve push ji odešle na vzdálený server.
+  \end{alertblock}
+\end{frame}
+
+% 0:42--0:44
+\begin{frame}{Jeden projekt, dvě vrstvy nástrojů}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+      \textbf{Vznik a běh programu}
+      \begin{itemize}
+        \item zdrojový kód,
+        \item překladač / interpret,
+        \item runtime,
+        \item IDE.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \textbf{Historie projektu}
+      \begin{itemize}
+        \item pracovní strom,
+        \item staging area,
+        \item commity a větve,
+        \item vzdálený repozitář.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.5cm}
+  IDE může obě vrstvy zpřístupnit, ale nenahrazuje jejich pochopení.
+\end{frame}
+
+% 0:44--0:45
+\begin{frame}{Co si zapamatovat?}
+  \begin{itemize}
+    \item Zdrojový kód musí být přeložen nebo vykonán prostřednictvím runtime.
+    \item Kompilace a interpretace nejsou dvě dokonale oddělené kategorie.
+    \item IDE spojuje nástroje, ale programovací jazyk ani Git se na něj nevážou.
+    \item Git ukládá propojené snímky projektu v commitech.
+    \item Commit je lokální; GitHub je jedna z možností sdílení repozitáře.
+  \end{itemize}
+  \vspace{0.4cm}
+  \centering\Large Otázky?
+\end{frame}
+
+\end{document}

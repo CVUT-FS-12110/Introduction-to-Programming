@@ -1,0 +1,39 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% Funguje přímo v této složce i po zkopírování do topics/<tema>/lecture/.
+\IfFileExists{../../../utils/presentation-template/beamerthemeCVUT.sty}
+  {\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}}
+  {\newcommand{\CVUTTemplatePath}{.}}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+
+\title{Název přednášky}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}
+\institute{}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+\begin{frame}{Jedna hlavní myšlenka}
+  \begin{itemize}
+    \item Stručný bod.
+    \item Další důležitý pojem nebo definice.
+  \end{itemize}
+\end{frame}
+
+\end{document}
