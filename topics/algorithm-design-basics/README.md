@@ -17,32 +17,27 @@ Algoritmizace, UML, Big-O
 
 ## Přednáška
 
-TODO: odkaz na online prezentaci (základní operace v programování, big-O UML diagramy)
+[Prezentace: Základy návrhu algoritmů](lecture/presentation.pdf)
 
+## Domácí příprava
 
-## Seminář
+[Zadání domácí přípravy](prework.md)
+
+## Seminář a cvičení
 
 Studenti si procvičí algoritmické myšlení: definování problému,
 rozklad úloh a vyjadřování řešení pomocí pseudokódu a vývojových
 diagramů. Důraz je kladen na srozumitelnost, správnost a základní úvahy o časové složitosti (intuice big-O) pro běžné programátorské úlohy.
 
-Úkoly na seminář:
-1. [Průměrná hodnota z čísel](examples/average_value/README.md)
-1. [Nakreslení přímky ze zadaného vektoru](examples/line_slope_asci/README.md)
+Úkoly na seminář a cvičení:
+1. [Collatzova posloupnost](examples/collatz.md)
+1. [Průměrná hodnota z čísel](examples/average_value.md)
+1. [Nakreslení přímky ze zadaného vektoru](examples/line_slope_ascii.md)
 
-### Osnova
-
-1. Specifikace problému a vstupy/výstupy
-2. Konvence pseudokódu
-3. Prvky vývojových diagramů a jejich převod do kódu
-4. Běžné vzory: cykly, podmínky, rozděl a panuj
-5. Základní intuice složitosti a kontrola správnosti
-
-## Cvičení
-
-[Domácí příprava a úkoly](tasks/tasks.md)
 
 ## Zdroje
 
 - Introduction to Algorithms (CLRS) — vybrané kapitoly
-- [PlantUML Activity Diagram (beta)](https://plantuml.com/activity-diagram-beta)
+- [Mermaid: Flowcharts](https://mermaid.js.org/syntax/flowchart.html) — zápis a vykreslování diagramů přímo v Markdownu
+- [PlantUML: Activity Diagram](https://plantuml.com/activity-diagram-beta) — prvky a příklady UML diagramů aktivit
+- [MIT OpenCourseWare: Notes on Big-O Notation](https://ocw.mit.edu/courses/6-00sc-introduction-to-computer-science-and-programming-spring-2011/resources/mit6_00scs11_rec04/) — úvod do efektivity algoritmů a řádu růstu

@@ -20,7 +20,7 @@ Git, IDE, program, algoritmus, strojový kód, zdrojový kód
 
 ## Přednáška
 
-TODO: odkaz na online prezentaci (základní pojmy, základní git)
+[Prezentace: Kompilace kódu a verzování](lecture/presentation.pdf)
 
 ## Seminář
 
