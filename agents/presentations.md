@@ -63,3 +63,42 @@
 - Ověřte správnost všech příkladů kódu a jejich výstupů.
 - Zkontrolujte, že v PDF nezůstaly pracovní poznámky, dočasné slajdy ani nevyřešené značky typu TODO.
 - Ujistěte se, že PDF i jeho zdrojové soubory jsou uložené ve správné složce tématu.
+
+## Sestavení v pracovním prostředí Windows/MiKTeX
+
+Při automatizovaném sestavení na tomto stroji nenechávejte úplný výstup
+`pdflatex` proudit do terminálu nástroje. Výstup je velmi dlouhý a po zaplnění
+výstupní roury může proces zůstat viset, přestože v LaTeXovém zdroji není
+chyba. Typickým příznakem je stále běžící proces `pdflatex` a nedokončený
+soubor `.log`.
+
+Spolehlivý postup v PowerShellu:
+
+1. Pracujte ze složky `topics/<tema>/lecture/`.
+2. Sestavujte pod izolovaným názvem úlohy, aby po předchozím přerušeném běhu
+   nezůstaly zamčené pracovní soubory.
+3. Každý průchod spusťte samostatně, podrobný terminálový výstup přesměrujte a
+   vždy zkontrolujte návratový kód.
+
+```powershell
+$presentationBuildName = "presentation-build"
+
+pdflatex -jobname=$presentationBuildName -interaction=nonstopmode -halt-on-error presentation.tex *> $null
+if ($LASTEXITCODE -ne 0) { throw "První průchod pdflatex selhal: $LASTEXITCODE" }
+
+pdflatex -jobname=$presentationBuildName -interaction=nonstopmode -halt-on-error presentation.tex *> $null
+if ($LASTEXITCODE -ne 0) { throw "Druhý průchod pdflatex selhal: $LASTEXITCODE" }
+
+Copy-Item -LiteralPath "$presentationBuildName.pdf" -Destination "presentation.pdf" -Force
+```
+
+MiKTeX zapisuje uživatelské logy a cache do profilu uživatele. V omezeném
+automatizovaném prostředí proto může být nutné spustit `pdflatex` s povolením
+zápisu mimo sandbox. Neobcházejte chybu opakovaným spouštěním dalších procesů;
+nejprve ověřte, zda nezůstal viset předchozí `pdflatex`, a případně ukončete
+pouze tento konkrétní proces.
+
+Po úspěšném sestavení ponechte ve verzovaných souborech jen
+`presentation.tex`, výsledný `presentation.pdf` a skutečné podklady
+prezentace. Pomocné soubory `presentation-build.*` odstraňte až po ověření, že
+výsledné PDF existuje a má očekávaný počet stran.

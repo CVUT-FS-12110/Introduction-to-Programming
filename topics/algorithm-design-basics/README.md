@@ -11,28 +11,26 @@
 - Posuzovat základní správnost algoritmů a mít jednoduchou intuici 
   o jejich výkonu.
 
-## Klíčová slova
-
-Algoritmizace, UML, Big-O
-
 ## Přednáška
 
 [Prezentace: Základy návrhu algoritmů](lecture/presentation.pdf)
 
 ## Domácí příprava
 
-[Zadání domácí přípravy](prework.md)
+[Zadání domácí přípravy](prework/prework.md)
 
-## Seminář a cvičení
+## Seminář
 
 Studenti si procvičí algoritmické myšlení: definování problému,
 rozklad úloh a vyjadřování řešení pomocí pseudokódu a vývojových
 diagramů. Důraz je kladen na srozumitelnost, správnost a základní úvahy o časové složitosti (intuice big-O) pro běžné programátorské úlohy.
 
-Úkoly na seminář a cvičení:
-1. [Collatzova posloupnost](examples/collatz.md)
-1. [Průměrná hodnota z čísel](examples/average_value.md)
-1. [Nakreslení přímky ze zadaného vektoru](examples/line_slope_ascii.md)
+1. [Collatzova posloupnost](seminar/collatz.md) — [návod k vytvoření diagramu v Mermaid](seminar/collatz_mermaid.md)
+
+## Cvičení
+
+1. [Průměrná hodnota z čísel](lab/average_value.md)
+1. [Nakreslení přímky ze zadaného vektoru](lab/line_slope_ascii.md)
 
 
 ## Zdroje

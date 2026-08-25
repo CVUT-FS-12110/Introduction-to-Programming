@@ -5,7 +5,7 @@
 - Připravte si vlastní účet na Github (nebo ekvivalentní službě)
 kam se dokážete během cvičení připojit.
 - Pokud chcete používat vlastní počítač (doporučeno),
-  nainstalujte si vhodné IDE - Pycharm, Visual Studio Code
+  nainstalujte si vhodné IDE - Visual Studio Code
 
 ## Cíle
 
@@ -14,13 +14,13 @@ kam se dokážete během cvičení připojit.
 - Online běhová prostředí – notebooky, Colab apod.
 - Používat Git pro základní workflow verzování (init, commit, branch).
 
-## Klíčová slova
-
-Git, IDE, program, algoritmus, strojový kód, zdrojový kód
-
 ## Přednáška
 
 [Prezentace: Kompilace kódu a verzování](lecture/presentation.pdf)
+
+## Domácí příprava
+
+[Zadání domácí přípravy: základní Git workflow](prework/assignment.md)
 
 ## Seminář
 
@@ -36,13 +36,16 @@ kompilací a interpretací, se základy verzování pomocí Gitu a s klíčovým
 4. Funkce IDE: editace, ladění, klávesové zkratky
 5. Doporučené workflow a osvědčené postupy
 
+Na semináři se společně projde [stejné zadání jako v domácí
+přípravě](prework/assignment.md). Jednotlivé kroky budou doplněny komentářem,
+podrobnějším vysvětlením příkazů a ukázkami řešení obvyklých problémů.
+
 ## Cvičení
 
-Cvičení má dvě části 
+Cvičení je věnováno rozsáhlejšímu Git workflow, které propojuje práci s
+větvemi, vzdáleným repozitářem, konflikty a úpravy historie.
 
-### Git workflow
-
-Úkol a domací příprava je popsána na [tomhle odkazu](assignment.md)
+[Zadání cvičení: pokročilé Git workflow](lab/advanced_git_workflow.md)
 
 ### Ukázkový kód (Python)
 

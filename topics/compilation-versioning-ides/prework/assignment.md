@@ -1,10 +1,15 @@
-# Cvičení GIT
+# Domácí příprava a seminář: základní Git workflow
 
 ## Domácí příprava
 
 - vyzkoušejte si úkol vyřešit doma (repozitář si pojmenujte jinak)
 - na hodině budete pracovat z nuly dle instrukcí
 - domácí příprava vás má připravit na rychlé řešení úkolů
+
+Na semináři se projde stejné zadání krok za krokem. Vyučující jednotlivé
+operace okomentuje, podrobněji vysvětlí jejich význam a ukáže řešení častých
+problémů. Před seminářem se proto pokuste celé zadání dokončit samostatně a
+poznamenejte si kroky, kterým nerozumíte nebo u kterých jste se zasekli.
 
 ## Co a jak odevzdat
 
@@ -22,7 +27,7 @@ Postupujte přesně v daném pořadí.
 - V této větvi přidejte nový **prázdný textový soubor**.
 - Proveďte commit změn (soubor `README.md` a nový soubor) a odešlete větev **`dev`** na GitHub.
 - Upravte soubor `README.md` přímo v online rozhraní GitHubu ve větvi **`dev`** a použijte zprávu commitu **„edited online“**.
-- Proveďte sloučení (merge) větve **`dev`** do větve **`main`** / **`master`** přímo na GitHubu.
+- Proveďte sloučení (merge) větve **`dev`** do větve **`master`** přímo na GitHubu.
 - Vytvořte **release** repozitáře s názvem **`v0.1`** (tag může být také `v0.1`).
 
 ## Úkol 2
@@ -33,7 +38,7 @@ pracovat s větvemi a vyřešit konflikt při slučování.
 
 Postupujte podle kroků:
 
-1. Ujistěte se, že jste ve větvi **`main`** / **`master`** a máte aktuální verzi repozitáře.
+1. Ujistěte se, že jste ve větvi **`master`** a máte aktuální verzi repozitáře.
 
 2. Vytvořte novou větev s názvem **`conflict-test`** a přepněte se do ní.
 
@@ -42,13 +47,13 @@ Postupujte podle kroků:
 
 4. Změny commitněte.
 
-5. Přepněte se zpět do větve **`main`** / **`master`**.
+5. Přepněte se zpět do větve **`master`**.
 
 6. Ve stejné části souboru `README.md` proveďte jinou změnu (upravit stejný řádek jako v předchozí větvi).
 
 7. Změny commitněte.
 
-8. Pokuste se sloučit větev **`conflict-test`** do **`main`** / **`master`**.
+8. Pokuste se sloučit větev **`conflict-test`** do **`master`**.
 
 9. Vznikne konflikt:
    - otevřete soubor `README.md`,

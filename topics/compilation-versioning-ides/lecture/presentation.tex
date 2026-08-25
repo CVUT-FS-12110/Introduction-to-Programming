@@ -356,7 +356,7 @@
 % 0:33--0:36
 \begin{frame}{Jak Git vidí změnu?}
   \centering
-  \begin{tikzpicture}[node distance=0.9cm,>=Latex]
+  \begin{tikzpicture}[node distance=1.6cm,>=Latex]
     \node[draw,rounded corners,fill=SoftGray,minimum width=2.6cm] (work) {pracovní strom};
     \node[draw,rounded corners,fill=SoftGray,minimum width=2.6cm,right=of work] (stage) {staging area};
     \node[draw,rounded corners,fill=SoftGray,minimum width=2.6cm,right=of stage] (repo) {repozitář};
@@ -388,8 +388,8 @@
 
 % 0:38--0:40
 \begin{frame}{Co je větev?}
+  \vspace{0.35cm}
   \term{Větev (branch)} je pohyblivý ukazatel na commit; umožňuje rozvíjet více linií historie.\par
-  \vspace{0.25cm}
   \centering
   \begin{tikzpicture}[>=Latex]
     \node[circle,draw,fill=SoftGray] (a) at (0,0) {A};
@@ -399,10 +399,9 @@
     \node[circle,draw,fill=SoftGray] (x) at (3.4,-1.0) {X};
     \draw[->] (a)--(b); \draw[->] (b)--(c); \draw[->] (c)--(d);
     \draw[->] (b)--(x);
-    \node[above=0.15cm of d] {\texttt{main}};
+    \node[above=0.15cm of d] {\texttt{master}};
     \node[below=0.15cm of x] {\texttt{experiment}};
   \end{tikzpicture}
-  \vspace{0.15cm}
   \begin{itemize}
     \item Vytvoření větve nekopíruje celý projekt.
     \item \term{Merge} znovu propojí dvě linie vývoje.
@@ -429,6 +428,97 @@
   \begin{alertblock}{Častý omyl}
     Commit ukládá změnu lokálně. Teprve push ji odešle na vzdálený server.
   \end{alertblock}
+\end{frame}
+
+\begin{frame}{Fork není clone}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{block}{Fork}
+        Kopie cizího repozitáře pod naším účtem na GitHubu.
+      \end{block}
+      \begin{itemize}
+        \item vzniká na serveru,
+        \item můžeme do ní zapisovat,
+        \item zůstává propojená s původním projektem.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{block}{Clone}
+        Lokální kopie vzdáleného repozitáře v našem počítači.
+      \end{block}
+      \begin{itemize}
+        \item vzniká příkazem \texttt{git clone},
+        \item obsahuje soubory i historii,
+        \item umožňuje lokálně upravovat a commitovat.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \begin{alertblock}{Pořadí pro cvičení}
+    Nejdřív vytvoříme fork na GitHubu, potom naklonujeme svůj fork.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Proč potřebujeme origin a upstream?}
+  \centering
+  \begin{tikzpicture}[>=Latex]
+    \node[draw,rounded corners,fill=SoftGray,minimum width=2.7cm,align=center]
+      (upstream) at (0,0) {repozitář vyučujícího\\\texttt{upstream}};
+    \node[draw,rounded corners,fill=SoftGray,minimum width=2.7cm,align=center]
+      (local) at (4,0) {lokální repozitář\\v počítači};
+    \node[draw,rounded corners,fill=SoftGray,minimum width=2.7cm,align=center]
+      (origin) at (8,0) {náš fork\\\texttt{origin}};
+    \draw[->,very thick] (upstream)--(local);
+    \draw[<->,very thick] (local)--(origin);
+  \end{tikzpicture}
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item \term{Remote} je pojmenovaný odkaz na vzdálený repozitář.
+    \item \texttt{origin} ukazuje na náš fork; \texttt{upstream} na původní repozitář.
+    \item Z \texttt{upstream} změny načítáme; do \texttt{origin} je odesíláme.
+    \item Adresy vždy ověříme pomocí \texttt{git remote -v}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Jak synchronizovat master?}
+  \begin{enumerate}
+    \item Přepneme se na lokální hlavní větev: \texttt{git switch master}.
+    \item Načteme stav původního projektu: \texttt{git fetch upstream}.
+    \item Začleníme změny: \texttt{git merge upstream/master}.
+    \item Aktualizujeme svůj fork: \texttt{git push origin master}.
+  \end{enumerate}
+  \texttt{fetch} pouze načte vzdálenou historii; teprve \texttt{merge} změní
+  naši aktuální větev.
+  \vspace{0.2cm}
+  \begin{alertblock}{Před založením pracovní větve}
+    Novou větev vytváříme z aktualizovaného \texttt{master}, jinak začínáme
+    pracovat na zastaralém základu.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Co je pull request?}
+  \begin{block}{Pull request}
+    Návrh na začlenění jedné větve do druhé.
+  \end{block}
+  \begin{itemize}
+    \item Ukazuje rozdíl mezi zdrojovou a cílovou větví.
+    \item Umožňuje změny před sloučením zkontrolovat a okomentovat.
+    \item Na GitHubu může spojovat větve ve stejném i v různých repozitářích.
+  \end{itemize}
+  \begin{alertblock}{Pozor na cílový repozitář}
+    V tomto cvičení cílíme na svůj fork, ne na repozitář vyučujícího.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Kam poslat změny?}
+  \begin{enumerate}
+    \item Z aktualizovaného \texttt{master} vytvoříme pracovní větev.
+    \item Změny commitujeme lokálně do pracovní větve.
+    \item Větev odešleme pomocí \texttt{git push} do svého \texttt{origin}.
+    \item Na GitHubu vytvoříme pull request do \texttt{master} svého forku.
+  \end{enumerate}
+  \vspace{0.35cm}
+  \textbf{Před potvrzením:} Zkontrolujeme zdrojovou i cílovou větev a oba
+  repozitáře.
 \end{frame}
 
 % 0:42--0:44
@@ -464,7 +554,8 @@
     \item Kompilace a interpretace nejsou dvě dokonale oddělené kategorie.
     \item IDE spojuje nástroje, ale programovací jazyk ani Git se na něj nevážou.
     \item Git ukládá propojené snímky projektu v commitech.
-    \item Commit je lokální; GitHub je jedna z možností sdílení repozitáře.
+    \item Fork je naše serverová kopie; clone je lokální kopie v počítači.
+    \item \texttt{origin} míří na náš fork, \texttt{upstream} na původní projekt.
   \end{itemize}
   \vspace{0.4cm}
   \centering\Large Otázky?

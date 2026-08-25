@@ -8,6 +8,8 @@ Collatzova posloupnost začíná libovolným kladným celým číslem:
 
 ## Zadání
 
+[Návod: Jak nakreslit Collatzovu úlohu v Mermaid](collatz_mermaid.md)
+
 Přečtěte si následující program, projděte jeho průběh pro několik různých vstupů a nakreslete diagram (flowchart / UML activity diagram), který jeho průběh znázorní.
 
 ```python
