@@ -1,0 +1,502 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+
+\title{Datové typy a vstup/výstup}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}
+\institute{}
+\date{}
+\renewcommand{\headlineA}{}
+\renewcommand{\headlineB}{}
+\renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{BitGreen}{RGB}{38,125,94}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+
+\lstdefinestyle{python}{
+  language=Python,
+  basicstyle=\ttfamily\large,
+  keywordstyle=\color{CodeBlue}\bfseries,
+  stringstyle=\color{BitGreen},
+  commentstyle=\color{gray},
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true
+}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:03
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Jak počítač ukládá informace pomocí bitů a bajtů?
+    \item Jak se reprezentují celá a desetinná čísla?
+    \item Jaké základní datové typy a kontejnery nabízí Python?
+    \item Jak převádět hodnoty mezi typy?
+    \item Jak program komunikuje s okolím přes vstup a výstup?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na co navazujeme?}
+  \begin{itemize}
+    \item Program pracuje s \term{vstupem}, provádí algoritmus a vytváří \term{výstup}.
+    \item Proměnná dovoluje hodnotu pojmenovat a později ji použít.
+    \item Dnes se ptáme, \textbf{jaký význam hodnota má} a \textbf{jak je uložena}.
+  \end{itemize}
+  \begin{alertblock}{Dnes neopakujeme řízení toku}
+    Podmínky a cykly procvičíme na navazujícím semináři a cvičení.
+  \end{alertblock}
+\end{frame}
+
+% 0:03--0:11
+\begin{frame}{Informace potřebuje reprezentaci}
+  \begin{block}{Data}
+    Informace zapsaná v podobě, kterou lze uložit, přenášet a zpracovat.
+  \end{block}
+  \begin{itemize}
+    \item Stejný vzor bitů může podle dohody znamenat číslo, znak nebo barvu.
+    \item \term{Datový typ} určuje možné hodnoty a povolené operace.
+    \item Reprezentace propojuje abstraktní hodnotu s fyzickou pamětí.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Bit a bajt}
+  \begin{itemize}
+    \item \term{Bit} je jedna binární číslice: \texttt{0} nebo \texttt{1}.
+    \item \term{Bajt (byte)} je běžně skupina osmi bitů.
+    \item Osm bitů rozlišuje $2^8=256$ různých kombinací.
+  \end{itemize}
+  \vspace{5mm}
+  \centering
+  \Large\ttfamily 0\;1\;1\;0\;1\;0\;0\;1
+  \par\normalsize\rmfamily
+  \vspace{3mm}
+  Jeden bajt; význam závisí na zvoleném typu a kódování.
+\end{frame}
+
+\begin{frame}{Binární zápis celého čísla}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \large\ttfamily 00101101\rmfamily
+      \begin{align*}
+        00101101_2
+          &= 32+8+4+1 \\
+          &= 45_{10}
+      \end{align*}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{itemize}
+        \item Každá pozice má váhu mocniny dvou.
+        \item Nejpravější bit má váhu $2^0=1$.
+        \item Přidání bitu zdvojnásobí počet možných stavů.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Celé číslo bez znaménka}
+  \begin{block}{Unsigned integer}
+    Všech $n$ bitů vyjadřuje velikost nezáporného celého čísla.
+  \end{block}
+  \[
+    \text{rozsah: } 0 \text{ až } 2^n-1
+  \]
+  \begin{itemize}
+    \item 8 bitů: 0 až 255
+    \item 16 bitů: 0 až 65\,535
+    \item Vhodné tam, kde záporná hodnota nedává smysl.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Jak uložit záporná čísla?}
+  \begin{itemize}
+    \item Potřebujeme do stejného počtu bitů zahrnout kladné i záporné hodnoty.
+    \item Samostatný „bit znaménka“ je intuitivní, ale přináší dvě reprezentace nuly.
+    \item Moderní počítače obvykle používají \term{dvojkový doplněk}.
+  \end{itemize}
+  \begin{block}{Důležitá myšlenka}
+    Bity samy znaménko nemají. Znaménko vzniká až jejich interpretací podle dohodnuté reprezentace.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Celé číslo se znaménkem}
+  \begin{block}{Signed integer ve dvojkovém doplňku}
+    Nejvyšší bit má zápornou váhu; ostatní bity mají obvyklé kladné váhy.
+  \end{block}
+  \[
+    \text{rozsah pro } n \text{ bitů: } -2^{n-1} \text{ až } 2^{n-1}-1
+  \]
+  \begin{itemize}
+    \item 8 bitů: $-128$ až $127$
+    \item Nula má jedinou reprezentaci.
+    \item Stejné obvody mohou provádět sčítání kladných i záporných čísel.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Omezený počet bitů znamená omezený rozsah}
+  \begin{itemize}
+    \item Výsledek mimo rozsah pevného typu způsobí \term{přetečení} (overflow).
+    \item V některých prostředích hodnota „přeteče“ na druhý konec rozsahu.
+    \item Jinde program ohlásí chybu nebo použije větší reprezentaci.
+  \end{itemize}
+  \begin{alertblock}{Python je v tomto neobvyklý}
+    Pythonový \texttt{int} se podle potřeby zvětšuje; limitem je dostupná paměť, ne pevně 32 nebo 64 bitů.
+  \end{alertblock}
+\end{frame}
+
+% 0:11--0:20
+\begin{frame}{Proč nestačí celá čísla?}
+  \begin{itemize}
+    \item Měření a výpočty často obsahují zlomkovou část.
+    \item Potřebujeme reprezentovat velmi malá i velmi velká čísla.
+    \item Pevný počet bitů ale stále dovoluje jen konečný počet hodnot.
+  \end{itemize}
+  \begin{block}{Kompromis}
+    Čísla s plovoucí řádovou čárkou nabízejí široký rozsah za cenu omezené přesnosti.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Vědecký zápis jako inspirace}
+  \[
+    6{,}022\times10^{23}
+  \]
+  \begin{itemize}
+    \item znaménko říká, zda je hodnota kladná nebo záporná,
+    \item významné číslice určují přesnost,
+    \item exponent posouvá řádovou čárku a určuje velikost.
+  \end{itemize}
+  \vspace{3mm}
+  Počítačový \texttt{float} používá stejnou myšlenku, ale v soustavě o základu 2.
+\end{frame}
+
+\begin{frame}{IEEE 754: běžná reprezentace \texttt{float}}
+  \centering
+  \begin{tikzpicture}[node distance=0mm]
+    \node[draw,fill=SoftGray,minimum width=1.3cm,minimum height=1.2cm] (s) {znaménko};
+    \node[draw,fill=SoftGray,minimum width=2.7cm,minimum height=1.2cm,right=of s] (e) {exponent};
+    \node[draw,fill=SoftGray,minimum width=5.3cm,minimum height=1.2cm,right=of e] (f) {zlomková část};
+  \end{tikzpicture}
+  \vspace{6mm}
+  \begin{itemize}
+    \item \term{binary32}: 1 + 8 + 23 bitů
+    \item \term{binary64}: 1 + 11 + 52 bitů
+    \item Pythonový \texttt{float} je na běžných implementacích binary64.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Co jednotlivé části znamenají?}
+  Pro běžná normalizovaná čísla zjednodušeně:
+  \[
+    (-1)^{\text{znaménko}}\times 1{,}\text{zlomek}\times 2^{\text{posunutý exponent}}
+  \]
+  \begin{itemize}
+    \item Znaménko volí kladnou nebo zápornou hodnotu.
+    \item Exponent určuje řád neboli přibližnou velikost.
+    \item Zlomková část nese významné binární číslice.
+  \end{itemize}
+  \begin{alertblock}{Pro tento kurz}
+    Důležitější než ruční kódování bitů je rozumět omezenému rozsahu a přesnosti.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Desetinné číslo nemusí být uloženo přesně}
+  \begin{itemize}
+    \item Konečný binární rozvoj mají například $0{,}5$ nebo $0{,}25$.
+    \item Desetinná hodnota $0{,}1$ má v binární soustavě nekonečný periodický rozvoj.
+    \item Uloží se proto nejbližší reprezentovatelná hodnota.
+  \end{itemize}
+  \begin{block}{Důsledek}
+    Výsledky s \texttt{float} porovnáváme s vhodnou tolerancí, ne vždy přesnou rovností.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Zaokrouhlovací chyba není chyba Pythonu}
+\begin{lstlisting}[style=python]
+result = 0.1 + 0.2
+print(result)          # 0.30000000000000004
+\end{lstlisting}
+  \begin{itemize}
+    \item Operace začíná už mírně zaokrouhlenými vstupy.
+    \item Další operace mohou chybu zvětšit nebo naopak skrýt.
+    \item Pro peníze a přesnou desítkovou aritmetiku existují jiné typy, například \texttt{Decimal}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Zvláštní hodnoty IEEE 754}
+  \begin{itemize}
+    \item $+\infty$ a $-\infty$: například výsledek překročení rozsahu v některých výpočtech,
+    \item \term{NaN} (Not a Number): neurčitý nebo nedefinovaný výsledek,
+    \item $+0$ a $-0$: dvě znaménkové podoby nuly,
+    \item subnormální čísla: velmi malé hodnoty blízko nule.
+  \end{itemize}
+  \begin{alertblock}{NaN je zvláštní}
+    NaN se nerovná ani samo sobě; ke kontrole používáme určené funkce.
+  \end{alertblock}
+\end{frame}
+
+% 0:20--0:29
+\begin{frame}{Základní skalární typy v Pythonu}
+  \centering
+  \begin{tabular}{lll}
+    \textbf{Typ} & \textbf{Význam} & \textbf{Příklad} \\
+    \hline
+    \texttt{int} & celé číslo & \texttt{-42} \\
+    \texttt{float} & číslo s plovoucí čárkou & \texttt{3.14} \\
+    \texttt{bool} & pravdivostní hodnota & \texttt{True} \\
+    \texttt{str} & text & \texttt{"ahoj"} \\
+    \texttt{NoneType} & nepřítomnost hodnoty & \texttt{None} \\
+  \end{tabular}
+  \vspace{5mm}
+
+  Typ můžeme zjistit funkcí \texttt{type(value)}.
+\end{frame}
+
+\begin{frame}{\texttt{bool} a \texttt{None} nejsou totéž}
+  \begin{itemize}
+    \item \texttt{bool} má dvě hodnoty: \texttt{True} a \texttt{False}.
+    \item \texttt{None} vyjadřuje, že hodnota není k dispozici nebo nebyla určena.
+    \item \texttt{0}, prázdný text a \texttt{None} mají odlišný význam.
+  \end{itemize}
+  \begin{block}{Typ zachycuje význam}
+    „Naměřili jsme nulu“ není totéž jako „měření chybí“.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Text: znaky nejsou bajty}
+  \begin{itemize}
+    \item Pythonový \texttt{str} je posloupnost znaků Unicode.
+    \item \term{Unicode} přiřazuje znakům kódové body: písmena, symboly i emoji.
+    \item Při uložení nebo přenosu se text převádí na bajty pomocí \term{kódování}.
+    \item Běžné kódování je UTF-8; jeden znak v něm může zabrat různý počet bajtů.
+  \end{itemize}
+  \begin{alertblock}{Častý omyl}
+    Počet znaků textu nemusí být stejný jako počet bajtů v souboru.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Proměnná, hodnota a typ}
+  \begin{itemize}
+    \item Proměnná je \term{jméno}, které odkazuje na objekt v paměti.
+    \item Typ patří hodnotě (objektu), ne natrvalo jménu proměnné.
+    \item Python určuje typ za běhu a jedno jméno může později odkazovat na jiný typ.
+  \end{itemize}
+  \begin{block}{Dynamické typování}
+    Nemusíme typ proměnné předem deklarovat, ale typy hodnot stále určují povolené operace.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Převod typu musí být výslovný}
+\begin{lstlisting}[style=python]
+count_text = "12"
+count = int(count_text)
+average = float("3.5")
+label = str(42)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{int()}, \texttt{float()} a \texttt{str()} vytvářejí hodnotu požadovaného typu.
+    \item Ne každý převod dává smysl: \texttt{int("ahoj")} skončí chybou.
+    \item Převod může ztrácet informaci: \texttt{int(3.9)} je \texttt{3}.
+  \end{itemize}
+\end{frame}
+
+% 0:29--0:37
+\begin{frame}{Kontejner uchovává více hodnot}
+  \begin{block}{Kontejnerový typ}
+    Hodnota, která sdružuje jiné hodnoty a určuje způsob přístupu k nim.
+  \end{block}
+  \begin{itemize}
+    \item Záleží na pořadí prvků?
+    \item Mohou se prvky opakovat?
+    \item Lze kontejner po vytvoření měnit?
+    \item Přistupujeme pozicí, hodnotou, nebo klíčem?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Čtyři běžné kontejnery Pythonu}
+  \centering
+  \small
+  \begin{tabular}{llll}
+    \textbf{Typ} & \textbf{Uspořádání} & \textbf{Měnitelný} & \textbf{Typické použití} \\
+    \hline
+    \texttt{list} & ano & ano & posloupnost prvků \\
+    \texttt{tuple} & ano & ne & pevná skupina hodnot \\
+    \texttt{set} & bez pozičního pořadí & ano & unikátní prvky \\
+    \texttt{dict} & pořadí vložení & ano & dvojice klíč--hodnota \\
+  \end{tabular}
+  \par
+  \normalsize
+  \vspace{5mm}
+  Volba kontejneru vyjadřuje, jak s daty zamýšlíme pracovat.
+\end{frame}
+
+\begin{frame}{\texttt{list} a \texttt{tuple}: uspořádané hodnoty}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{block}{\texttt{list}}
+        \texttt{["red", "green", "blue"]}
+      \end{block}
+      \begin{itemize}
+        \item lze měnit,
+        \item přístup pomocí indexu,
+        \item duplicity jsou povolené.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{block}{\texttt{tuple}}
+        \texttt{(1920, 1080)}
+      \end{block}
+      \begin{itemize}
+        \item po vytvoření se nemění,
+        \item přístup pomocí indexu,
+        \item vhodná pevná struktura.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{\texttt{set}: množina unikátních hodnot}
+  \begin{itemize}
+    \item Prvek je v množině nejvýše jednou.
+    \item Nepracujeme s jeho pozičním indexem.
+    \item Množina přirozeně podporuje sjednocení, průnik a rozdíl.
+    \item Typická otázka zní: „Je tato hodnota přítomná?“
+  \end{itemize}
+  \begin{block}{Příklad významu}
+    \texttt{allowed\_roles = \{"student", "teacher"\}}
+  \end{block}
+\end{frame}
+
+\begin{frame}{\texttt{dict}: hodnoty pojmenované klíči}
+  \begin{itemize}
+    \item Slovník ukládá dvojice \term{klíč--hodnota}.
+    \item Každý klíč je ve slovníku jedinečný.
+    \item Hodnotu hledáme podle klíče, nikoli podle číselné pozice.
+  \end{itemize}
+  \begin{block}{Příklad významu}
+    \texttt{person = \{"name": "Eva", "age": 21\}}
+  \end{block}
+  Slovník se hodí pro záznam s pojmenovanými položkami nebo pro rychlé vyhledávání.
+\end{frame}
+
+\begin{frame}{Měnitelnost ovlivňuje chování programu}
+  \begin{itemize}
+    \item \term{Mutable}: objekt lze změnit na místě --- například \texttt{list}, \texttt{set}, \texttt{dict}.
+    \item \term{Immutable}: po vytvoření se nemění --- například \texttt{int}, \texttt{float}, \texttt{str}, \texttt{tuple}.
+    \item Dvě proměnné mohou odkazovat na tentýž měnitelný objekt.
+  \end{itemize}
+  \begin{alertblock}{Praktický důsledek}
+    Změna sdíleného seznamu může být viditelná přes více různých jmen.
+  \end{alertblock}
+\end{frame}
+
+% 0:37--0:44
+\begin{frame}{Program komunikuje pomocí proudů}
+  \centering
+  \begin{tikzpicture}[node distance=13mm,>=Latex]
+    \node[draw,rounded corners,fill=SoftGray,minimum width=2.3cm] (in) {vstup};
+    \node[draw,rounded corners,fill=SoftGray,minimum width=3.2cm,right=of in] (program) {program};
+    \node[draw,rounded corners,fill=SoftGray,minimum width=2.3cm,right=of program] (out) {výstup};
+    \draw[->,very thick] (in)--node[above]{data}(program);
+    \draw[->,very thick] (program)--node[above]{data}(out);
+  \end{tikzpicture}
+  \vspace{7mm}
+  \begin{itemize}
+    \item \term{Proud (stream)} je postupná posloupnost dat.
+    \item Zdroj nebo cíl může být terminál, soubor, zařízení i jiný program.
+    \item Program nemusí znát fyzické provedení druhého konce proudu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Standardní vstup a výstupy}
+  \begin{itemize}
+    \item \term{stdin}: standardní vstup, obvykle klávesnice nebo přesměrovaná data,
+    \item \term{stdout}: běžný výstup programu,
+    \item \term{stderr}: diagnostické a chybové zprávy.
+  \end{itemize}
+  \begin{block}{Proč jsou oddělené?}
+    Výsledek programu lze uložit nebo předat dál, zatímco chyby zůstanou viditelné uživateli.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Výstup v Pythonu: \texttt{print()}}
+\begin{lstlisting}[style=python]
+name = "Eva"
+score = 42
+print("Student:", name, "body:", score)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{print()} převede hodnoty na text a zapíše je na standardní výstup.
+    \item Více argumentů standardně oddělí mezerou.
+    \item Na konec standardně přidá znak nového řádku.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Vstup v Pythonu: \texttt{input()}}
+\begin{lstlisting}[style=python]
+age_text = input("Zadejte vek: ")
+age = int(age_text)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{input()} zobrazí výzvu a čeká na řádek standardního vstupu.
+    \item Výsledkem je vždy \texttt{str}, i když uživatel napsal číslice.
+    \item Význam vstupu určíme až kontrolou a případným převodem typu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rozhraní programu je dohoda}
+  \begin{itemize}
+    \item Program musí vědět, v jakém formátu vstup očekává.
+    \item Uživatel nebo jiný program musí vědět, co výstup znamená.
+    \item Typ, jednotka, pořadí i kódování jsou součástí této dohody.
+  \end{itemize}
+  \begin{alertblock}{„Zadejte číslo“ často nestačí}
+    Celé, nebo desetinné? V jakém rozsahu? S desetinnou čárkou, nebo tečkou? V jaké jednotce?
+  \end{alertblock}
+\end{frame}
+
+% 0:44--0:45
+\begin{frame}{Co si zapamatovat?}
+  \begin{itemize}
+    \item Bity získávají význam teprve díky zvolené reprezentaci a datovému typu.
+    \item Signed a unsigned celá čísla rozdělují stejný počet bitů jinak.
+    \item IEEE 754 nabízí velký rozsah, ale mnoho hodnot ukládá pouze přibližně.
+    \item Python má skalární typy i kontejnery s různými vlastnostmi.
+    \item \texttt{input()} vrací text; převod na číslo je samostatný krok.
+    \item Standardní proudy oddělují vstup, běžný výstup a chybové zprávy.
+  \end{itemize}
+  \vspace{3mm}
+  \centering\Large Otázky?
+\end{frame}
+
+\end{document}
