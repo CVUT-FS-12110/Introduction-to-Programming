@@ -1,58 +1,49 @@
-## **4. Loops**
-Loops let you repeat code multiple times without writing it again and again.
+# Řízení chodu programu — podmínky a cykly
 
-They are useful when you need to perform a task many times or go through a collection of data.
+Program málokdy běží jen shora dolů. Tato lekce ukazuje, jak se program
+**rozhoduje** (podmínky) a jak **opakuje** činnost (cykly). Je to nástroj,
+kterým převedeme algoritmus z papíru do funkčního kódu.
 
----
+## Prerekvizity
 
-### `while` Loop
-A `while` loop repeats as long as its condition is **True**.
+- Základy algoritmizace — pseudokód a vývojové diagramy
+  ([téma Základy návrhu algoritmů](../algorithm-design-basics/README.md))
+- Datové typy a kontejnery Pythonu
+  ([předchozí téma](../data-types-io/README.md))
 
-```python
-count = 1
-while count <= 5:
-    print("Count:", count)
-    count += 1
-```
-Example output:
-```
-Count: 1
-Count: 2
-Count: 3
-Count: 4
-Count: 5
-```
-Be careful with while loops - if the condition never becomes `False`, you’ll create an infinite loop.
+## Cíle
 
-**Summing Numbers with a `while` Loop:**
+- Zapsat rozhodování pomocí `if`, `elif` a `else`.
+- Kombinovat podmínky pomocí `and`, `or` a `not`.
+- Napsat cyklus `for` i `while` a vybrat ten vhodnější.
+- Řídit průběh cyklu pomocí `break` a `continue`.
+- Poznat a opravit nekonečný cyklus.
+- Zkrátit zápis pomocí list comprehension a ternárního operátoru.
 
-```python
-total = 0
-number = 1
+## Přednáška
 
-while number <= 5:
-    total += number
-    number += 1
+_Připravujeme_ — [podklady k přednášce](lecture/lecture.md).
 
-print("Total:", total)
-```
+## Domácí příprava
 
-Example output:
-```
-Total: 15
-```
+_Připravujeme_ — [zadání domácí přípravy](prework/README.md).
 
-**Try it for yourself** – Simple Guessing Game:
+## Seminář
 
-```python
-secret = 7
-guess = int(input("Guess a number between 1 and 10: "))
+Seminář je zaměřený hlavně na cykly. Na společných úlohách si ukážeme,
+jak zvolit mezi `for` a `while`, jak procházet seznamy a slovníky a jak
+si při ladění cyklu pomoci vypisováním mezivýsledků.
 
-while guess != secret:
-    print("Wrong! Try again.")
-    guess = int(input("Guess again: "))
+_Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
-print("You got it!")
-```
+## Cvičení
 
----
+Samostatné řešení úloh, ve kterých se podmínky a cykly kombinují.
+
+_Zadání připravujeme_ — [zadání cvičení](lab/assigment.md).
+
+## Zdroje
+
+- [Python Tutorial: More Control Flow Tools](https://docs.python.org/3/tutorial/controlflow.html) — oficiální úvod do podmínek a cyklů
+- [Python Tutorial: List Comprehensions](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions) — kratší zápis tvorby seznamů
+- [Python Wiki: For Loop](https://wiki.python.org/moin/ForLoop) — typické vzory použití cyklu `for`

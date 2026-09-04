@@ -1,146 +1,50 @@
-## 5. Object-Oriented Programming (OOP)
+# Úvod do objektově orientovaného programování
 
-OOP helps you organize your code around objects - things that have properties (data) and behaviors (functions).
-For example, a `Car` can have a color (property) and a `drive()` function (behavior).
+Objektově orientované programování (OOP) je způsob, jak si program
+uspořádat kolem **objektů** — věcí, které mají vlastnosti (data)
+a chování (funkce). Například auto má barvu a značku a umí jet.
+V této lekci si ukážeme, jak takové objekty v Pythonu vytvářet.
 
-OOP is one of the most important concepts in programming!
+## Prerekvizity
 
----
+- Funkce, parametry a návratové hodnoty
+  ([předchozí téma](../functions-definition-invocation-and-scope/README.md))
+- Datové typy a kontejnery Pythonu
+  ([téma Datové typy a vstup/výstup](../data-types-io/README.md))
 
-### What Is a Class and an Object?
+## Cíle
 
-- **Class** – a blueprint for creating objects
-- **Object** – an instance of a class
+- Vysvětlit rozdíl mezi třídou (předpisem) a objektem (instancí).
+- Napsat vlastní třídu s konstruktorem `__init__` a metodami.
+- Pracovat s atributy objektu a rozumět významu `self`.
+- Vytvořit potomka existující třídy pomocí dědičnosti a přepsat metodu.
+- Rozhodnout, kdy se objekty vyplatí použít místo samostatných funkcí.
 
-Think of a class like a *recipe*, and an object like the *cake* you bake from that recipe.
+## Přednáška
 
----
+_Připravujeme_ — [podklady k přednášce](lecture/README.md).
 
-### Defining a Simple Class
+## Domácí příprava
 
-You can use `raise` to generate a custom error when certain conditions aren’t met.
+_Připravujeme_ — [zadání domácí přípravy](prework/README.md).
 
-```python
-class Car:
-    def __init__(self, brand, color):
-        self.brand = brand
-        self.color = color
+## Seminář
 
-    def drive(self):
-        print(f"The {self.color} {self.brand} is driving!")
+Na semináři si postupně postavíme jednu vlastní třídu — od prázdné
+kostry přes konstruktor a atributy až po metody. Vyzkoušíme si, jak
+z jedné třídy vzniká více nezávislých objektů, a na jednoduchém příkladu
+si ukážeme dědičnost.
 
-# Create an object
-my_car = Car("Toyota", "red")
-my_car.drive()
-```
-`__init__()` is called automatically when a new object is created.
+_Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
-`self` refers to the current object.
+## Cvičení
 
-Example output:
-```
-The red Toyota is driving!
-```
+Samostatný návrh a implementace vlastních tříd pro zadanou úlohu.
 
----
+_Zadání připravujeme_ — [zadání cvičení](lab/assigments.md).
 
-### Attributes and Methods
+## Zdroje
 
-| Term          | Meaning                     | Example                         |
-| ------------- | --------------------------- | ------------------------------- |
-| **Attribute** | A variable inside an object | `self.color`                    |
-| **Method**    | A function inside a class   | `def drive(self):`              |
-| **Object**    | An instance of a class      | `my_car = Car("Toyota", "red")` |
-
----
-
-### Example: Dog Class
-
-```python
-class Dog:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-
-    def bark(self):
-        print(f"{self.name} says woof!")
-
-dog1 = Dog("Buddy", 3)
-dog2 = Dog("Lucy", 5)
-
-dog1.bark()
-dog2.bark()
-```
-
-Example output:
-```
-Buddy says woof!
-Lucy says woof!
-```
-
----
-
-### Adding and Modifying Attributes
-
-You can change object properties after creation:
-
-```python
-dog1.age = 4
-print(dog1.age)
-```
-
-Example output:
-```
-4
-```
-
-You can also add new attributes dynamically:
-
-```python
-dog1.breed = "Golden Retriever"
-print(dog1.breed)
-```
-
-Example output:
-```
-Golden Retriever
-```
-
----
-
-### Inheritance
-
-A class can inherit from another class - it means the child class can use all attributes and methods of the parent.
-
-```python
-class Animal:
-    def speak(self):
-        print("Some sound")
-
-class Cat(Animal):
-    def speak(self):
-        print("Meow!")
-
-cat = Cat()
-cat.speak()
-```
-The child class (`Cat`) can override methods from the parent class (`Animal`).
-
-Example output:
-```
-Meow!
-```
----
-
-### Summary - Object-Oriented Programming
-
-| Concept         | Description                 | Example              |
-| --------------- | --------------------------- | -------------------- |
-| **Class**       | Blueprint for objects       | `class Car:`         |
-| **Object**      | Instance of a class         | `my_car = Car()`     |
-| **Attribute**   | Variable in a class         | `self.name`          |
-| **Method**      | Function in a class         | `def drive(self):`   |
-| **Constructor** | Initializes an object       | `__init__()`         |
-| **Inheritance** | Child class inherits parent | `class Dog(Animal):` |
-
----
+- [Python Tutorial: Classes](https://docs.python.org/3/tutorial/classes.html) — oficiální úvod do tříd a objektů
+- [Real Python: OOP in Python 3](https://realpython.com/python3-object-oriented-programming/) — vysvětlení krok za krokem s příklady
+- [Python Docs: Data model — special methods](https://docs.python.org/3/reference/datamodel.html#special-method-names) — co znamenají metody typu `__init__`

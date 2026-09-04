@@ -1,133 +1,49 @@
-## **1. Functions**
+# Funkce — definice, volání a rozsah platnosti
 
-Functions are **blocks of reusable code** that perform a specific task.
+Funkce je pojmenovaný kus kódu, který můžeme opakovaně použít. Díky
+funkcím je program kratší, čitelnější a snáze se testuje. V této lekci
+se naučíme funkce psát, volat a rozumět tomu, **kde která proměnná platí**.
 
-They help make your programs easier to read, test, and maintain.
+## Prerekvizity
 
----
+- Podmínky a cykly
+  ([předchozí téma](../control-flow-loops-and-conditionals/README.md))
+- Datové typy a kontejnery Pythonu
+  ([téma Datové typy a vstup/výstup](../data-types-io/README.md))
 
-### Defining and Calling a Function
+## Cíle
 
-You define a function using a keyword `def`, followed by the function name and parentheses `()`.
+- Definovat vlastní funkci pomocí `def` a zavolat ji.
+- Předávat funkci parametry a vracet výsledek pomocí `return`.
+- Používat výchozí hodnoty parametrů a pojmenované argumenty.
+- Rozlišit lokální a globální proměnnou a vysvětlit rozsah platnosti (scope).
+- Rozdělit delší program na několik krátkých funkcí.
 
-```python
-def greet():
-    print("Hello, Python learner!")
-```
-To run the function, call it by name:
+## Přednáška
 
-```python
-greet()
-```
+_Připravujeme_ — [podklady k přednášce](lecture/README.md).
 
-Example output:
-```
-Hello, Python learner!
-```
----
+## Domácí příprava
 
-### Functions with Parameters
+_Připravujeme_ — [zadání domácí přípravy](prework/README.md).
 
-Functions can take **parameters** - values you pass in when calling the function.
+## Seminář
 
-```python
-def greet_user(name):
-    print("Hello,", name + "!")
+Na semináři vezmeme delší program napsaný „v jednom kuse“ a společně ho
+rozdělíme na funkce. Ukážeme si rozdíl mezi funkcí, která něco vypíše,
+a funkcí, která hodnotu vrátí, a na příkladech si vyzkoušíme, co se stane
+s proměnnou uvnitř a vně funkce.
 
-greet_user("Bob")
-```
-Here, `"Bob"` is an argument passed into the function parameter `name`.
+_Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
-Example output:
-```
-Hello, Bob!
-```
----
+## Cvičení
 
-### Functions That Return a Value
+Samostatné psaní vlastních funkcí a jejich skládání do většího celku.
 
-Functions can **return a result** instead of printing directly.
+_Zadání připravujeme_ — [zadání cvičení](lab/assigments.md).
 
-```python
-def add(a):
-    return a + 1
+## Zdroje
 
-result = add(3)
-print("Sum:", result)
-```
-The `return` statement sends a value back to the place where the function was called.
-
-Example output:
-```
-Sum: 4
-```
----
-
-### Default Parameters
-
-You can set a **default value** for a parameter - used when no argument is provided.
-
-```python
-def greet(name="friend"):
-    print("Hello,", name + "!")
-
-greet()
-greet("John")
-```
-Example output:
-```
-Hello, friend!
-Hello, John!
-```
----
-
-### Multiple Parameters
-
-Functions can take multiple inputs - separate them with commas.
-
-```python
-def multiply(x, y):
-    return x * y
-
-print(multiply(4, 5))
-```
-Example output:
-```
-20
-```
----
-
-### Local and Global Variables
-
-Variables created **inside a function** exist only there - they’re *local*.
-
-```python
-x = 10
-
-def show_number():
-    x = 5
-    print("Inside function:", x)
-
-show_number()
-print("Outside function:", x)
-```
-Example output:
-```
-Inside function: 5
-Outside function: 10
-```
----
-
-### Summary - Functions in Python
-
-| Concept           | Description                 | Example                       |
-| ----------------- | --------------------------- | ----------------------------- |
-| Define a function | Create reusable code block  | `def greet():`                |
-| Call a function   | Run the code inside it      | `greet()`                     |
-| Parameter         | Value passed into function  | `def add(a):`                 |
-| Return value      | Send result back            | `return a + 1`                |
-| Default value     | Optional parameter value    | `def greet(name="friend"):`   |
-| Local variable    | Exists only inside function | `x` inside `def` block        |
-| Global variable   | Accessible everywhere       | Declared outside any function |
-
----
+- [Python Tutorial: Defining Functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions) — oficiální úvod do funkcí
+- [Python FAQ: What are the rules for local and global variables?](https://docs.python.org/3/faq/programming.html#what-are-the-rules-for-local-and-global-variables-in-python) — pravidla rozsahu platnosti
+- [PEP 8: Function names](https://peps.python.org/pep-0008/#function-and-variable-names) — jak funkce pojmenovávat
