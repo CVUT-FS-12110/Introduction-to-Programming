@@ -9,7 +9,7 @@ nabízí Python a jak program komunikuje s okolím pomocí vstupu a výstupu.
 - Schopnost používat Git
 - Nastavené IDE pro psaní a spouštění Pythonních programů
 - Základy algoritmizace — pseudokód a vývojové diagramy
-  ([předchozí téma](../algorithm-design-basics/README.md))
+  ([předchozí téma](../02-algorithm-design-basics/README.md))
 
 ## Cíle
 
@@ -27,7 +27,7 @@ nabízí Python a jak program komunikuje s okolím pomocí vstupu a výstupu.
 
 ## Domácí příprava
 
-_Připravujeme_ — [zadání domácí přípravy](prework/README.md).
+[Zadání domácí přípravy: typy, převody a vstup/výstup](prework/README.md)
 
 ## Seminář
 
@@ -42,7 +42,7 @@ _Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 Samostatná práce s malými programy, které něco načtou, převedou a vypíšou.
 
-_Zadání připravujeme_ — [zadání cvičení](lab/assigments.md).
+[Zadání cvičení](lab/assignment.md)
 
 ## Zdroje
 

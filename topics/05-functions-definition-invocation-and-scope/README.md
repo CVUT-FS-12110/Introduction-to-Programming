@@ -7,9 +7,9 @@ se naučíme funkce psát, volat a rozumět tomu, **kde která proměnná platí
 ## Prerekvizity
 
 - Podmínky a cykly
-  ([předchozí téma](../control-flow-loops-and-conditionals/README.md))
+  ([předchozí téma](../04-control-flow-loops-and-conditionals/README.md))
 - Datové typy a kontejnery Pythonu
-  ([téma Datové typy a vstup/výstup](../data-types-io/README.md))
+  ([téma Datové typy a vstup/výstup](../03-data-types-io/README.md))
 
 ## Cíle
 
@@ -25,7 +25,7 @@ _Připravujeme_ — [podklady k přednášce](lecture/README.md).
 
 ## Domácí příprava
 
-_Připravujeme_ — [zadání domácí přípravy](prework/README.md).
+[Zadání domácí přípravy: vlastní funkce a rozsah platnosti](prework/README.md)
 
 ## Seminář
 
@@ -40,7 +40,7 @@ _Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 Samostatné psaní vlastních funkcí a jejich skládání do většího celku.
 
-_Zadání připravujeme_ — [zadání cvičení](lab/assigments.md).
+[Zadání cvičení](lab/assignment.md)
 
 ## Zdroje
 

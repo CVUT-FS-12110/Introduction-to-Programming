@@ -7,9 +7,9 @@ kterým převedeme algoritmus z papíru do funkčního kódu.
 ## Prerekvizity
 
 - Základy algoritmizace — pseudokód a vývojové diagramy
-  ([téma Základy návrhu algoritmů](../algorithm-design-basics/README.md))
+  ([téma Základy návrhu algoritmů](../02-algorithm-design-basics/README.md))
 - Datové typy a kontejnery Pythonu
-  ([předchozí téma](../data-types-io/README.md))
+  ([předchozí téma](../03-data-types-io/README.md))
 
 ## Cíle
 
@@ -26,7 +26,7 @@ _Připravujeme_ — [podklady k přednášce](lecture/lecture.md).
 
 ## Domácí příprava
 
-_Připravujeme_ — [zadání domácí přípravy](prework/README.md).
+[Zadání domácí přípravy: sledování stavu, podmínky a cykly](prework/README.md)
 
 ## Seminář
 
@@ -40,7 +40,7 @@ _Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 Samostatné řešení úloh, ve kterých se podmínky a cykly kombinují.
 
-_Zadání připravujeme_ — [zadání cvičení](lab/assigment.md).
+[Zadání cvičení](lab/assignment.md)
 
 ## Zdroje
 

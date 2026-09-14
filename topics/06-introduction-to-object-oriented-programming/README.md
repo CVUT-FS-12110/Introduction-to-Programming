@@ -8,9 +8,9 @@ V této lekci si ukážeme, jak takové objekty v Pythonu vytvářet.
 ## Prerekvizity
 
 - Funkce, parametry a návratové hodnoty
-  ([předchozí téma](../functions-definition-invocation-and-scope/README.md))
+  ([předchozí téma](../05-functions-definition-invocation-and-scope/README.md))
 - Datové typy a kontejnery Pythonu
-  ([téma Datové typy a vstup/výstup](../data-types-io/README.md))
+  ([téma Datové typy a vstup/výstup](../03-data-types-io/README.md))
 
 ## Cíle
 
@@ -26,7 +26,7 @@ _Připravujeme_ — [podklady k přednášce](lecture/README.md).
 
 ## Domácí příprava
 
-_Připravujeme_ — [zadání domácí přípravy](prework/README.md).
+[Zadání domácí přípravy: třídy a objekty](prework/README.md)
 
 ## Seminář
 
@@ -41,7 +41,7 @@ _Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 Samostatný návrh a implementace vlastních tříd pro zadanou úlohu.
 
-_Zadání připravujeme_ — [zadání cvičení](lab/assigments.md).
+[Zadání cvičení](lab/assignment.md)
 
 ## Zdroje
 
