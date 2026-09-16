@@ -23,7 +23,7 @@ Studující na cvičení pracují podle pokynů vyučující osoby.
 
 ### První část semestru: práce bez AI
 
-- Při řešení úloh **není** povoleno využívat nástroje AI.
+- Při řešení úloh během cvičení **není** povoleno využívat nástroje AI.
 - Na začátku každého cvičení probíhá krátký Moodle test v délce 5–10 minut. Test prověřuje praktické algoritmické úlohy (smyčky, podmínky apod.) i teorii z přednášek.
 - Od studujících se očekává průběžná domácí příprava (*prework*) před každou hodinou.
 - V hodinách je zakázáno používat mobilní telefony nebo je nechávat viditelně položené.
