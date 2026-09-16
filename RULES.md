@@ -6,7 +6,6 @@
 
 - **Povinnost omlouvání:** Absence na cvičeních se vždy řeší a evidují.
 - **Samoomluva:** Studující má během semestru nárok na jednu samoomluvu bez nutnosti předkládat úřední či lékařské potvrzení. Absenci je nutné omluvit neprodleně poté, co se studující dozví, že se cvičení nemůže zúčastnit.
-- **Ostatní absence:** Všechny další absence musejí být řádně omluvené, například neschopenkou nebo lékařským potvrzením.
 - **Nahrazování výuky:** Zameškané cvičení lze nahradit s jinou paralelní skupinou. Podmínkou je včasná domluva s vyučující osobou, u které studující plánuje cvičení nahradit.
 
 ## 2. Průběh cvičení a pravidla v hodinách
