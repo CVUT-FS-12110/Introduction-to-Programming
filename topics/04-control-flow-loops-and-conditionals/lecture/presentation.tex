@@ -1,0 +1,559 @@
+\documentclass[aspectratio=169,t]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+
+\title{Kontrola chodu programu}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}
+\institute{}
+\date{}
+\renewcommand{\headlineA}{}
+\renewcommand{\headlineB}{}
+\renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{DecisionOrange}{RGB}{224,126,44}
+\definecolor{SuccessGreen}{RGB}{54,123,82}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\setbeamercolor{alertblock title}{fg=white,bg=DecisionOrange}
+\setbeamercolor{alertblock body}{fg=black,bg=SoftGray}
+
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\newcommand{\source}[1]{\par\vspace{1mm}{\scriptsize\color{gray}#1}}
+
+\lstdefinestyle{python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{CodeBlue}\bfseries,
+  commentstyle=\color{SuccessGreen},
+  stringstyle=\color{DecisionOrange!80!black},
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  rulecolor=\color{black!20},
+  backgroundcolor=\color{SoftGray}
+}
+
+\tikzset{
+  flow/.style={draw=CodeBlue,very thick,fill=SoftGray,align=center,
+    minimum height=10mm,minimum width=26mm,rounded corners=2pt},
+  decision/.style={draw=DecisionOrange,very thick,fill=SoftGray,diamond,
+    aspect=2.2,align=center,inner sep=1pt},
+  arrow/.style={-{Latex[length=2.5mm]},very thick,draw=CodeBlue}
+}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:03
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Jak přesně podmínky a cykly určují \term{další vykonaný krok}?
+    \item Jak skládat logické výrazy a využít \term{krátké vyhodnocování}?
+    \item Kdy volit \texttt{for}, kdy \texttt{while} a jak poznat, že cyklus skončí?
+    \item Jak číst \texttt{break}, \texttt{continue} a \texttt{else} u cyklu?
+    \item Kdy pomohou ternární výraz a \term{list comprehension}?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na co navazujeme?}
+  \begin{itemize}
+    \item Z návrhu algoritmů známe sekvenci, podmínky, cykly a diagramy.
+    \item Z datových typů víme, že výraz má hodnotu a typ.
+    \item Už jsme psali \texttt{if}, \texttt{for} a \texttt{while}.
+  \end{itemize}
+  \begin{block}{Dnešní otázka}
+    Dokážeme z kódu spolehlivě určit, \textbf{co se vykoná, kolikrát a proč}?
+  \end{block}
+\end{frame}
+
+% 0:03--0:06
+\begin{frame}[fragile]{Rychlé opakování: sledujte stav}
+\begin{lstlisting}[style=python]
+total = 0
+for number in [3, -1, 4]:
+    if number > 0:
+        total += number
+print(total)
+\end{lstlisting}
+  \begin{itemize}
+    \item Které řádky se vykonají opakovaně?
+    \item Jaké hodnoty má \texttt{number} a \texttt{total} po každém průchodu?
+    \item Výsledek nevzniká „najednou“: program mění \term{stav} krok za krokem.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Tři stavební kameny řízení toku}
+  \centering
+  \vspace{5mm}
+  \begin{tikzpicture}[node distance=18mm]
+    \node[flow] (sequence) {sekvence\\\small krok za krokem};
+    \node[flow,right=of sequence] (selection) {větvení\\\small vyber cestu};
+    \node[flow,right=of selection] (iteration) {iterace\\\small opakuj};
+    \draw[arrow] (sequence)--(selection);
+    \draw[arrow] (selection)--(iteration);
+  \end{tikzpicture}
+  \vspace{7mm}
+  \begin{itemize}
+    \item Konstrukce lze \textbf{vnořovat}: podmínka v cyklu, cyklus v podmínce.
+    \item Odsazení v Pythonu určuje, které příkazy tvoří jeden blok.
+  \end{itemize}
+\end{frame}
+
+% 0:06--0:16
+\begin{frame}{Podmínka rozhoduje podle pravdivostní hodnoty}
+  \begin{block}{Podmínka}
+    Výraz, jehož výsledek Python vyhodnotí jako \texttt{True}, nebo \texttt{False}.
+  \end{block}
+  \begin{itemize}
+    \item Porovnání: \texttt{x < 0}, \texttt{name == "Eva"}, \texttt{x in values}.
+    \item Logické operátory: \texttt{and}, \texttt{or}, \texttt{not}.
+    \item Podmínka se vyhodnotí právě ve chvíli, kdy k ní tok programu dorazí.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Pravdivost: nejen \texttt{bool}}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \textbf{Nepravdivé hodnoty}
+      \begin{itemize}
+        \item \texttt{False}, \texttt{None}
+        \item číselná nula
+        \item \texttt{""}, \texttt{[]}, \texttt{\{\}}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \textbf{Pravdivé hodnoty}
+      \begin{itemize}
+        \item většina ostatních hodnot
+        \item neprázdný text či kolekce
+        \item také záporné číslo
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \begin{alertblock}{Čitelný zápis}
+    \texttt{if values:} přímo říká „pokud kolekce není prázdná“.
+    Pravdivost však není totéž co rovnost s \texttt{True}.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Porovnání lze řetězit}
+\begin{lstlisting}[style=python]
+if 0 <= temperature <= 100:
+    print("V kapalnem intervalu vody")
+\end{lstlisting}
+  \begin{itemize}
+    \item Význam odpovídá \texttt{0 <= temperature and temperature <= 100}.
+    \item Matematický zápis bývá čitelnější a prostřední výraz se vyhodnotí jednou.
+    \item Nezaměňujte \texttt{=} (přiřazení) a \texttt{==} (porovnání).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Jak se skládají logické podmínky?}
+  \vspace{4mm}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \small
+      \begin{tabular}{c c c c}
+        \textbf{A} & \textbf{B} & \textbf{A and B} & \textbf{A or B} \\
+        \hline
+        F & F & F & F \\
+        F & T & F & T \\
+        T & F & F & T \\
+        T & T & T & T
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \begin{itemize}
+        \item \texttt{and}: musejí platit obě části.
+        \item \texttt{or}: stačí alespoň jedna část.
+        \item \texttt{not}: obrátí pravdivostní hodnotu.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Krátké vyhodnocování chrání další výraz}
+\begin{lstlisting}[style=python]
+if denominator != 0 and numerator / denominator > 2:
+    print("Podil je vetsi nez 2")
+\end{lstlisting}
+  \begin{itemize}
+    \item U \texttt{and} se druhá část nevyhodnotí, pokud první nestačí splnit.
+    \item U \texttt{or} se druhá část nevyhodnotí, pokud první už stačí.
+    \item Pořadí podmínek proto ovlivňuje nejen rychlost, ale někdy i bezpečnost.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Jedna z více větví}
+\begin{lstlisting}[style=python]
+if score >= 75:
+    grade = "B"
+elif score >= 60:
+    grade = "C"
+else:
+    grade = "F"
+\end{lstlisting}
+  \begin{itemize}
+    \item Podmínky se zkoušejí shora dolů; provede se \textbf{první platná} větev.
+    \item Pořadí musí jít od specifičtějšího případu k obecnějšímu.
+      Dvě samostatná \texttt{if} jsou naopak dvě nezávislé otázky.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Podmíněný výraz: hodnota podle podmínky}
+\begin{lstlisting}[style=python]
+label = "sude" if number % 2 == 0 else "liche"
+\end{lstlisting}
+  \begin{itemize}
+    \item Celý zápis je \term{výraz}: vytvoří jednu ze dvou hodnot.
+    \item Hodí se pro jednoduchou volbu při přiřazení nebo výpisu.
+    \item Pro více kroků či složitou logiku je čitelnější běžné \texttt{if}.
+  \end{itemize}
+\end{frame}
+
+% 0:16--0:18
+\begin{frame}[fragile]{Kontrolní otázka: co program vypíše?}
+\begin{lstlisting}[style=python]
+x = 0
+if x and 10 / x > 1:
+    print("A")
+elif x == 0:
+    print("B")
+else:
+    print("C")
+\end{lstlisting}
+  \begin{block}{Zdůvodněte bez spuštění}
+    Sledujte pravdivost hodnoty \texttt{x}, krátké vyhodnocování a pořadí větví.
+  \end{block}
+\end{frame}
+
+% 0:18--0:31
+\begin{frame}{Iterace opakuje blok příkazů}
+  \begin{itemize}
+    \item Jedno vykonání těla cyklu je \term{iterace}.
+    \item Cyklus \texttt{for} získává postupně hodnoty z \term{iterovatelného objektu}.
+    \item Cyklus \texttt{while} znovu testuje podmínku.
+    \item Po každé iteraci se musí změnit hodnota, pozice nebo jiný stav, jinak nemusíme postupovat ke konci.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Pythoní \texttt{for} prochází hodnoty}
+\begin{lstlisting}[style=python]
+for color in ["red", "green", "blue"]:
+    print(color)
+\end{lstlisting}
+  \begin{itemize}
+    \item Proměnná \texttt{color} postupně odkazuje na každý prvek.
+    \item Nepotřebujeme ručně spravovat index ani podmínku ukončení.
+    \item Stejný princip funguje pro seznam, text, n-tici, množinu i slovník.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{range}: posloupnost celých čísel}
+\begin{lstlisting}[style=python]
+range(5)          # 0, 1, 2, 3, 4
+range(2, 6)       # 2, 3, 4, 5
+range(10, 3, -2)  # 10, 8, 6, 4
+\end{lstlisting}
+  \begin{itemize}
+    \item Pravá mez se \textbf{nezahrnuje}.
+    \item Třetí argument je krok; záporný krok umožní sestup.
+    \item \texttt{range} použijeme, když opravdu potřebujeme čísla nebo počet opakování.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Když potřebujeme prvek i jeho pozici}
+\begin{lstlisting}[style=python]
+names = ["Ada", "Grace", "Guido"]
+
+for position, name in enumerate(names, start=1):
+    print(position, name)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{enumerate} vytváří dvojice \texttt{(index, hodnota)}.
+    \item Je čitelnější než ruční zvyšování počítadla.
+    \item Parametr \texttt{start} mění počáteční číslo, ne indexování seznamu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Když procházíme dvě kolekce souběžně}
+\begin{lstlisting}[style=python]
+names = ["Ada", "Grace", "Guido"]
+scores = [95, 91, 88]
+
+for name, score in zip(names, scores):
+    print(name, score)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{zip} vytváří dvojice odpovídajících prvků.
+    \item Běžný \texttt{zip} skončí s nejkratší kolekcí.
+    \item Pokud délky musejí být stejné, ověřte tento předpoklad.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{while}: opakování řízené stavem}
+\begin{lstlisting}[style=python]
+remaining = 23
+steps = 0
+
+while remaining > 0:
+    remaining -= 5
+    steps += 1
+\end{lstlisting}
+  \begin{itemize}
+    \item Podmínka se testuje \textbf{před} každou iterací.
+    \item Tělo se nemusí vykonat ani jednou.
+    \item \texttt{while} se hodí, když předem neznáme počet iterací.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Tři otázky ke správnosti cyklu}
+  \begin{enumerate}
+    \item \textbf{Inicializace:} platí před prvním průchodem potřebný stav?
+    \item \textbf{Pokrok:} přibližuje každá iterace program ke konci?
+    \item \textbf{Výsledek:} co víme, když podmínka přestane platit?
+  \end{enumerate}
+  \begin{block}{Invarianta cyklu}
+    Tvrzení, které platí před každou iterací a pomáhá vysvětlit správnost výsledku.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Příklad invarianty: průběžný součet}
+\begin{lstlisting}[style=python]
+total = 0
+for number in numbers:
+    total += number
+\end{lstlisting}
+  \begin{itemize}
+    \item Před každou iterací je \texttt{total} součtem už zpracovaných prvků.
+    \item Přidáním aktuálního prvku tvrzení zachováme pro další iteraci.
+    \item Po skončení byly zpracovány všechny prvky, proto je \texttt{total} jejich součet.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Jak vznikne nekonečný cyklus?}
+\begin{lstlisting}[style=python]
+remaining = 10
+while remaining > 0:
+    print(remaining)
+    # remaining se nemeni
+\end{lstlisting}
+  \begin{alertblock}{Diagnóza}
+    Podmínka závisí na \texttt{remaining}, ale tělo tuto hodnotu neposouvá k nepravdě.
+  \end{alertblock}
+  \begin{itemize}
+    \item Někdy je nekonečný cyklus záměrný, například u serveru.
+    \item Musí pak existovat jiný kontrolovaný způsob ukončení.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{break} a \texttt{continue}}
+\begin{lstlisting}[style=python]
+for number in numbers:
+    if number < 0:
+        continue
+    if number == target:
+        break
+    print(number)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{continue}: přeskoč zbytek \textbf{této iterace}.
+    \item \texttt{break}: opusť \textbf{nejbližší cyklus}.
+    \item Oba příkazy mění běžný tok; používejte je tam, kde záměr zpřehlední.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{else} u cyklu: nebyl proveden \texttt{break}}
+\begin{lstlisting}[style=python]
+for number in numbers:
+    if number == target:
+        print("Nalezeno")
+        break
+else:
+    print("Nenalezeno")
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{else} proběhne po normálním dokončení cyklu.
+    \item Neproběhne, pokud cyklus ukončil \texttt{break}.
+    \item Neznamená „cyklus neměl žádnou iteraci“.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Volba cyklu vyjadřuje záměr}
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \textbf{Použijte \texttt{for}}
+      \begin{itemize}
+        \item pro každý prvek,
+        \item pevný počet opakování,
+        \item známý rozsah hodnot.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \textbf{Použijte \texttt{while}}
+      \begin{itemize}
+        \item dokud platí podmínka,
+        \item čekání na správný vstup,
+        \item počet kroků předem neznáme.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Vnoření mění počet provedení}
+\begin{lstlisting}[style=python]
+for row in table:          # n radku
+    for value in row:      # m hodnot v radku
+        print(value)
+\end{lstlisting}
+  \begin{itemize}
+    \item Tělo vnitřního cyklu se vykoná přibližně \(n \cdot m\)-krát.
+    \item Dva cykly \textbf{za sebou} by se naopak sčítaly.
+    \item Struktura toku proto přímo souvisí s časovou složitostí.
+  \end{itemize}
+\end{frame}
+
+% 0:31--0:36
+\begin{frame}{Historie: od skoku k pojmenovaným strukturám}
+  \begin{itemize}
+    \item Procesor umí změnit pořadí instrukcí pomocí podmíněných a nepodmíněných skoků.
+    \item Příkaz \texttt{goto} přenese tok programu na označené místo.
+    \item Libovolné skoky jsou mocné, ale dovolují mnoho cest vstupu do stejné části programu.
+    \item Výsledek může připomínat „špagetový kód“: tok se obtížně sleduje a zdůvodňuje.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{1966 a 1968: strukturované programování}
+  \begin{itemize}
+    \item Böhm a Jacopini (1966) zkoumali převod obecných diagramů toku do strukturované podoby.
+    \item Praktická myšlenka: sekvence, výběr a opakování stačí k vyjádření algoritmů.
+    \item Dijkstra (1968) kritizoval nekontrolované \texttt{goto}: ztěžuje vztah mezi textem programu a jeho průběhem.
+    \item Cílem není zákaz skoků v procesoru, ale \textbf{čitelný tok ve zdrojovém kódu}.
+    \item \texttt{break} a \texttt{continue} proto mají omezený, z kódu zřejmý cíl.
+  \end{itemize}
+  \source{C. Böhm, G. Jacopini, 1966, DOI: 10.1145/355592.365646; E. W. Dijkstra, 1968, DOI: 10.1145/362929.362947.}
+\end{frame}
+
+% 0:36--0:43
+\begin{frame}[fragile]{Běžný vzor: vytvoření nového seznamu}
+\begin{lstlisting}[style=python]
+squares = []
+for number in numbers:
+    squares.append(number ** 2)
+\end{lstlisting}
+  \begin{itemize}
+    \item Začneme prázdným výsledkem.
+    \item Pro každý vstup vypočteme jednu hodnotu.
+    \item Hodnotu přidáme do nového seznamu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{List comprehension: stejný datový tok stručně}
+\begin{lstlisting}[style=python]
+squares = [number ** 2 for number in numbers]
+\end{lstlisting}
+  \begin{center}
+    \texttt{[výraz \textbf{for} prvek \textbf{in} kolekce]}
+  \end{center}
+  \begin{itemize}
+    \item Výsledkem je nový seznam.
+    \item Pořadí čtení: „druhá mocnina pro každé číslo v číslech“.
+    \item Je to vhodné pro jednoduchou transformaci, ne pro libovolný blok příkazů.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Filtrování: \texttt{if} za cyklem}
+\begin{lstlisting}[style=python]
+positive_squares = [
+    number ** 2
+    for number in numbers
+    if number > 0
+]
+\end{lstlisting}
+  \begin{itemize}
+    \item Koncové \texttt{if} rozhoduje, \textbf{zda prvek zahrnout}.
+    \item Výraz na začátku říká, \textbf{jakou hodnotu vytvořit}.
+    \item Víceřádkový zápis je stále jeden výraz.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Volba hodnoty: \texttt{if} před cyklem}
+\begin{lstlisting}[style=python]
+labels = [
+    "sude" if number % 2 == 0 else "liche"
+    for number in numbers
+]
+\end{lstlisting}
+  \begin{itemize}
+    \item Ternární výraz vytvoří hodnotu pro \textbf{každý} prvek.
+    \item Koncové \texttt{if} by některé prvky naopak vyřadilo.
+    \item Poloha \texttt{if} tedy mění význam, nejde jen o styl zápisu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Kdy zůstat u obyčejného cyklu?}
+  \begin{itemize}
+    \item Tělo provádí více různých akcí nebo mění více proměnných.
+    \item Potřebujeme \texttt{break}, \texttt{continue} nebo podrobný výpis průběhu.
+    \item Comprehension má několik vnořených cyklů či podmínek a musí se luštit.
+    \item Zkrácení počtu řádků samo o sobě není cílem.
+  \end{itemize}
+  \begin{block}{Pravidlo čitelnosti}
+    Kompaktní zápis použijte, pokud jedním pohledem sděluje jednu transformaci.
+  \end{block}
+\end{frame}
+
+% 0:43--0:45
+\begin{frame}[fragile]{Závěrečné ověření: tři otázky}
+\begin{lstlisting}[style=python]
+result = [x * 2 for x in values if x]
+\end{lstlisting}
+  \begin{enumerate}
+    \item Které hodnoty podmínka \texttt{if x} vyřadí?
+    \item V jakém pořadí se vyhodnotí cyklus, podmínka a výraz \texttt{x * 2}?
+    \item Kdy by byl běžný cyklus čitelnější?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Co si zapamatovat?}
+  \begin{itemize}
+    \item Tok programu skládáme ze sekvence, větvení a iterace.
+    \item Pořadí podmínek a krátké vyhodnocování ovlivňují vykonané operace.
+    \item U cyklu sledujte inicializaci, invariantní stav a pokrok ke konci.
+    \item \texttt{for} prochází hodnoty; \texttt{while} opakuje podle stavu.
+    \item \texttt{break}, \texttt{continue} a \texttt{else} přesně mění běžný tok cyklu.
+    \item Ternární výraz a comprehension jsou dobré tehdy, když zpřehlední jednoduchý záměr.
+  \end{itemize}
+  \vspace{2mm}
+  \centering\Large Otázky?
+\end{frame}
+
+\end{document}

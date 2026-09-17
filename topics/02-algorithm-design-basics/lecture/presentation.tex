@@ -1,0 +1,681 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,babel,positioning,shapes.geometric,shapes.misc,shapes.symbols}
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+\title{Základy návrhu algoritmů}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}
+\institute{}
+\date{}
+\renewcommand{\headlineA}{}
+\renewcommand{\headlineB}{}
+\renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{DecisionOrange}{RGB}{242,153,74}
+\definecolor{SuccessGreen}{RGB}{77,145,95}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\setbeamercolor{alertblock title}{fg=white,bg=DecisionOrange}
+\setbeamercolor{alertblock body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+
+\lstdefinestyle{python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{CodeBlue}\bfseries,
+  commentstyle=\color{SuccessGreen},
+  stringstyle=\color{DecisionOrange!80!black},
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  rulecolor=\color{black!20},
+  backgroundcolor=\color{SoftGray}
+}
+\tikzset{
+  flow/.style={draw=CodeBlue,very thick,fill=SoftGray,align=center,minimum height=9mm},
+  process/.style={flow,rectangle,rounded corners=1pt,minimum width=30mm},
+  terminator/.style={flow,rounded rectangle,minimum width=25mm},
+  decision/.style={flow,diamond,aspect=2.1,inner sep=1pt},
+  io/.style={flow,trapezium,trapezium left angle=70,trapezium right angle=110,minimum width=29mm},
+  action/.style={flow,rounded corners=4pt,minimum width=30mm},
+  arrow/.style={-{Latex[length=2.5mm]},very thick,draw=CodeBlue}
+}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:03
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Jak podmínky a cykly řídí \term{tok programu}?
+    \item Jak z programu odhadnout \term{počet operací}?
+    \item Co říká časová složitost a značení \term{Big O}?
+    \item Jak číst a kreslit \term{flowchart}?
+    \item Jak souvisí flowchart s \term{UML activity diagramem}?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na co navazujeme a proč to potřebujeme?}
+  \begin{itemize}
+    \item Algoritmické myšlení lze rozvíjet bez ohledu na znalost konkrétního programovacího jazyka.
+    \item Začneme plánováním řešení \textbf{dříve}, než přejdeme k zápisu kódu.
+    \item Stejný problém může mít více správných, ale různě efektivních řešení.
+    \item Diagram pomáhá o programu komunikovat bez závislosti na syntaxi jazyka.
+  \end{itemize}
+\end{frame}
+
+% 0:03--0:07
+\begin{frame}{Algoritmus není totéž co program}
+  \begin{block}{Algoritmus}
+    Konečný a jednoznačný postup, který převádí vstup na požadovaný výstup.
+  \end{block}
+  \begin{itemize}
+    \item \term{Algoritmus} popisuje myšlenku řešení.
+    \item \term{Program} je realizace algoritmu v konkrétním jazyce.
+    \item Jeden algoritmus lze zapsat slovně, pseudokódem, diagramem i kódem.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Co musí být v zadání problému?}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \textbf{Vstup}
+      \begin{itemize}
+        \item Jaká data dostáváme?
+        \item Jak jsou velká?
+        \item Jaká omezení platí?
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \textbf{Výstup}
+      \begin{itemize}
+        \item Co přesně vracíme?
+        \item Jak poznáme správnost?
+        \item Co se stane na hranicích?
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \begin{alertblock}{Nejdříve specifikace, potom řešení}
+    Bez přesného vstupu a výstupu nelze spolehlivě posoudit správnost algoritmu.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Tři stavební kameny toku programu}
+  \centering
+  \begin{tikzpicture}[node distance=12mm]
+    \node[process] (seq) {posloupnost\\krok za krokem};
+    \node[decision,right=of seq] (branch) {podmínka?};
+    \node[process,right=of branch] (loop) {opakování\\cyklus};
+    \draw[arrow] (seq)--(branch);
+    \draw[arrow] (branch)--(loop);
+  \end{tikzpicture}
+  \vspace{7mm}
+  \begin{itemize}
+    \item \term{Posloupnost}: příkazy se vykonají v pořadí.
+    \item \term{Větvení}: další krok závisí na podmínce.
+    \item \term{Cyklus}: část postupu se opakuje.
+  \end{itemize}
+\end{frame}
+
+% 0:07--0:16
+\begin{frame}[fragile]{Podmínka \texttt{if}: vyber jednu cestu}
+\begin{lstlisting}[style=python]
+if temperature < 0:
+    print("Mrzne")
+else:
+    print("Nemrzne")
+\end{lstlisting}
+  \begin{itemize}
+    \item Podmínka má hodnotu \texttt{True} nebo \texttt{False}.
+    \item Vykoná se právě odpovídající větev.
+    \item Po větvení program pokračuje společným dalším krokem.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Více možností: \texttt{if} -- \texttt{elif} -- \texttt{else}}
+\begin{lstlisting}[style=python]
+if score >= 90:
+    grade = "A"
+elif score >= 75:
+    grade = "B"
+else:
+    grade = "C"
+\end{lstlisting}
+  \begin{alertblock}{Pořadí podmínek je součást algoritmu}
+    Python testuje podmínky shora dolů a použije první pravdivou větev.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Cyklus \texttt{while}: opakuj, dokud podmínka platí}
+\begin{lstlisting}[style=python]
+n = 8
+while n > 1:
+    n = n // 2
+    print(n)
+\end{lstlisting}
+  \begin{itemize}
+    \item Podmínka se kontroluje \textbf{před každým průchodem}.
+    \item Tělo se nemusí vykonat ani jednou.
+    \item Některý krok musí směřovat k ukončení cyklu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Kdy se \texttt{while} nezastaví?}
+  \begin{itemize}
+    \item Řídicí hodnota se vůbec nemění.
+    \item Mění se opačným směrem, než potřebuje podmínka.
+    \item Některá větev přeskočí aktualizaci hodnoty.
+    \item Ukončení závisí na vstupu, který nemusí nikdy nastat.
+  \end{itemize}
+  \begin{block}{Invariant a varianta cyklu}
+    \term{Invariant} zůstává pravdivý; \term{varianta} se mění směrem k ukončení.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Cyklus \texttt{for}: projdi známou kolekci}
+\begin{lstlisting}[style=python]
+numbers = [3, 8, 1, 6]
+total = 0
+
+for number in numbers:
+    total += number
+\end{lstlisting}
+  \begin{itemize}
+    \item Proměnná \texttt{number} postupně získá každý prvek.
+    \item Počet průchodů je dán počtem prvků kolekce.
+    \item V Pythonu \texttt{for} znamená „pro každý prvek“.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{\texttt{for}, nebo \texttt{while}?}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \textbf{Použijte \texttt{for}}
+      \begin{itemize}
+        \item pro každý prvek,
+        \item známý počet opakování,
+        \item průchod přes \texttt{range}.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \textbf{Použijte \texttt{while}}
+      \begin{itemize}
+        \item opakování do splnění podmínky,
+        \item počet kroků předem neznáme,
+        \item stav řídíme sami.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{break} a \texttt{continue} mění běžný tok}
+\begin{lstlisting}[style=python]
+for number in numbers:
+    if number < 0:
+        continue       # dalsi prvek
+    if number == 0:
+        break          # konec cyklu
+    total += number
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{continue} přeskočí zbytek aktuálního průchodu.
+    \item \texttt{break} ukončí nejbližší cyklus.
+    \item V diagramu musí být obě změny toku viditelné šipkou.
+  \end{itemize}
+\end{frame}
+
+% 0:16--0:31
+\begin{frame}{Proč počítat operace?}
+  \begin{itemize}
+    \item Čas na stopkách závisí na počítači, jazyce i aktuálním zatížení.
+    \item Počet kroků algoritmu lze porovnávat nezávisle na konkrétním stroji.
+    \item Zajímá nás, jak práce roste s velikostí vstupu.
+  \end{itemize}
+  \begin{block}{Velikost vstupu \(n\)}
+    Například počet prvků seznamu, počet znaků textu nebo počet vrcholů grafu.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Co budeme považovat za jednu operaci?}
+  \begin{itemize}
+    \item přiřazení nebo aritmetická operace,
+    \item porovnání a vyhodnocení jednoduché podmínky,
+    \item přístup k jednomu prvku seznamu,
+    \item jednoduchý výpis --- v našem zjednodušeném modelu.
+  \end{itemize}
+  \begin{alertblock}{Je to model}
+    Skutečné operace netrvají stejně dlouho. Model musí být jednoduchý, ale použitý konzistentně.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Příklad: přesný počet kroků}
+\begin{lstlisting}[style=python]
+total = 0                    # 1x
+for number in numbers:       # n prvku
+    total = total + number   # n-krat
+print(total)                 # 1x
+\end{lstlisting}
+  \begin{itemize}
+    \item Zjednodušeně: \(T(n)=1+n+n+1=2n+2\).
+    \item Přesný výsledek závisí na tom, co zahrneme do jedné operace.
+    \item Důležitější než koeficient je zde \textbf{lineární růst}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Podmínka: kterou větev počítáme?}
+  \begin{itemize}
+    \item \term{Nejlepší případ}: vstup vyvolá nejméně práce.
+    \item \term{Nejhorší případ}: vstup vyvolá nejvíce práce.
+    \item \term{Průměrný případ}: potřebujeme předpoklad o rozdělení vstupů.
+  \end{itemize}
+  \begin{block}{Běžná dohoda}
+    Není-li uvedeno jinak, často analyzujeme nejhorší případ: dává bezpečnou horní mez.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Předčasný konec: nejlepší a nejhorší případ}
+\begin{lstlisting}[style=python]
+for number in numbers:
+    if number == target:
+        return True
+return False
+\end{lstlisting}
+  \begin{itemize}
+    \item Cíl je první prvek: přibližně \(1\) kontrola.
+    \item Cíl je poslední nebo chybí: přibližně \(n\) kontrol.
+    \item Nejlepší případ \(\Theta(1)\), nejhorší \(\Theta(n)\).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Dva cykly za sebou se sčítají}
+\begin{lstlisting}[style=python]
+for x in numbers:       # n
+    print(x)
+
+for x in numbers:       # n
+    print(x * x)
+\end{lstlisting}
+  \[
+    T(n) \approx n+n=2n \quad\Rightarrow\quad \Theta(n)
+  \]
+  Dvojnásobek práce je stále lineární růst.
+\end{frame}
+
+\begin{frame}[fragile]{Vnořené cykly se násobí}
+\begin{lstlisting}[style=python]
+for x in numbers:          # n
+    for y in numbers:      # n pro kazde x
+        print(x, y)
+\end{lstlisting}
+  \[
+    T(n) \approx n\cdot n=n^2 \quad\Rightarrow\quad \Theta(n^2)
+  \]
+  Každá z \(n\) vnějších iterací spustí celý vnitřní cyklus.
+\end{frame}
+
+\begin{frame}[fragile]{Půlení problému vede k logaritmu}
+\begin{lstlisting}[style=python]
+while n > 1:
+    n = n // 2
+\end{lstlisting}
+  Po \(k\) krocích zbývá přibližně \(n/2^k\). Končíme, když
+  \[
+    \frac{n}{2^k}\leq 1 \quad\Rightarrow\quad k\geq \log_2 n.
+  \]
+  Proto je počet průchodů \(\Theta(\log n)\).
+\end{frame}
+
+\begin{frame}{Od přesného počtu k řádu růstu}
+  \begin{itemize}
+    \item \(3n+7\), \(100n+2\) i \(n\) rostou pro velké \(n\) lineárně.
+    \item Konstantní násobky a nižší členy nemění dominantní růst.
+    \item Asymptotická analýza se ptá: \textbf{co převládne pro velké vstupy?}
+  \end{itemize}
+  \[
+    4n^2+3n+12 \quad\leadsto\quad n^2
+  \]
+\end{frame}
+
+\begin{frame}{Big O: asymptotická horní mez}
+  \begin{block}{Definice}
+    \(T(n)\in O(g(n))\), pokud existují konstanty \(c>0\) a \(n_0\), že pro všechna \(n\geq n_0\) platí \(T(n)\leq c\,g(n)\).
+  \end{block}
+  \begin{itemize}
+    \item Big O říká, že růst \(T\) není asymptoticky rychlejší než \(g\).
+    \item Formálně je \(3n+2\) také v \(O(n^2)\), ale těsnější mez je \(O(n)\).
+    \item V praxi se snažíme uvádět co nejtěsnější užitečnou mez.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Big O, Omega a Theta}
+  \begin{itemize}
+    \item \(O(g(n))\): asymptotická \textbf{horní} mez.
+    \item \(\Omega(g(n))\): asymptotická \textbf{dolní} mez.
+    \item \(\Theta(g(n))\): horní i dolní mez --- stejný řád růstu.
+  \end{itemize}
+  \begin{block}{Příklad}
+    Pro \(T(n)=3n+2\) platí \(T(n)\in O(n)\), \(T(n)\in\Omega(n)\), tedy \(T(n)\in\Theta(n)\).
+  \end{block}
+\end{frame}
+
+\begin{frame}{Typické třídy růstu}
+  \centering
+  \begin{tabular}{lll}
+    \textbf{Složitost} & \textbf{Název} & \textbf{Typický příklad} \\
+    \hline
+    \(O(1)\) & konstantní & přístup na známý index \\
+    \(O(\log n)\) & logaritmická & opakované půlení \\
+    \(O(n)\) & lineární & jeden průchod seznamem \\
+    \(O(n\log n)\) & linearitmická & efektivní třídění \\
+    \(O(n^2)\) & kvadratická & všechny dvojice prvků \\
+    \(O(2^n)\) & exponenciální & výběr všech podmnožin \\
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Malý vstup může klamat}
+  \begin{itemize}
+    \item Algoritmus s \(1000n\) může být pro malé \(n\) pomalejší než algoritmus s \(n^2\).
+    \item Pro dost velké \(n\) však kvadratický růst lineární překoná.
+    \item Big O neříká skutečný čas ani konstanty.
+    \item Po asymptotické analýze má smysl program také měřit.
+  \end{itemize}
+\end{frame}
+
+% 0:31--0:50
+\begin{frame}{Co je flowchart?}
+  \begin{block}{Vývojový diagram (flowchart)}
+    Grafické znázornění kroků algoritmu a toku řízení mezi nimi.
+  \end{block}
+  \begin{itemize}
+    \item Uzly představují kroky, rozhodnutí nebo vstup a výstup.
+    \item Orientované šipky určují pořadí vykonávání.
+    \item Diagram zachycuje logiku; nemusí kopírovat každý řádek kódu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Mermaid je zápis, flowchart je diagram}
+  \begin{itemize}
+    \item \term{Flowchart} je způsob modelování algoritmu.
+    \item \term{Mermaid} je textový jazyk, který diagram vykreslí.
+    \item Tentýž flowchart lze nakreslit rukou, v editoru nebo zapsat v Mermaid.
+  \end{itemize}
+  \begin{block}{Příklad zápisu}
+    \texttt{flowchart TD}\qquad \texttt{start([Start]) --> process[Zpracuj data]}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Značka: začátek a konec}
+  \centering
+  \begin{tikzpicture}[node distance=35mm]
+    \node[terminator] (start) {Start};
+    \node[terminator,right=of start] (stop) {Konec};
+    \draw[arrow] (start)--(stop);
+  \end{tikzpicture}
+  \vspace{8mm}
+  \begin{itemize}
+    \item Zaoblený terminátor označuje vstupní nebo koncový bod toku.
+    \item Diagram má mít jasný začátek a alespoň jeden konec.
+    \item Mermaid: \texttt{start([Start])}, \texttt{stop([Konec])}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Značka: proces neboli akce}
+  \centering
+  \begin{tikzpicture}
+    \node[process,minimum width=50mm] {\texttt{total = total + number}};
+  \end{tikzpicture}
+  \vspace{8mm}
+  \begin{itemize}
+    \item Obdélník představuje výpočet, přiřazení nebo jiný krok.
+    \item Text má být krátký, konkrétní a ve slovesném tvaru nebo jako příkaz.
+    \item Mermaid: \texttt{step[Sečti hodnoty]}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Značka: rozhodnutí}
+  \centering
+  \begin{tikzpicture}[node distance=18mm,scale=.78,transform shape]
+    \node[decision] (d) {\texttt{n > 0?}};
+    \node[process,above right=of d] (yes) {kladné};
+    \node[process,below right=of d] (no) {nekladné};
+    \draw[arrow] (d)--node[above left]{ano}(yes);
+    \draw[arrow] (d)--node[below left]{ne}(no);
+  \end{tikzpicture}
+  \vspace{1mm}
+  \begin{itemize}
+    \item Kosočtverec obsahuje otázku nebo logickou podmínku.
+    \item Každá odchozí hrana musí mít jednoznačný popisek.
+    \item Mermaid: \texttt{decision\{n > 0?\}}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Značka: vstup a výstup}
+  \centering
+  \begin{tikzpicture}[node distance=28mm]
+    \node[io] (input) {Načti \texttt{n}};
+    \node[io,right=of input] (output) {Vypiš výsledek};
+    \draw[arrow] (input)--(output);
+  \end{tikzpicture}
+  \vspace{8mm}
+  \begin{itemize}
+    \item Rovnoběžník tradičně označuje načtení nebo výpis dat.
+    \item Odlišuje komunikaci s okolím od vnitřního výpočtu.
+    \item Mermaid podporuje tvar rovnoběžníku; běžný obdélník je také čitelný, pokud jsme konzistentní.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Značka: šipka a spojení toku}
+  \centering
+  \vspace{4mm}
+  \begin{tikzpicture}[node distance=22mm]
+    \node[process] (a) {krok A};
+    \node[process,right=of a] (b) {krok B};
+    \node[process,right=of b] (c) {krok C};
+    \draw[arrow] (a)--(b);
+    \draw[arrow] (b)--(c);
+  \end{tikzpicture}
+  \vspace{8mm}
+  \begin{itemize}
+    \item Hrot šipky určuje směr řízení.
+    \item Tok obvykle vedeme shora dolů nebo zleva doprava.
+    \item Křížení hran omezujeme; složitý obraz často signalizuje příliš mnoho detailů.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Jak diagram vyjádří cyklus?}
+  \centering
+  \vspace{4mm}
+  \begin{tikzpicture}[node distance=12mm]
+    \node[decision] (condition) {další prvek?};
+    \node[process,below=of condition] (body) {zpracuj prvek};
+    \node[terminator,right=32mm of condition] (end) {pokračuj dál};
+    \draw[arrow] (condition)--node[right]{ano}(body);
+    \draw[arrow] (body.west) to[out=180,in=180,looseness=1.4] (condition.west);
+    \draw[arrow] (condition)--node[above]{ne}(end);
+  \end{tikzpicture}
+  \vspace{4mm}
+  \begin{itemize}
+    \item Rozhodnutí testuje pokračování cyklu.
+    \item Zpětná šipka vrací tok k další kontrole podmínky.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Další tvary: užitečné, ne vždy nutné}
+  \centering
+  \begin{tikzpicture}[node distance=19mm]
+    \node[flow,cylinder,shape border rotate=90,aspect=.3,minimum width=25mm] (db) {data};
+    \node[flow,rectangle,double,double distance=1.5pt,
+      minimum width=34mm,right=of db] (sub) {podprogram};
+    \node[flow,tape,tape bend bottom=out,tape bend top=none,
+      minimum width=28mm,right=of sub] (doc) {dokument};
+  \end{tikzpicture}
+  \vspace{7mm}
+  \begin{itemize}
+    \item Válec: uložená data nebo databáze.
+    \item Obdélník s dvojitým okrajem: předem definovaný proces / podprogram.
+    \item Dokument: dokument nebo report.
+    \item Pro jednoduché algoritmy obvykle stačí terminátor, proces, rozhodnutí, I/O a šipky.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Flowchart versus UML activity diagram}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \textbf{Flowchart}
+      \begin{itemize}
+        \item obecná a pružná notace,
+        \item tradiční tvary pro proces a I/O,
+        \item vhodný pro vysvětlení algoritmu.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \textbf{UML activity diagram}
+      \begin{itemize}
+        \item standardizovaná UML notace,
+        \item akce, rozhodnutí a řídicí toky,
+        \item umí paralelní větve a odpovědnosti.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \begin{block}{Pro naše úlohy}
+    Význam je velmi podobný. Důležitější než název je čitelný a konzistentní tok.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Jak se liší základní značky UML aktivit?}
+  \centering
+  \begin{tikzpicture}[node distance=17mm]
+    \node[circle,fill=black,minimum size=6mm] (initial) {};
+    \node[action,right=of initial] (action) {zpracuj vstup};
+    \node[decision,right=of action] (decision) {platí?};
+    \node[circle,draw=black,very thick,minimum size=9mm,right=of decision] (outer) {};
+    \node[circle,fill=black,minimum size=5mm] at (outer.center) {};
+    \draw[arrow] (initial)--(action);
+    \draw[arrow] (action)--(decision);
+    \draw[arrow] (decision)--node[above]{[ne]}(outer);
+  \end{tikzpicture}
+  \vspace{7mm}
+  \begin{itemize}
+    \item Plný kruh: počáteční uzel; terč: konec aktivity.
+    \item Zaoblený obdélník: akce; kosočtverec: rozhodnutí nebo sloučení.
+    \item Podmínky na hranách se často zapisují jako \texttt{[ano]} a \texttt{[ne]}.
+  \end{itemize}
+\end{frame}
+
+% 0:50--0:57
+\begin{frame}[fragile]{Od programu k diagramu: nejdříve bloky}
+  \vspace{3mm}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\footnotesize]
+total = 0
+for n in numbers:
+    if n % 2 == 0:
+        total += n
+print(total)
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \begin{enumerate}
+        \item inicializace,
+        \item kontrola dalšího prvku,
+        \item rozhodnutí sudé / liché,
+        \item případná aktualizace,
+        \item výpis po skončení cyklu.
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Od programu k diagramu: výsledný tok}
+  \centering
+  \vspace{4mm}
+  \begin{tikzpicture}[node distance=4mm,scale=.75,transform shape]
+    \node[terminator] (start) {Start};
+    \node[process,below=of start] (init) {\texttt{total = 0}};
+    \node[decision,below=of init] (more) {další \texttt{n}?};
+    \node[decision,below=of more] (even) {\texttt{n \% 2 == 0?}};
+    \node[process,below=of even] (add) {\texttt{total = total + n}};
+    \node[io,right=32mm of more] (out) {vypiš \texttt{total}};
+    \node[terminator,below=of out] (stop) {Konec};
+    \draw[arrow] (start)--(init);
+    \draw[arrow] (init)--(more);
+    \draw[arrow] (more)--node[right]{ano}(even);
+    \draw[arrow] (even)--node[right]{ano}(add);
+    \draw[arrow] (add.west) to[out=180,in=180,looseness=1.3] (more.west);
+    \draw[arrow] (even.east) to[out=0,in=0,looseness=1.5]
+      node[pos=.25,right]{ne} (more.east);
+    \draw[arrow] (more)--node[above]{ne}(out);
+    \draw[arrow] (out)--(stop);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Časté chyby v diagramech}
+  \begin{itemize}
+    \item Rozhodnutí nemá popsané odchozí větve.
+    \item Cyklus nemá zpětnou hranu nebo cestu ven.
+    \item Výpis uvnitř cyklu je omylem zakreslen až za cyklem.
+    \item \texttt{break} vede k další iteraci místo za cyklus.
+    \item Diagram mechanicky kopíruje každý řádek a přestává být čitelný.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Jak kontrolovat správnost diagramu?}
+  \begin{enumerate}
+    \item Zvolte malý konkrétní vstup.
+    \item Sledujte šipky a zapisujte hodnoty proměnných.
+    \item Stejný vstup projděte řádek po řádku v programu.
+    \item Porovnejte pořadí kroků, větve a výsledný výstup.
+    \item Zopakujte pro hraniční vstup: prázdný seznam, nulu, první shodu.
+  \end{enumerate}
+\end{frame}
+
+% 0:57--1:00
+\begin{frame}{Jedna úloha, tři pohledy}
+  \begin{itemize}
+    \item \term{Kód} přesně říká, co vykoná počítač.
+    \item \term{Diagram} ukazuje strukturu toku a usnadňuje komunikaci.
+    \item \term{Analýza složitosti} říká, jak množství práce roste se vstupem.
+  \end{itemize}
+  \begin{block}{Dobrý návrh propojuje všechny tři}
+    Dokážeme vysvětlit správnost, zakreslit tok a odhadnout počet operací.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Co si zapamatovat?}
+  \begin{itemize}
+    \item \texttt{if} větví tok; \texttt{for} prochází prvky; \texttt{while} opakuje podle podmínky.
+    \item Sekvenční cykly sčítáme, vnořené cykly typicky násobíme.
+    \item Big O je asymptotická horní mez; \(\Theta\) vyjadřuje těsný řád růstu.
+    \item Flowchart tvoří uzly a orientované šipky; značky používejte konzistentně.
+    \item UML activity diagram je formálnější příbuzná notace, nikoli jiný algoritmus.
+  \end{itemize}
+  \vspace{3mm}
+  \centering\Large Otázky?
+\end{frame}
+
+\end{document}

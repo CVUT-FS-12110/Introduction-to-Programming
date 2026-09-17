@@ -1,0 +1,109 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeCVUT}[2026/08/17 Portable CTU Beamer theme]
+
+\RequirePackage{setspace}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+
+\makeatletter
+\mode<presentation>
+
+% The document must define the path before loading this package, for example:
+% \newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\providecommand{\CVUTTemplatePath}{.}
+
+\definecolor{BlueCTU}{RGB}{65,105,225}
+\definecolor{CVUTLogoBlue}{RGB}{1,113,189}
+\definecolor{light}{RGB}{0,0,0}
+\definecolor{dark}{RGB}{255,255,255}
+\setbeamercolor{structure}{fg=BlueCTU}
+\setbeamercolor{frametitle}{fg=black,bg=black}
+\setbeamercolor{headline}{fg=black}
+
+\setbeamersize{text margin left=2.5em,text margin right=2em}
+\usefonttheme[onlymath]{serif}
+\setbeamerfont{frametitle}{size=\huge}
+\setbeamerfont{footline}{size=\fontsize{9}{11}\selectfont}
+\setbeamerfont{headline}{size=\fontsize{9}{11}\selectfont}
+\useinnertheme{rectangles}
+
+\setbeamertemplate{background canvas}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \ifnum\c@framenumber=1
+      \node[anchor=center,inner sep=0] at (current page.center)
+        {\includegraphics[width=\paperwidth,height=\paperheight]{\CVUTTemplatePath/source_img/front_dark_CZ.jpg}};
+      \fill[CVUTLogoBlue] (current page.north west)
+        rectangle ([xshift=.25\paperwidth,yshift=-.266667\paperheight]current page.north west);
+      \begin{scope}
+        \clip (current page.north west)
+          rectangle ([xshift=.25\paperwidth,yshift=-.266667\paperheight]current page.north west);
+        \node[anchor=north west,inner sep=0] at (current page.north west)
+          {\includegraphics[width=.75\paperwidth,height=\paperheight]{\CVUTTemplatePath/source_img/front_dark_CZ.jpg}};
+      \end{scope}
+    \else
+      \node[anchor=center,inner sep=0] at (current page.center)
+        {\includegraphics[width=\paperwidth,height=\paperheight]{\CVUTTemplatePath/source_img/background_CZ.jpg}};
+      \fill[white] (current page.north west)
+        rectangle ([xshift=.25\paperwidth,yshift=-.266667\paperheight]current page.north west);
+      \begin{scope}
+        \clip (current page.north west)
+          rectangle ([xshift=.25\paperwidth,yshift=-.266667\paperheight]current page.north west);
+        \node[anchor=north west,inner sep=0] at (current page.north west)
+          {\includegraphics[width=.75\paperwidth,height=\paperheight]{\CVUTTemplatePath/source_img/background_CZ.jpg}};
+      \end{scope}
+    \fi
+  \end{tikzpicture}%
+}
+
+\defbeamertemplate*{title page}{CVUTTitle}{
+  \vspace{0.1\paperheight}%
+  {\color{dark}\setstretch{1.0}\LARGE\bfseries\inserttitle\par}
+  \ifx\insertsubtitle\@empty\else
+    \vspace{0.35cm}{\color{dark}\insertsubtitle\par}
+  \fi
+  \ifx\insertauthor\@empty\else
+    \vspace{0.9cm}{\color{dark}\insertauthor\par}
+  \fi
+  \ifx\insertinstitute\@empty\else
+    \vspace{0.1cm}{\color{dark}\insertinstitute\par}
+  \fi
+  \ifx\insertdate\@empty\else
+    \vspace{0.1cm}{\color{dark}\insertdate\par}
+  \fi
+  \vfill
+}
+
+\setbeamertemplate{frametitle}{
+  \ifbeamercolorempty[bg]{frametitle}{}{\nointerlineskip}%
+  \@tempdima=\textwidth
+  \advance\@tempdima by\beamer@leftmargin
+  \advance\@tempdima by\beamer@rightmargin
+  \vspace{0.8cm}
+  \usebeamerfont{frametitle}%
+  \vbox{}\vskip-1ex
+  \if@tempswa\else\csname beamer@ftecenter\endcsname\fi
+  \strut\insertframetitle\strut\par
+  \ifx\insertframesubtitle\@empty\else
+    {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}%
+      \insertframesubtitle\strut\par}%
+  \fi
+  \vskip-1ex
+  \if@tempswa\else\vskip-.3cm\fi
+}
+
+\providecommand{\headlineA}{}
+\providecommand{\headlineB}{}
+\providecommand{\headlineC}{}
+\setbeamertemplate{headline}{%
+  \vspace{0.1cm}
+  \hbox{%
+    \begin{beamercolorbox}[wd=0.95\paperwidth,ht=1.5cm,right]{headline}%
+      \headlineA\par\vspace{0.2cm}
+      \headlineB\par\vspace{0.2cm}
+      \headlineC
+    \end{beamercolorbox}%
+  }
+}
+
+\mode<all>
+\makeatother
