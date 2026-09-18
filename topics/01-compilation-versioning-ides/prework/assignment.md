@@ -11,6 +11,15 @@ operace okomentuje, podrobněji vysvětlí jejich význam a ukáže řešení č
 problémů. Před výukou se proto pokuste celé zadání dokončit samostatně a
 poznamenejte si kroky, kterým nerozumíte nebo u kterých jste se zasekli.
 
+## Než začnete
+
+- Výchozí větev repozitáře se může jmenovat **`master`** nebo **`main`**.
+  V následujícím zadání je uvedeno `master`; pokud váš repozitář používá
+  `main`, pracujte stejným způsobem s větví `main`.
+- Pro připojení ke GitHubu přes SSH budete potřebovat vlastní **SSH klíč**,
+  jehož veřejnou část přidáte do svého účtu na GitHubu. Postup vytvoření
+  klíče a jeho přidání na GitHub si před výukou samostatně nastudujte.
+
 ## Co a jak odevzdat
 
 - Odkaz na váš **veřejný GitHub repozitář**.
@@ -54,6 +63,10 @@ Postupujte podle kroků:
 7. Změny commitněte.
 
 8. Pokuste se sloučit větev **`conflict-test`** do **`master`**.
+
+   > Nápověda: zkontrolujte, že jste v hlavní větvi, a použijte
+   > `git merge conflict-test`. Pokud se vaše hlavní větev jmenuje `main`,
+   > proveďte sloučení z větve `main`.
 
 9. Vznikne konflikt:
    - otevřete soubor `README.md`,
