@@ -1,4 +1,4 @@
-# Seminář: Datové typy a vstup/výstup
+# Komentované příklady: Datové typy a vstup/výstup
 
 Tento týden si projdeme základní datové typy v Pythonu, jejich vlastnosti a operace, které s nimi můžeme provádět. Abychom pochopili program flow a byli schopni provádět konverze mezi datovými typy, podíváme se i na témata jako conditions (podmínky) a loops (smyčky).
 
@@ -49,7 +49,7 @@ o	While loop
 
 
 
-# Seminář: Datové typy a vstup/výstup - rozšíření znalostí
+# Komentované příklady: Datové typy a vstup/výstup — rozšíření znalostí
 
 Cile:
 -	Rozšíření k předešlým tématům

@@ -19,17 +19,11 @@
 Proporční volební systém, D'Hondt, Sainte-Laguë, mandát, kvocient, volební klauzule,
 Imperialiho kvóta, Hagenbach-Bischoffova kvóta, skrutinium
 
-## Materiály
+## Přednáška
 
-| Soubor | Popis |
-|---|---|
-| `electoral-algorithms.ipynb` | Hlavní notebook — výklad algoritmů s vizualizacemi |
-| `tasks.ipynb` | Úkoly pro studenty (kostry k doimplementování) |
-| `solutions/solutions.ipynb` | Kompletní řešení úkolů |
+- [Výkladový notebook s komentovanými příklady](electoral-algorithms.ipynb)
 
-## Přednáška / Seminář
-
-Hlavní notebook `electoral-algorithms.ipynb` pokrývá:
+Notebook pokrývá:
 
 1. **D'Hondtova metoda** — nejpoužívanější volební algoritmus v Evropě
    - Princip, ruční výpočet, implementace v Pythonu

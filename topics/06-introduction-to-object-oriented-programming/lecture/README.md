@@ -1,5 +1,8 @@
 # Přednáška: Úvod do OOP
 
-_Připravujeme._
+- [Prezentace (PDF)](presentation.pdf)
+- [Zdrojový soubor prezentace](presentation.tex)
 
-Sem přijdou podklady k přednášce k tématu [Úvod do objektově orientovaného programování](../README.md).
+Přednáška pokrývá třídy a objekty, atributy, metody, `self`, `__init__`,
+UML diagram tříd a sekvenční diagram, dědičnost, přepis metod, polymorfismus
+a kompozici. Navazuje na ni [samostatné cvičení](../lab/assignment.md).

@@ -12,18 +12,13 @@ Soubory, IO, JSON, CSV
 
 ## Přednáška
 
-TODO: odkaz na online prezentaci (Formáty dat)
-
-
-## Seminář
+Slajdy zatím nejsou k dispozici.
 
 Přehled serializace dat pro ukládání a přenos: JSON, CSV a jednoduché
 binární formáty. Studenti se naučí ukládat strukturovaná data,
 znovu je načítat a uvažovat o kompromisu mezi čitelností a velikostí dat.
 
-Podklady:
-
-- [Seminář](seminar.md)
+- [Komentované příklady: ukládání dat a serializace](seminar.md)
 
 ### Osnova
 

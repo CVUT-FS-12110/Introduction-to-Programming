@@ -16,29 +16,18 @@ kam se dokážete během cvičení připojit.
 
 ## Přednáška
 
-[Prezentace: Kompilace kódu a verzování](lecture/presentation.pdf)
+- [Slajdy: Kompilace kódu a verzování](lecture/presentation.pdf)
+- [Komentované příklady: základní Git workflow](seminar/README.md)
+
+Komentované příklady ukazují, jak se zdrojový kód stává spustitelným
+softwarem, jak tento proces podporuje IDE a jak při vývoji používat Git.
+Společně se prochází [stejné zadání jako v domácí
+přípravě](prework/assignment.md), doplněné vysvětlením příkazů a řešením
+obvyklých problémů.
 
 ## Domácí příprava
 
 [Zadání domácí přípravy: základní Git workflow](prework/assignment.md)
-
-## Seminář
-
-Seminář se zaměřuje na to, jak se zdrojový kód stává spustitelným softwarem
-a jaké nástroje tento proces podporují. Studenti se seznámí s rozdílem mezi
-kompilací a interpretací, se základy verzování pomocí Gitu a s klíčovými funkcemi a workflow v IDE, které urychlují vývoj a ladění.
-
-### Osnova
-
-1. Kompilace vs. interpretace (jak se kód stává spustitelným)
-2. Nástroje: kompilátory, interprety, runtime prostředí
-3. Základy verzování pomocí Gitu
-4. Funkce IDE: editace, ladění, klávesové zkratky
-5. Doporučené workflow a osvědčené postupy
-
-Na semináři se společně projde [stejné zadání jako v domácí
-přípravě](prework/assignment.md). Jednotlivé kroky budou doplněny komentářem,
-podrobnějším vysvětlením příkazů a ukázkami řešení obvyklých problémů.
 
 ## Cvičení
 

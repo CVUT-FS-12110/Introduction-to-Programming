@@ -1,4 +1,4 @@
-# Seminář: úlohy
+# Komentované příklady: rozšíření
 
 
 ## Úloha 1 - Zadání
@@ -41,4 +41,3 @@ e)	Vytvoř hranici, kterou musí politické strany splnit, aby se dostali do par
 f)	Pomocí D’Hondt metody rozdistribuuj sedadla v poslanecké sněmovně pro jednotlivé politické strany. Urči, kolik sedadel dostane každá politická strana a informaci vytiskni.
 
 g)	Vytvoř sloupcový graf, kde je vizualizace výsledků hlasování pro jednotlivé politické strany.
-

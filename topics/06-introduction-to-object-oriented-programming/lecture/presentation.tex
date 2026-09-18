@@ -1,0 +1,485 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.multipart,babel}
+
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+\title{Úvod do objektově orientovaného programování}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}
+\institute{}
+\date{}
+\renewcommand{\headlineA}{}
+\renewcommand{\headlineB}{}
+\renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{CodeGreen}{RGB}{38,125,94}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\lstdefinestyle{python}{language=Python,basicstyle=\ttfamily\large,
+  keywordstyle=\color{CodeBlue}\bfseries,stringstyle=\color{CodeGreen},
+  commentstyle=\color{gray},showstringspaces=false,columns=fullflexible,keepspaces=true}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:03
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Rozlišit třídu, objekt a instanci.
+    \item Vytvořit třídu s atributy, konstruktorem a metodami.
+    \item Vysvětlit roli \texttt{self} a sledovat změny stavu objektu.
+    \item Číst jednoduchý diagram tříd a sekvenční diagram.
+    \item Použít dědičnost, přepsání metody a polymorfismus.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na co navazujeme?}
+  \begin{itemize}
+    \item Funkce pojmenovávají chování a přijímají parametry.
+    \item Seznamy a slovníky seskupují hodnoty.
+    \item Objekt spojí \term{data a operace nad nimi} do jednoho celku.
+  \end{itemize}
+  \begin{block}{OOP je nástroj organizace}
+    Ne každý program potřebuje vlastní třídy. Používáme je, když model zpřehlední.
+  \end{block}
+\end{frame}
+
+% 0:03--0:09
+\begin{frame}[fragile]{Samostatná data se mohou rozcházet}
+\begin{lstlisting}[style=python]
+names = ["Eva", "Petr"]
+balances = [700, 1200]
+
+balances[0] += 200
+\end{lstlisting}
+  \begin{itemize}
+    \item Vazbu mezi jménem a zůstatkem drží jen stejný index.
+    \item Operace nad účtem jsou rozptýlené po programu.
+    \item Chceme mít data i povolené změny pohromadě.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Třída a objekt}
+  \begin{description}
+    \item[Třída] předpis společné struktury a chování, například \texttt{BankAccount}.
+    \item[Objekt] konkrétní hodnota vytvořená podle třídy, například účet Evy.
+    \item[Instance] jiné označení objektu dané třídy.
+  \end{description}
+  \begin{block}{Jedna třída, mnoho objektů}
+    Každý objekt má vlastní stav, ale sdílí definici metod své třídy.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{První třída}
+\begin{lstlisting}[style=python]
+class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+\end{lstlisting}
+  Název třídy se podle konvence píše \texttt{CamelCase}; názvy metod jako funkce.
+\end{frame}
+
+\begin{frame}[fragile]{Vytvoření objektu a volání metody}
+\begin{lstlisting}[style=python]
+eva = BankAccount("Eva", 700)
+petr = BankAccount("Petr")
+
+eva.deposit(200)
+print(eva.balance)    # 900
+print(petr.balance)   # 0
+\end{lstlisting}
+  \begin{itemize}
+    \item Volání třídy vytvoří nový objekt.
+    \item Tečka zpřístupní atribut nebo metodu konkrétního objektu.
+  \end{itemize}
+\end{frame}
+
+% 0:09--0:16
+\begin{frame}{Atribut, metoda, stav}
+  \begin{description}
+    \item[Atribut] pojmenovaná hodnota patřící objektu: \texttt{eva.balance}.
+    \item[Metoda] funkce definovaná ve třídě: \texttt{eva.deposit(200)}.
+    \item[Stav] aktuální soubor hodnot atributů objektu.
+  \end{description}
+  Metoda může stav číst, změnit nebo z něj vypočítat výsledek.
+\end{frame}
+
+\begin{frame}[fragile]{Co dělá \texttt{\_\_init\_\_}?}
+\begin{lstlisting}[style=python]
+eva = BankAccount("Eva", 700)
+\end{lstlisting}
+  \begin{enumerate}
+    \item Python vytvoří nový prázdný objekt.
+    \item Automaticky zavolá \texttt{\_\_init\_\_(nový\_objekt, "Eva", 700)}.
+    \item \texttt{\_\_init\_\_} nastaví počáteční stav objektu.
+  \end{enumerate}
+  \begin{alertblock}{Přesný pojem}
+    \texttt{\_\_init\_\_} je inicializátor; v úvodním kurzu se často zjednodušeně nazývá konstruktor.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Co znamená \texttt{self}?}
+  \begin{block}{\texttt{self}}
+    Odkaz na konkrétní objekt, se kterým právě probíhá volání metody.
+  \end{block}
+  \begin{itemize}
+    \item \texttt{eva.deposit(200)} odpovídá \texttt{BankAccount.deposit(eva, 200)}.
+    \item Python první argument doplní při volání přes objekt.
+    \item Jméno \texttt{self} je konvence, kterou vždy dodržujeme.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Parametr a atribut nejsou totéž}
+\begin{lstlisting}[style=python]
+def __init__(self, owner, balance=0):
+    self.owner = owner
+    self.balance = balance
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{owner} je lokální parametr tohoto volání.
+    \item \texttt{self.owner} je atribut, který zůstane v objektu.
+    \item Pravá strana se vyhodnotí a levá určuje, kam hodnotu uložit.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Každý objekt má vlastní stav}
+\begin{lstlisting}[style=python]
+a = BankAccount("Eva", 700)
+b = BankAccount("Petr", 700)
+a.deposit(200)
+
+print(a.balance, b.balance)  # 900 700
+\end{lstlisting}
+  Proměnné \texttt{a} a \texttt{b} odkazují na dva různé objekty.
+\end{frame}
+
+% 0:16--0:23
+\begin{frame}[fragile]{Metoda může vracet hodnotu}
+\begin{lstlisting}[style=python]
+class BankAccount:
+    # __init__ and deposit are unchanged
+
+    def can_withdraw(self, amount):
+        return amount <= self.balance
+
+    def describe(self):
+        return f"{self.owner}: {self.balance:.2f} CZK"
+\end{lstlisting}
+  Stejně jako u funkcí rozlišujeme výpis pomocí \texttt{print} a návrat hodnoty.
+\end{frame}
+
+\begin{frame}[fragile]{Metoda může hlídat platné změny}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\small]
+def withdraw(self, amount):
+    if amount <= 0:
+        return False
+    if amount > self.balance:
+        return False
+    self.balance -= amount
+    return True
+\end{lstlisting}
+  \begin{block}{Zapouzdření}
+    Objekt nabízí operace, které chrání pravidla jeho stavu; uživatel nemusí znát vnitřní postup.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Metoda může volat jinou metodu}
+\begin{lstlisting}[style=python]
+def transfer_to(self, other, amount):
+    if not self.withdraw(amount):
+        return False
+    other.deposit(amount)
+    return True
+
+eva.transfer_to(petr, 300)
+\end{lstlisting}
+  \texttt{self} je odesílající účet; \texttt{other} odkazuje na jiný objekt.
+\end{frame}
+
+\begin{frame}{Objekt je také hodnota}
+  \begin{itemize}
+    \item Lze ho uložit do proměnné nebo seznamu.
+    \item Lze ho předat jako argument funkci či metodě.
+    \item Více proměnných může odkazovat na tentýž objekt.
+  \end{itemize}
+  \begin{alertblock}{Důsledek sdíleného odkazu}
+    Změna objektu přes jeden odkaz je vidět i přes druhý odkaz na stejný objekt.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Kdy třída pomáhá?}
+\begin{lstlisting}[style=python]
+accounts = [
+    BankAccount("Eva", 700),
+    BankAccount("Petr", 1200),
+    BankAccount("Jana", 300),
+]
+
+for account in accounts:
+    print(account.describe())
+\end{lstlisting}
+  Třída dává všem prvkům stejné rozhraní a každému vlastní stav.
+\end{frame}
+
+% 0:23--0:30
+\begin{frame}{UML diagram třídy}
+  \centering
+  \begin{tikzpicture}
+    \node[draw,rectangle split,rectangle split parts=3,align=left,
+      text width=62mm,fill=SoftGray] {
+      \centering\textbf{BankAccount}
+      \nodepart{second}
+      + owner: str\\
+      + balance: float
+      \nodepart{third}
+      + deposit(amount)\\
+      + withdraw(amount): bool\\
+      + describe(): str
+    };
+  \end{tikzpicture}
+  \begin{itemize}
+    \item Horní část: jméno třídy; prostřední: atributy; dolní: metody.
+    \item \texttt{+} značí veřejnou část rozhraní, \texttt{-} neveřejný detail.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{UML není kód}
+  \begin{itemize}
+    \item Diagram ukazuje strukturu a vztahy, ne přesný postup metod.
+    \item Typ za dvojtečkou pomáhá čtenáři, i když jej Python nemusí vynucovat.
+    \item Závorky rozlišují metodu od atributu.
+    \item Diagram třídy popisuje předpis, nikoli aktuální hodnoty jednoho objektu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Sekvenční diagram: pořadí volání}
+  \centering
+  \vspace{5mm}
+
+  \begin{tikzpicture}[>=Latex,scale=.76,transform shape]
+    \node (u) at (0,0) {program};
+    \node (e) at (4,0) {\texttt{eva:BankAccount}};
+    \node (p) at (8,0) {\texttt{petr:BankAccount}};
+    \draw[dashed] (u)--(0,-4.1); \draw[dashed] (e)--(4,-4.1); \draw[dashed] (p)--(8,-4.1);
+    \draw[->] (0,-.8)--node[above]{\texttt{transfer\_to(petr, 300)}}(4,-.8);
+    \draw[->] (4,-1.7)--node[above]{\texttt{withdraw(300)}}(4,-2.4);
+    \draw[->] (4,-3.0)--node[above]{\texttt{deposit(300)}}(8,-3.0);
+    \draw[->,dashed] (8,-3.5)--node[above]{návrat}(4,-3.5);
+  \end{tikzpicture}
+  \par\vspace{2mm}
+
+  Diagram zachycuje, kdo komu a v jakém pořadí posílá volání.
+\end{frame}
+
+\begin{frame}{Diagram tříd vs. sekvenční diagram}
+  \begin{columns}[T]
+    \begin{column}{.46\textwidth}
+      \begin{block}{Diagram tříd}
+        Statická struktura: třídy, atributy, metody a vztahy.
+      \end{block}
+    \end{column}
+    \begin{column}{.46\textwidth}
+      \begin{block}{Sekvenční diagram}
+        Dynamický průběh: konkrétní objekty a pořadí volání v čase.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 0:30--0:38
+\begin{frame}{Dědičnost: specializace existující třídy}
+  \begin{block}{Dědičnost}
+    Potomek přebírá chování rodiče a může ho rozšířit nebo upravit.
+  \end{block}
+  \begin{itemize}
+    \item \texttt{Employee} je obecný zaměstnanec.
+    \item \texttt{Doctor} je specializovaný zaměstnanec.
+    \item Dědičnost vyjadřuje vztah „je druhem“ (\emph{is-a}).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Základní zápis dědičnosti}
+\begin{lstlisting}[style=python]
+class Employee:
+    def describe(self):
+        return "employee"
+
+class Doctor(Employee):
+    def examine(self, patient):
+        return f"Examining {patient}"
+
+d = Doctor()
+print(d.describe())       # inherited method
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Přepsání metody (override)}
+\begin{lstlisting}[style=python]
+class Employee:
+    def describe(self):
+        return "employee"
+
+class Doctor(Employee):
+    def describe(self):
+        return "doctor"
+
+print(Doctor().describe())  # doctor
+\end{lstlisting}
+  Potomek definuje metodu stejného jména; při volání se použije jeho verze.
+\end{frame}
+
+\begin{frame}[fragile]{Vlastní \texttt{\_\_init\_\_} přepíše rodičovský}
+\begin{lstlisting}[style=python]
+class Employee:
+    def __init__(self, name):
+        self.name = name
+
+class Doctor(Employee):
+    def __init__(self, name, specialty):
+        super().__init__(name)
+        self.specialty = specialty
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{super()} zpřístupní implementaci rodiče.
+    \item Bez volání rodiče by atribut \texttt{name} nevznikl.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Dědičnost v UML}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=17mm,
+    cls/.style={draw,fill=SoftGray,minimum width=38mm,minimum height=12mm,align=center}]
+    \node[cls] (parent) {\textbf{Employee}\\\texttt{name}};
+    \node[cls,below=of parent] (child) {\textbf{Doctor}\\\texttt{specialty}};
+    \draw[-{Triangle[open,length=4mm,width=5mm]}] (child)--(parent);
+  \end{tikzpicture}
+  \begin{itemize}
+    \item Dutý trojúhelník míří od potomka k rodiči.
+    \item Potomek dědí členy rodiče a přidává vlastní.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Polymorfismus: stejné volání, různé chování}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\normalsize]
+class CashPayment:
+    def process(self):
+        return "Paid in cash"
+
+class CardPayment:
+    def process(self):
+        return "Paid by card"
+
+for payment in [CashPayment(), CardPayment()]:
+    print(payment.process())
+\end{lstlisting}
+  Kód používá společné rozhraní a nemusí větvit podle konkrétního typu.
+\end{frame}
+
+% 0:38--0:42
+\begin{frame}{Kompozice: objekt obsahuje jiné objekty}
+  \begin{itemize}
+    \item \texttt{Warehouse} uchovává seznam objektů \texttt{Item}.
+    \item \texttt{Appointment} odkazuje na objekt \texttt{Patient} i \texttt{Doctor}.
+    \item Kompozice vyjadřuje vztah „má“ (\emph{has-a}).
+  \end{itemize}
+  \begin{block}{Praktické pravidlo}
+    Pro vztah „má“ preferujte kompozici; dědičnost použijte pro skutečnou specializaci „je druhem“.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Speciální metody zapojují objekty do Pythonu}
+\begin{lstlisting}[style=python]
+class Vector2D:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+print(Vector2D(3, 4))    # (3, 4)
+\end{lstlisting}
+  Podobně \texttt{\_\_add\_\_} určuje chování operátoru \texttt{+} a \texttt{\_\_eq\_\_} porovnání \texttt{==}.
+\end{frame}
+
+\begin{frame}{Kdy třídu raději nevytvářet?}
+  \begin{itemize}
+    \item Jednorázový výpočet bez dlouhodobého stavu často stačí jako funkce.
+    \item Třída pouze s jednou metodou bez atributů může být zbytečná vrstva.
+    \item Nejprve se ptejte: existuje zde několik hodnot stejného druhu s vlastním stavem a chováním?
+  \end{itemize}
+  \begin{block}{Cíl není „použít OOP“}
+    Cílem je kód, jehož struktura odpovídá problému a dobře se mění.
+  \end{block}
+\end{frame}
+
+% 0:42--0:45
+\begin{frame}{Časté chyby}
+  \begin{itemize}
+    \item Chybí dvojtečka za \texttt{class} nebo \texttt{def}.
+    \item Metodě chybí první parametr \texttt{self}.
+    \item Místo \texttt{self.name} se použije neexistující lokální \texttt{name}.
+    \item Konstruktor se nejmenuje přesně \texttt{\_\_init\_\_}.
+    \item Metoda je jen pojmenována: \texttt{account.deposit} místo volání se závorkami.
+    \item Potomek přepíše \texttt{\_\_init\_\_}, ale neinicializuje rodičovské atributy.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rychlá kontrola porozumění}
+  \begin{enumerate}
+    \item Jaký je rozdíl mezi třídou a objektem?
+    \item Na co odkazuje \texttt{self} při \texttt{a.deposit(100)}?
+    \item Proč mají dva účty rozdílný zůstatek?
+    \item Co ukazuje diagram tříd a co sekvenční diagram?
+    \item Co se stane, když potomek definuje metodu stejného jména jako rodič?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Co využijete na cvičení?}
+  \begin{itemize}
+    \item \texttt{Rectangle}: atributy, metody a změna stavu.
+    \item \texttt{Vector2D}: metody vracející nové objekty a \texttt{\_\_str\_\_}.
+    \item \texttt{Warehouse} a \texttt{Item}: spolupráce objektů a kompozice.
+    \item Hierarchie tvarů: dědičnost, přepis metod a polymorfismus.
+    \item Pokročilé úlohy: další speciální metody a návrh více tříd.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Shrnutí}
+  \begin{itemize}
+    \item Třída je předpis, objekt je konkrétní instance s vlastním stavem.
+    \item Atributy uchovávají data, metody definují chování.
+    \item \texttt{self} označuje objekt aktuálního volání; \texttt{\_\_init\_\_} nastaví jeho počáteční stav.
+    \item UML diagram tříd popisuje strukturu, sekvenční diagram průběh volání.
+    \item Dědičnost specializuje, kompozice skládá a polymorfismus sjednocuje rozhraní.
+  \end{itemize}
+\end{frame}
+
+\end{document}

@@ -18,13 +18,9 @@ TODO
 
 ## Přednáška
 
-TODO: odkaz na online prezentaci
+Slajdy zatím nejsou k dispozici.
 
-## Seminář
-
-TODO
-
-Podpůrné příklady:
+Komentované příklady:
 
 1. [Problém globálního stavu](examples/global_variable_problem/README.md)
 1. [Explicitní předávání stavu](examples/explicit_state_passing/README.md)

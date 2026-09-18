@@ -1,8 +1,8 @@
-# Seminář: Funkce
+# Komentované příklady: Funkce
 
 _Připravujeme._
 
-Sem přijdou úlohy řešené společně na semináři k tématu [Funkce](../README.md).
+Sem přijdou společně řešené úlohy k tématu [Funkce](../README.md).
 
 
 Tento týden probereme funkce – ty pomáhají organizovat programy a zredukovat opakování.

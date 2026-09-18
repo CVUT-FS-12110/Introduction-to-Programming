@@ -22,19 +22,15 @@ kterým převedeme algoritmus z papíru do funkčního kódu.
 
 ## Přednáška
 
-_Připravujeme_ — [podklady k přednášce](lecture/lecture.md).
+- [Slajdy: Podmínky a cykly](lecture/presentation.pdf)
+- [Komentované příklady](seminar/README.md)
+
+Komentované příklady se soustředí na volbu mezi `for` a `while`, průchod
+seznamy a slovníky a sledování mezivýsledků při ladění cyklu.
 
 ## Domácí příprava
 
 [Zadání domácí přípravy: sledování stavu, podmínky a cykly](prework/README.md)
-
-## Seminář
-
-Seminář je zaměřený hlavně na cykly. Na společných úlohách si ukážeme,
-jak zvolit mezi `for` a `while`, jak procházet seznamy a slovníky a jak
-si při ladění cyklu pomoci vypisováním mezivýsledků.
-
-_Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 ## Cvičení
 

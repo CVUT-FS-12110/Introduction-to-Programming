@@ -27,7 +27,7 @@ Týden 4 — Smyčky a podmínky. Volební algoritmy jsou ideální aplikační 
 
 ---
 
-## Přednáška / Seminář (90 min)
+## Přednáška a komentované příklady (90 min)
 
 ### Doporučený průběh
 

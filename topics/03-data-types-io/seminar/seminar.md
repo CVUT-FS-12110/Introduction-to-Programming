@@ -1,4 +1,4 @@
-# Seminář: úlohy
+# Komentované příklady: úlohy
 
 
 ## Úloha 1 - Zadání
@@ -49,4 +49,3 @@ Ve vašem organizačním týmu si chcete všechny předešlé dokumenty zaheslov
 # Úkoly
 
 Určete si username a password a při tvorbě systému využijte while loop. Zeptejte se člověka, aby se pokusil přihlásit. Má max. 3 pokusy. Pokud zadá správné heslo, systém ukáže: Welcome. Pokud napíše heslo špatně, systém ukáže: Access denied.
-

@@ -1,5 +1,8 @@
 # Přednáška: Funkce
 
-_Připravujeme._
+- [Prezentace (PDF)](presentation.pdf)
+- [Zdrojový soubor prezentace](presentation.tex)
 
-Sem přijdou podklady k přednášce k tématu [Funkce](../README.md).
+Přednáška pokrývá definici a volání funkcí, parametry a argumenty,
+návratové hodnoty, rozsah platnosti, rozklad programu, funkce jako hodnoty
+a úvod do rekurze. Navazuje na ni [samostatné cvičení](../lab/assignment.md).

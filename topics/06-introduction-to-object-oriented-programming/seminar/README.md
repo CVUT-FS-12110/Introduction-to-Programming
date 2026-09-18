@@ -1,8 +1,8 @@
-# Seminář: Úvod do OOP
+# Komentované příklady: Úvod do OOP
 
 _Připravujeme._
 
-Sem přijdou úlohy řešené společně na semináři k tématu [Úvod do objektově orientovaného programování](../README.md).
+Sem přijdou společně řešené úlohy k tématu [Úvod do objektově orientovaného programování](../README.md).
 
 
 Objekty a základní principy Objektivně orientovaného programování (OOP) v Pythonu si projdeme tak, že si zadefinujeme třídy, vytvoříme objekty a porozumíme konstrukcím a základním OP konceptům. Toto téma je postaveno na znalosti funkcí a vyvinutějších struktur programů. 

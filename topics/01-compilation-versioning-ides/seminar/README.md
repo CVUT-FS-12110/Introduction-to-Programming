@@ -1,6 +1,6 @@
-# Seminář: základní Git workflow
+# Komentované příklady: základní Git workflow
 
-Na semináři se společně projde [zadání z domácí
+Ve společném komentovaném průchodu se projde [zadání z domácí
 přípravy](../prework/assignment.md). Jde o stejné zadání, studenti proto
 nezačínají novou úlohu.
 

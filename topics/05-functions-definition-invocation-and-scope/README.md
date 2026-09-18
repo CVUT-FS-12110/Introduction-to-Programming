@@ -21,20 +21,15 @@ se naučíme funkce psát, volat a rozumět tomu, **kde která proměnná platí
 
 ## Přednáška
 
-_Připravujeme_ — [podklady k přednášce](lecture/README.md).
+- [Slajdy: Funkce](lecture/presentation.pdf)
+- [Komentované příklady](seminar/README.md)
+
+V komentovaných příkladech rozdělíme delší program na funkce, porovnáme
+`print` a `return` a budeme sledovat lokální a globální rozsah platnosti.
 
 ## Domácí příprava
 
 [Zadání domácí přípravy: vlastní funkce a rozsah platnosti](prework/README.md)
-
-## Seminář
-
-Na semináři vezmeme delší program napsaný „v jednom kuse“ a společně ho
-rozdělíme na funkce. Ukážeme si rozdíl mezi funkcí, která něco vypíše,
-a funkcí, která hodnotu vrátí, a na příkladech si vyzkoušíme, co se stane
-s proměnnou uvnitř a vně funkce.
-
-_Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 ## Cvičení
 

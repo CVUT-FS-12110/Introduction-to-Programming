@@ -4,7 +4,9 @@
 
 - Každá prezentace má být navržena přibližně na 45 minut výuky.
 - Pro 45minutovou přednášku počítejte orientačně s 25–35 slajdy. Upřednostňujte více stručných slajdů, mezi kterými lze rychle přecházet, před několika přeplněnými slajdy.
-- Na přednášku navazuje 90minutový seminář a 90minutové cvičení, proto se soustřeďte především na teorii, definice a vztahy mezi pojmy.
+- Výukový blok tvoří přibližně 45 minut slajdů a 90 minut komentovaných
+  příkladů, na které navazuje 90minutové samostatné cvičení. Slajdy proto
+  soustřeďte především na teorii, definice a vztahy mezi pojmy.
 - Pro sazbu používejte [projektovou LaTeXovou šablonu](../utils/presentation-template/README.md), která vychází z motivu ČVUT a nevyžaduje externí fonty.
 - Každé téma má vlastní prezentaci uloženou jako `topics/*/lecture/presentation.pdf`.
 - Ve stejné složce uchovávejte také všechny zdrojové soubory konkrétní prezentace, zejména soubor `.tex`, vlastní obrázky a případná data.

@@ -1,0 +1,449 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,babel}
+
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+\title{Funkce: definice, volání a rozsah platnosti}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}
+\institute{}
+\date{}
+\renewcommand{\headlineA}{}
+\renewcommand{\headlineB}{}
+\renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{CodeGreen}{RGB}{38,125,94}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\lstdefinestyle{python}{language=Python,basicstyle=\ttfamily\large,
+  keywordstyle=\color{CodeBlue}\bfseries,stringstyle=\color{CodeGreen},
+  commentstyle=\color{gray},showstringspaces=false,columns=fullflexible,keepspaces=true}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:03
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Definovat a zavolat vlastní funkci.
+    \item Rozlišit parametr, argument a návratovou hodnotu.
+    \item Předpovědět pořadí provádění programu s funkcemi.
+    \item Vysvětlit lokální a globální rozsah platnosti.
+    \item Rozdělit delší program na malé spolupracující části.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na co navazujeme?}
+  \begin{itemize}
+    \item Proměnné uchovávají hodnoty různých datových typů.
+    \item Podmínky rozhodují a cykly opakují příkazy.
+    \item Teď budeme celé kroky algoritmu \term{pojmenovávat a skládat}.
+  \end{itemize}
+  \begin{block}{Motivace}
+    Dobrá funkce převádí jasně určené vstupy na výstup a skrývá podrobnosti výpočtu.
+  \end{block}
+\end{frame}
+
+% 0:03--0:08
+\begin{frame}[fragile]{Když stejný výpočet píšeme opakovaně}
+\begin{lstlisting}[style=python]
+area_1 = 3.14159 * (d_1 / 2) ** 2
+area_2 = 3.14159 * (d_2 / 2) ** 2
+area_3 = 3.14159 * (d_3 / 2) ** 2
+\end{lstlisting}
+  \begin{itemize}
+    \item Oprava vzorce se musí provést na více místech.
+    \item Záměr kódu není pojmenovaný.
+    \item Snadno vzniknou mírně odlišné kopie.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Co je funkce?}
+  \begin{block}{Funkce}
+    Pojmenovaný blok příkazů, který lze opakovaně zavolat; může přijmout vstupy a vrátit výsledek.
+  \end{block}
+  \begin{itemize}
+    \item \term{Definice} popisuje, co se má při volání stát.
+    \item \term{Volání} spustí tělo funkce.
+    \item Název vyjadřuje účel: \texttt{circle\_area}, ne \texttt{do\_it}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Definice a volání}
+\begin{lstlisting}[style=python]
+def circle_area(diameter):
+    radius = diameter / 2
+    return 3.14159 * radius ** 2
+
+area = circle_area(0.06)
+print(area)
+\end{lstlisting}
+  \begin{itemize}
+    \item Za hlavičkou \texttt{def} je dvojtečka.
+    \item Odsazení vymezuje tělo funkce.
+    \item Závorky ve volání jsou podstatné: \texttt{circle\_area(0.06)}.
+  \end{itemize}
+\end{frame}
+
+% 0:08--0:15
+\begin{frame}[fragile]{Definice sama tělo nespustí}
+\begin{lstlisting}[style=python]
+def greet(name):
+    print("Hello", name)    # runs only when called
+
+print("Before")
+greet("Eva")
+print("Po")
+\end{lstlisting}
+  \begin{block}{Výstup}
+    \texttt{Před}\quad $\rightarrow$ \quad\texttt{Ahoj Eva}\quad $\rightarrow$ \quad\texttt{Po}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Jak proběhne volání?}
+  \centering
+  \begin{tikzpicture}[node distance=6mm,>=Latex,scale=.86,transform shape,
+    box/.style={draw,rounded corners,fill=SoftGray,minimum width=34mm,minimum height=9mm,align=center}]
+    \node[box] (call) {\texttt{circle\_area(0.06)}};
+    \node[box,right=of call] (bind) {\texttt{diameter = 0.06}};
+    \node[box,right=of bind] (body) {provedení těla};
+    \node[box,right=of body] (ret) {\texttt{return} předá výsledek};
+    \draw[->] (call)--(bind); \draw[->] (bind)--(body); \draw[->] (body)--(ret);
+  \end{tikzpicture}
+  \vspace{4mm}
+
+  Každé volání získá vlastní lokální proměnné. Po návratu program pokračuje za místem volání.
+\end{frame}
+
+\begin{frame}{Parametr není argument}
+  \begin{description}
+    \item[Parametr] jméno vstupu v definici funkce: \texttt{diameter}
+    \item[Argument] konkrétní hodnota předaná při volání: \texttt{0.06}
+  \end{description}
+  \begin{block}{Při volání}
+    Argument se přiřadí odpovídajícímu parametru a vznikne lokální proměnná.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Více parametrů: záleží na pořadí}
+\begin{lstlisting}[style=python]
+def tube_mass(d_out, d_in, length, density):
+    area = circle_area(d_out) - circle_area(d_in)
+    return area * length * density
+
+mass = tube_mass(0.06, 0.05, 6, 7850)
+\end{lstlisting}
+  Poziční argumenty se přiřazují zleva doprava.
+\end{frame}
+
+\begin{frame}[fragile]{Výchozí a pojmenované argumenty}
+\begin{lstlisting}[style=python]
+def tube_mass(d_out, d_in, length, density=7850):
+    area = circle_area(d_out) - circle_area(d_in)
+    return area * length * density
+
+steel = tube_mass(0.06, 0.05, 6)
+aluminium = tube_mass(0.06, 0.05, 6,
+                      density=2700)
+\end{lstlisting}
+  \begin{itemize}
+    \item Výchozí hodnota dovolí argument vynechat.
+    \item Pojmenovaný argument zvyšuje čitelnost volání.
+  \end{itemize}
+\end{frame}
+
+% 0:15--0:22
+\begin{frame}[fragile]{\texttt{print} a \texttt{return} nejsou totéž}
+\begin{lstlisting}[style=python]
+def double_print(x):
+    print(x * 2)
+
+def double_return(x):
+    return x * 2
+
+a = double_print(5)   # vytiskne 10, a je None
+b = double_return(5)  # nic nevytiskne, b je 10
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Návratová hodnota se dá skládat}
+  \begin{itemize}
+    \item uložit: \texttt{area = circle\_area(0.06)},
+    \item rovnou použít: \texttt{mass = circle\_area(d) * length * density},
+    \item předat jiné funkci: \texttt{print(circle\_area(d))},
+    \item otestovat bez čtení výpisu.
+  \end{itemize}
+  \begin{alertblock}{Bez explicitního \texttt{return}}
+    Python vrátí speciální hodnotu \texttt{None}.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{return} funkci okamžitě ukončí}
+\begin{lstlisting}[style=python]
+def safe_divide(a, b):
+    if b == 0:
+        return None
+    return a / b
+    print("Sem se program nikdy nedostane")
+\end{lstlisting}
+  \begin{itemize}
+    \item První provedený \texttt{return} předá výsledek volajícímu.
+    \item Kód za ním se v dané větvi neprovede.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Více výsledků: ve skutečnosti jedna n-tice}
+\begin{lstlisting}[style=python]
+def min_max(values):
+    smallest = largest = values[0]
+    for value in values[1:]:
+        if value < smallest:
+            smallest = value
+        if value > largest:
+            largest = value
+    return smallest, largest
+
+low, high = min_max([4, 1, 9, 3])
+\end{lstlisting}
+\end{frame}
+
+% 0:22--0:29
+\begin{frame}{Rozsah platnosti (scope)}
+  \begin{block}{Lokální jméno}
+    Vzniká uvnitř funkce a zvenčí není dostupné.
+  \end{block}
+  \begin{block}{Globální jméno}
+    Je definované na úrovni modulu; funkce ho může číst.
+  \end{block}
+  Stejné jméno může v různých rozsazích označovat různé proměnné.
+\end{frame}
+
+\begin{frame}[fragile]{Lokální proměnná zakryje globální}
+\begin{lstlisting}[style=python]
+x = 10
+
+def change(x):
+    x = x + 1
+    print(x)
+
+change(5)  # 6
+print(x)   # 10
+\end{lstlisting}
+  Parametr \texttt{x} je při každém volání nová lokální proměnná.
+\end{frame}
+
+\begin{frame}[fragile]{Proč se vyhýbat změnám globálního stavu?}
+\begin{lstlisting}[style=python]
+total = 0
+
+def add_bad(value):
+    global total
+    total += value
+
+def add_good(total, value):
+    return total + value
+\end{lstlisting}
+  \begin{itemize}
+    \item Skrytá závislost ztěžuje čtení a testování.
+    \item Výsledek čistší funkce závisí jen na předaných argumentech.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Pozor: měnitelný argument může funkce změnit}
+\begin{lstlisting}[style=python]
+def add_measurement(values, value):
+    values.append(value)
+
+data = [2, 4]
+add_measurement(data, 6)
+print(data)                 # [2, 4, 6]
+\end{lstlisting}
+  \begin{alertblock}{Důvod}
+    Parametr \texttt{values} odkazuje na stejný seznam jako \texttt{data}. Pokud změnu nechceme, pracujeme s kopií.
+  \end{alertblock}
+\end{frame}
+
+% 0:29--0:36
+\begin{frame}{Jak poznat dobrou funkci?}
+  \begin{itemize}
+    \item Má jeden jasný účel a výstižné slovesné jméno.
+    \item Vstupy dostává parametry; výsledek vrací.
+    \item Nespoléhá zbytečně na globální proměnné.
+    \item Je krátká natolik, že ji lze přečíst jako jeden krok algoritmu.
+    \item Rozhraní je stabilnější než vnitřní postup výpočtu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Funkce skládáme do většího řešení}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\small]
+def summary(values):
+    low, high = min_max(values)
+    return {
+        "mean": mean(values),
+        "median": median(values),
+        "min": low,
+        "max": high,
+    }
+\end{lstlisting}
+  \begin{block}{Dekompozice}
+    Složitý problém rozdělíme na menší části s jasným rozhraním.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Vstup a výstup oddělíme od výpočtu}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\normalsize]
+def celsius_to_fahrenheit(value):
+    return value * 9 / 5 + 32
+
+def main():
+    value = float(input("Temperature in C: "))
+    result = celsius_to_fahrenheit(value)
+    print(result)
+
+if __name__ == "__main__":
+    main()
+\end{lstlisting}
+  Výpočet lze znovu použít i ověřit bez klávesnice a obrazovky.
+\end{frame}
+
+\begin{frame}[fragile]{Dokumentace funkce: rozhraní před detaily}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\normalsize]
+def tube_mass(d_out, d_in, length, density=7850):
+    """Return the mass of a hollow tube in kilograms.
+
+    Dimensions are in metres, density in kg/m^3.
+    """
+    area = circle_area(d_out) - circle_area(d_in)
+    return area * length * density
+\end{lstlisting}
+  \term{Docstring} říká, co funkce očekává a vrací; neopisuje každý řádek.
+\end{frame}
+
+% 0:36--0:41
+\begin{frame}{Funkce ve vývojovém diagramu}
+  \centering
+  \vspace{4mm}
+
+  \begin{tikzpicture}[node distance=4mm,>=Latex,scale=.72,transform shape,
+    start/.style={draw,ellipse,fill=SoftGray,minimum width=37mm,align=center},
+    process/.style={draw,rectangle,fill=SoftGray,minimum width=37mm,minimum height=8mm,align=center},
+    decision/.style={draw,diamond,aspect=2,fill=SoftGray,align=center}]
+    \node[start] (s) {Funkce \texttt{absolute(x)}};
+    \node[decision,below=of s] (d) {$x < 0$?};
+    \node[process,below left=7mm and 12mm of d] (neg) {$result=-x$};
+    \node[process,below right=7mm and 12mm of d] (pos) {$result=x$};
+    \node[start,below=16mm of d] (r) {Návrat \texttt{result}};
+    \draw[->] (s)--(d); \draw[->] (d)--node[left]{ano}(neg); \draw[->] (d)--node[right]{ne}(pos);
+    \draw[->] (neg) to[out=-90,in=180] (r);
+    \draw[->] (pos) to[out=-90,in=0] (r);
+  \end{tikzpicture}
+  \begin{itemize}
+    \item Začátek nese hlavičku funkce, konec její návrat.
+    \item Diagram zobrazuje tok uvnitř jednoho volání.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Funkce lze předat jako argument}
+\begin{lstlisting}[style=python]
+def apply_twice(function, value):
+    return function(function(value))
+
+def double(x):
+    return 2 * x
+
+print(apply_twice(double, 3))  # 12
+\end{lstlisting}
+  Bez závorek \texttt{double} označuje samotnou funkci; \texttt{double(3)} je její volání.
+\end{frame}
+
+\begin{frame}[fragile]{Rekurze: funkce volá sama sebe}
+\begin{lstlisting}[style=python]
+def factorial(n):
+    if n == 0:          # base case
+        return 1
+    return n * factorial(n - 1)
+\end{lstlisting}
+  \begin{itemize}
+    \item Základní případ zastaví další volání.
+    \item Rekurzivní krok převádí problém na menší instanci.
+    \item \texttt{factorial(3)} čeká na \texttt{factorial(2)}, ta na \texttt{factorial(1)} atd.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rekurze není automaticky rychlá}
+  \begin{itemize}
+    \item Každé volání má vlastní parametry a lokální proměnné.
+    \item Naivní Fibonacciho funkce opakovaně počítá stejné podproblémy.
+    \item Pomoci může iterace nebo \term{memoizace}: uložení už spočítaných výsledků.
+  \end{itemize}
+  \begin{alertblock}{Nejdřív správnost}
+    Vždy musí existovat základní případ a každý krok se k němu musí přibližovat.
+  \end{alertblock}
+\end{frame}
+
+% 0:41--0:45
+\begin{frame}{Časté chyby}
+  \begin{itemize}
+    \item Chybí dvojtečka nebo odsazení za \texttt{def}.
+    \item Funkce je pouze pojmenovaná, ale nejsou použity závorky pro volání.
+    \item Záměna \texttt{print} a \texttt{return}.
+    \item Argumenty jsou v jiném pořadí než parametry.
+    \item Použití lokální proměnné mimo funkci.
+    \item Rekurze nemá dosažitelný základní případ.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rychlá kontrola porozumění}
+  \begin{enumerate}
+    \item Co vrátí funkce bez příkazu \texttt{return}?
+    \item Jaký je rozdíl mezi parametrem a argumentem?
+    \item Proč se globální \texttt{x} nezmění, když má funkce parametr \texttt{x}?
+    \item Proč má výpočet hodnotu vracet místo jejího vypsání?
+    \item Co musí mít každá rekurzivní funkce?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Co využijete na cvičení?}
+  \begin{itemize}
+    \item Skládání funkcí: obsah kruhu $\rightarrow$ průřez $\rightarrow$ hmotnost trubky.
+    \item Výchozí a pojmenované argumenty pro hustotu materiálu.
+    \item Více návratových hodnot a funkce nad seznamem měření.
+    \item Čisté výpočty oddělené od \texttt{input} a \texttt{print} v \texttt{main()}.
+    \item Pro pokročilé: funkce jako argument a rekurze.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Shrnutí}
+  \begin{itemize}
+    \item \texttt{def} vytvoří funkci; závorky ji zavolají.
+    \item Parametry tvoří rozhraní, argumenty dodávají konkrétní hodnoty.
+    \item \texttt{return} předá hodnotu volajícímu a ukončí funkci.
+    \item Lokální proměnné patří jednomu volání; globální stav používejte střídmě.
+    \item Malé funkce dovolují program číst, skládat a ověřovat po částech.
+  \end{itemize}
+\end{frame}
+
+\end{document}

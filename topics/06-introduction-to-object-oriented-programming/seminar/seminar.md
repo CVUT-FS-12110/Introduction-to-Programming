@@ -1,4 +1,4 @@
-# Seminář: úlohy
+# Komentované příklady: úlohy
 
 ## Úloha 1 - Zadání
 

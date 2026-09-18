@@ -1,4 +1,4 @@
-# Úkoly
+# Domácí příprava: práce se soubory
 
 ## Úloha na doma — osobní poznámkový soubor
 
@@ -25,7 +25,7 @@ Program musí používat:
 
 ### Smysl domácí přípravy
 
-Studenti si ještě před seminářem sáhnou na:
+Ještě před výukou si vyzkoušíte:
 
 - rozdíl mezi „soubor existuje na disku“ a „program s ním pracuje“,
 - konce řádků a prázdné řádky,

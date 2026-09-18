@@ -1,11 +1,11 @@
-# Seminář: ukládání dat a serializace
+# Komentované příklady: ukládání dat a serializace
 
 V minulém tématu jste pracovali se soubory jako s textem.  
-V tomto semináři půjdeme o krok dál: naučíte se ukládat **strukturovaná data** tak, aby je bylo možné později znovu načíst a dál zpracovávat.
+V těchto příkladech půjdeme o krok dál: naučíte se ukládat **strukturovaná data** tak, aby je bylo možné později znovu načíst a dál zpracovávat.
 
-## Co byste měli po semináři umět
+## Co byste měli po společném průchodu umět
 
-Po semináři byste měli zvládnout:
+Po společném průchodu byste měli zvládnout:
 
 - vysvětlit, co znamená serializace a deserializace,
 - uložit Python data do JSONu a znovu je načíst,

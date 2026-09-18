@@ -22,20 +22,15 @@ V této lekci si ukážeme, jak takové objekty v Pythonu vytvářet.
 
 ## Přednáška
 
-_Připravujeme_ — [podklady k přednášce](lecture/README.md).
+- [Slajdy: Úvod do OOP](lecture/presentation.pdf)
+- [Komentované příklady](seminar/README.md)
+
+V komentovaných příkladech postupně vytvoříme třídu s konstruktorem,
+atributy a metodami, několik nezávislých objektů a jednoduchou dědičnost.
 
 ## Domácí příprava
 
 [Zadání domácí přípravy: třídy a objekty](prework/README.md)
-
-## Seminář
-
-Na semináři si postupně postavíme jednu vlastní třídu — od prázdné
-kostry přes konstruktor a atributy až po metody. Vyzkoušíme si, jak
-z jedné třídy vzniká více nezávislých objektů, a na jednoduchém příkladu
-si ukážeme dědičnost.
-
-_Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 ## Cvičení
 

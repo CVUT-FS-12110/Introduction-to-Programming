@@ -12,8 +12,8 @@ a jak zkontrolovat, že vygenerovaný kód opravdu dělá, co má.
 - Základy objektově orientovaného programování
   ([téma Úvod do OOP](../06-introduction-to-object-oriented-programming/README.md))
 - Práce se soubory a instalace knihoven přes pip
-  ([Práce se soubory](../file-handling-and-file-io/README.md),
-  [Používání knihoven](../libraries-and-documentation/README.md))
+  ([Práce se soubory](../07-file-handling-and-file-io/README.md),
+  [Používání knihoven](../08-libraries-and-documentation/README.md))
 
 ## Cíle
 
@@ -27,19 +27,17 @@ a jak zkontrolovat, že vygenerovaný kód opravdu dělá, co má.
 
 ## Přednáška
 
-[Výkladový notebook](lecture/testing-fundamentals.ipynb) — od `assert`
+- [Výkladový notebook](lecture/testing-fundamentals.ipynb) — od `assert`
 přes pytest, edge cases, výjimky a testování tříd až po fixtures.
 Slouží i k samostudiu před cvičením.
+
+- [Komentované příklady](seminar/README.md)
 
 ## Domácí příprava
 
 [Pre-work notebook](prework/prework.ipynb) — 4 úkoly (40–50 minut).
 Výstupem je soubor `test_prework.py`, který se odevzdává do Moodlu
 před začátkem cvičení.
-
-## Seminář
-
-_Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 ## Cvičení
 

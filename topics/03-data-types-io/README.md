@@ -23,20 +23,16 @@ nabízí Python a jak program komunikuje s okolím pomocí vstupu a výstupu.
 
 ## Přednáška
 
-[Prezentace: Datové typy a vstup/výstup](lecture/presentation.pdf)
+- [Slajdy: Datové typy a vstup/výstup](lecture/presentation.pdf)
+- [Komentované příklady](seminar/README.md)
+
+V komentovaných příkladech si vyzkoušíte celočíselné dělení,
+zaokrouhlovací chyby typu `float`, převody pomocí `int()`, `float()` a
+`str()` a typické použití základních kontejnerů.
 
 ## Domácí příprava
 
 [Zadání domácí přípravy: typy, převody a vstup/výstup](prework/README.md)
-
-## Seminář
-
-Na semináři si vyzkoušíme, co se v paměti opravdu děje: jak se chová
-celočíselné dělení, kde vzniká zaokrouhlovací chyba u `float`, proč
-`"5" + 5` skončí chybou a jak správně použít `int()`, `float()` nebo `str()`.
-Dále projdeme čtyři základní kontejnery a jejich typické použití.
-
-_Zadání připravujeme_ — [úlohy na seminář](seminar/README.md).
 
 ## Cvičení
 

@@ -1,5 +1,5 @@
-# Seminář: Podmínky a cykly
+# Komentované příklady: Podmínky a cykly
 
 _Připravujeme._
 
-Sem přijdou úlohy řešené společně na semináři k tématu [Řízení chodu programu](../README.md).
+Sem přijdou společně řešené úlohy k tématu [Řízení chodu programu](../README.md).

@@ -1,6 +1,6 @@
-# Seminář: práce se soubory
+# Komentované příklady: práce se soubory
 
-V tomto semináři se naučíte používat soubory jako jednoduchý způsob, jak:
+V těchto příkladech se naučíte používat soubory jako jednoduchý způsob, jak:
 
 - načítat data do programu,
 - ukládat výsledky i po skončení programu,
@@ -8,9 +8,9 @@ V tomto semináři se naučíte používat soubory jako jednoduchý způsob, jak
 
 Budeme pracovat hlavně s textovými soubory. Na konci se krátce podíváme i na to, že některé objekty se mohou **chovat jako soubor**, i když ve skutečnosti nejsou uložené na disku.
 
-## Co byste měli po semináři umět
+## Co byste měli po společném průchodu umět
 
-Po semináři byste měli zvládnout:
+Po společném průchodu byste měli zvládnout:
 
 - otevřít soubor pro čtení nebo zápis,
 - rozlišit základní režimy otevření souboru,
@@ -357,5 +357,7 @@ Na cvičení na tento základ navážete úlohami, kde budete:
 
 - analyzovat textový soubor,
 - vytvářet jednoduchý deník,
-- převádět textový popis na strukturu složek a souborů,
-- pracovat s virtuálními soubory a ZIP archivy.
+- zpracovávat měření a bezpečně pracovat s cestami,
+- generovat SVG výstup,
+- porovnávat textové a binární soubory,
+- testovat souborové funkce pomocí virtuálních souborů.

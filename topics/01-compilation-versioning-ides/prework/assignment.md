@@ -1,4 +1,4 @@
-# Domácí příprava a seminář: základní Git workflow
+# Domácí příprava: základní Git workflow
 
 ## Domácí příprava
 
@@ -6,9 +6,9 @@
 - na hodině budete pracovat z nuly dle instrukcí
 - domácí příprava vás má připravit na rychlé řešení úkolů
 
-Na semináři se projde stejné zadání krok za krokem. Vyučující jednotlivé
+V komentovaných příkladech se projde stejné zadání krok za krokem. Vyučující jednotlivé
 operace okomentuje, podrobněji vysvětlí jejich význam a ukáže řešení častých
-problémů. Před seminářem se proto pokuste celé zadání dokončit samostatně a
+problémů. Před výukou se proto pokuste celé zadání dokončit samostatně a
 poznamenejte si kroky, kterým nerozumíte nebo u kterých jste se zasekli.
 
 ## Co a jak odevzdat

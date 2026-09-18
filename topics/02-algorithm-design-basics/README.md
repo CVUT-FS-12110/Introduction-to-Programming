@@ -13,19 +13,16 @@
 
 ## Přednáška
 
-[Prezentace: Základy návrhu algoritmů](lecture/presentation.pdf)
+- [Slajdy: Základy návrhu algoritmů](lecture/presentation.pdf)
+- [Komentovaný příklad: Collatzova posloupnost](seminar/collatz.md)
+- [Návod k vytvoření diagramu v Mermaid](seminar/collatz_mermaid.md)
+
+Komentované příklady procvičují rozklad problému, pseudokód, vývojové
+diagramy a základní úvahy o správnosti a časové složitosti.
 
 ## Domácí příprava
 
 [Zadání domácí přípravy](prework/prework.md)
-
-## Seminář
-
-Studenti si procvičí algoritmické myšlení: definování problému,
-rozklad úloh a vyjadřování řešení pomocí pseudokódu a vývojových
-diagramů. Důraz je kladen na srozumitelnost, správnost a základní úvahy o časové složitosti (intuice big-O) pro běžné programátorské úlohy.
-
-1. [Collatzova posloupnost](seminar/collatz.md) — [návod k vytvoření diagramu v Mermaid](seminar/collatz_mermaid.md)
 
 ## Cvičení
 

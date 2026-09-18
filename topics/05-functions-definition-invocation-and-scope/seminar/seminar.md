@@ -1,4 +1,4 @@
-# Seminář: úlohy
+# Komentované příklady: úlohy
 
 ## Úloha 1 - Zadání
 
@@ -27,4 +27,3 @@ h)	Pro účastníka vygeneruj speciální ID. Např. ve formě křesní jméno +
 (Příklad: Martin narozen 9.2.2003  MARTIN090203)
 
 i)	Vytiskni jména všech účastníků na nový řádek. Nápověda: Vytvoř funkci s loop.
-

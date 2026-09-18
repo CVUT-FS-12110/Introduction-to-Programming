@@ -13,7 +13,7 @@ Díky modulu `typing` (nebo zabudovaným typům jako `list`, `dict` v novější
 
 Zatímco typové nápovědy řeší **co** (jaké typy dat), docstringy řeší **proč a jak**.
 - Píší se hned pod definici funkce pomocí trojitých uvozovek `""" ... """`.
-- Řídí se konvencí [PEP 257](https://peps.python.org/pep-0257/.
+- Řídí se konvencí [PEP 257](https://peps.python.org/pep-0257/).
 - IDE je umí hezky zobrazit.
 - Z docstringů lze automaticky generovat celou HTML dokumentaci k projektu (nástroje jako Sphinx, pdoc).
 

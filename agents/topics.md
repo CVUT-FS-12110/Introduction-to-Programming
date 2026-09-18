@@ -52,23 +52,25 @@ Patří sem práce, kterou má student udělat nebo alespoň zkusit před výuko
 
 - Uveďte cíl, předpoklady, zadání a očekávanou přípravu.
 - Neprozrazujte řešení, pokud o ně uživatel výslovně nepožádá.
-- Prework může být stejný jako úloha probíraná na semináři nebo může
+- Prework může být stejný jako úloha probíraná v komentovaných příkladech nebo může
   připravovat část následného cvičení.
-- Pokud je prework stejný jako seminární úloha, udržujte jedno autoritativní
-  zadání a ze semináře na něj odkažte. Nekopírujte dvě verze textu, které by se
+- Pokud je prework stejný jako společně probíraná úloha, udržujte jedno autoritativní
+  zadání a z komentovaných příkladů na něj odkažte. Nekopírujte dvě verze textu, které by se
   mohly časem rozejít.
 
-### `seminar/` — komentovaný průchod
+### `seminar/` — komentované příklady k přednášce
 
-Na semináři pracuje především vyučující společně se studenty. Materiál má být
-podrobný a vysvětlující.
+Název složky je interní organizační označení. Ve studentských textech se slovo
+„seminář“ nepoužívá; obsah se vždy označuje jako **komentované příklady** a je
+součástí bloku **Přednáška**. Materiál vede vyučující společně se studenty a má
+být podrobný a vysvětlující.
 
 - Popište postup, souvislosti a důvody jednotlivých kroků.
 - Uveďte časté chyby, otázky k diskusi a místa vhodná k demonstraci.
-- Pokud seminář prochází prework, napište to výslovně a odkažte na stejné
+- Pokud komentované příklady procházejí prework, napište to výslovně a odkažte na stejné
   zadání.
-- Návody a referenční taháky používané při semináři ukládejte sem.
-- Veřejné seminární podklady nesmějí obsahovat skryté učitelské řešení.
+- Návody a referenční taháky používané při komentovaném průchodu ukládejte sem.
+- Veřejné komentované příklady nesmějí obsahovat skryté učitelské řešení.
 
 ### `lab/` — samostatné cvičení
 
@@ -91,22 +93,24 @@ studentské podklady. Doporučené pořadí:
 1. název tématu,
 2. prerekvizity,
 3. cíle,
-4. přednáška,
+4. přednáška (slajdy a komentované příklady v jednom bloku),
 5. domácí příprava,
-6. seminář,
-7. cvičení,
-8. zdroje.
+6. cvičení,
+7. zdroje.
 
 Pravidla pro odkazy:
 
 - Používejte relativní odkazy, například
   `lecture/presentation.pdf`, `prework/assignment.md` nebo `lab/task.md`.
+- Pokud existují slajdy, musí na ně blok `Přednáška` přímo odkazovat.
+- Komentované příklady ze složky `seminar/` odkazujte ve stejném bloku
+  `Přednáška`; nevytvářejte pro ně ve studentském README samostatnou sekci.
 - Každý studentský podklad musí být z hlavního `README.md` dosažitelný.
 - Návod vztahující se ke konkrétnímu zadání odkažte také přímo ze zadání.
 - Po přesunu souborů vyhledejte v celém repozitáři starou cestu pomocí `rg` a
   opravte všechny výskyty.
-- Nadpisy v README rozdělte na `Seminář` a `Cvičení`; neslučujte je do jedné
-  sekce.
+- Ve studentských README ani názvech veřejných materiálů nepoužívejte slovo
+  „seminář“. Používejte označení `Komentované příklady`.
 
 ## Veřejné a učitelské materiály
 
@@ -142,6 +146,8 @@ Před dokončením ověřte:
 - prázdné požadované složky mají `.gitkeep`,
 - žádná cesta stále neodkazuje na staré umístění souboru,
 - všechny relativní odkazy vedou na existující soubory,
+- blok `Přednáška` odkazuje na existující slajdy a komentované příklady,
+- studentské texty neobsahují označení „seminář“,
 - veřejný repozitář neobsahuje skryté řešení ani učitelské poznámky,
 - čeština, názvosloví a názvy souborů jsou konzistentní,
 - `git diff --check` nehlásí chyby formátování,

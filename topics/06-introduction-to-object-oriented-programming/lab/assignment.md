@@ -137,7 +137,7 @@ Napište třídu `Matrix`, která uchovává matici jako seznam seznamů:
 
 **Rozšíření:** Doplňte výpočet determinantu (rozvojem podle řádku,
 rekurzivně) a inverzní matice. Pak s nimi vyřešte obvod s rezistory
-ze semináře k tématu
+z komentovaných příkladů k tématu
 [Datové typy a vstup/výstup](../../03-data-types-io/README.md).
 
 ## 7. Piškvorky ★★★★

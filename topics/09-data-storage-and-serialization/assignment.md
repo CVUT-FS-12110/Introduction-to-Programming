@@ -47,9 +47,9 @@ Po načtení obou souborů si všimněte:
 
 ### Smysl domácí přípravy
 
-Před seminářem si vyzkoušíte:
+Před výukou si vyzkoušíte:
 
 - uložit stejná data dvěma různými způsoby,
 - použít základní funkce modulů `json` a `csv`,
 - ověřit, že při čtení CSV se hodnoty načítají jako text,
-- připravit si konkrétní zkušenost, ke které se na semináři vrátíme.
+- připravit si konkrétní zkušenost, ke které se při výkladu vrátíme.
