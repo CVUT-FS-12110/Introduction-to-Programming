@@ -27,7 +27,10 @@ diagramy a základní úvahy o správnosti a časové složitosti.
 ## Cvičení
 
 1. [Průměrná hodnota z čísel](lab/average_value.md)
-1. [Nakreslení přímky ze zadaného vektoru](lab/line_slope_ascii.md)
+1. [Převod teploty ze stupňů Celsia](lab/temperature_conversion.md)
+1. [Hledání největší hodnoty](lab/largest_value.md)
+1. [Počítání kladných, záporných a nulových hodnot](lab/count_number_types.md)
+1. [Nakreslení přímky ze zadaného vektoru — rozšiřující úloha](lab/line_slope_ascii.md)
 
 
 ## Zdroje
