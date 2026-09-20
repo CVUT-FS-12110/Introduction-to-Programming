@@ -20,11 +20,6 @@ poznamenejte si kroky, kterým nerozumíte nebo u kterých jste se zasekli.
   jehož veřejnou část přidáte do svého účtu na GitHubu. Postup vytvoření
   klíče a jeho přidání na GitHub si před výukou samostatně nastudujte.
 
-## Co a jak odevzdat
-
-- Odkaz na váš **veřejný GitHub repozitář**.
-- Odevzdejte v systému moodle.
-
 ## Úkol 1
 Postupujte přesně v daném pořadí.
 
