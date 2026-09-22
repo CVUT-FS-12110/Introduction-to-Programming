@@ -31,3 +31,4 @@ __pycache__/
 *.vrb
 *.xdv
 _minted-*/
+.DS_Store
