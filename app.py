@@ -1,1 +1,1 @@
-print("Hello, World!")
+jmeno = input()
