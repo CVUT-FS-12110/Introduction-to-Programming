@@ -1,6 +1,3 @@
-print ("Hello, World!")
+Jmeno = input("Jak se jmenuješ?")
+print("Ahoj " + Jmeno + "! Rád tě poznávám.")
 
-import numpy as np
-
-a = np.array([1, 2, 3])
-print(a)
