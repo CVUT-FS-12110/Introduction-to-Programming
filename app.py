@@ -1,1 +1,2 @@
-print('zadejte jméno:')
+x = input()
+print('Ahoj, ' + x)
