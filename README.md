@@ -16,3 +16,6 @@
 1. Běžně používané datové typy a třídy.
 1. Analýza výstupů programu (profiling)
 
+Krátký návod ke spuštění app.py:
+
+Otevri a zadej sve jmeno. Nasledne se nech pozdravit a zavri program.
