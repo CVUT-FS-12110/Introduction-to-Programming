@@ -16,3 +16,7 @@
 1. Běžně používané datové typy a třídy.
 1. Analýza výstupů programu (profiling)
 
+Guide to start the program
+1) Start the program
+2) Input your username
+3) Wait for your greeting
