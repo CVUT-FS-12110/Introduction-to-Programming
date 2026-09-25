@@ -2,6 +2,10 @@
 
 ## Témata
 
+#APP.PY navod
+
+Aplikaci spustis prikazem - python3 app.py 
+Po otazce napis jmeno, pote zmackni enter.
 1. [Kompilace a verzování](topics/01-compilation-versioning-ides/README.md)
 1. [Základy algoritmizace](topics/02-algorithm-design-basics/README.md)
 1. [Datové typy a vstup/výstup](topics/03-data-types-io/README.md)
