@@ -1,6 +1,5 @@
 # hello.py
-def main():
-    print("Hello, world!")
 
-if __name__ == "__main__":
-    main()
+name = input("Jak se jmenujes?")
+print(f"Ahoj, {name}")
+
