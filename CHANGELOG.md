@@ -1,1 +1,2 @@
 # Changelog
+- Přidán neformální pozdrav
