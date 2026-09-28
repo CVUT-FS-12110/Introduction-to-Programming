@@ -1,1 +1,1 @@
-print(1);
+x = input( );
