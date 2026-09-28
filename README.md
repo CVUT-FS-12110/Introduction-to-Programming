@@ -23,12 +23,8 @@
 
 
 Moje Aplikace
-
 Návod ke spuštění
-
 Program spustíte pomocí Pythonu 3 příkazem:
-
 bash
-
 python app.py
 
