@@ -1,2 +1,2 @@
 jmeno = input('Zadejte vaše jméno: ')
-print(f'Ahoj, {jmeno}!')
+print(f'Zdarec, {jmeno}!')
