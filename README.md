@@ -22,9 +22,9 @@
 
 
 
-Moje Aplikace
+Moje aplikace
 Návod ke spuštění
-Program spustíte pomocí Pythonu 3 příkazem:
+Program spustíte pomocí Pythonu 3 příkazem :
 bash
 python app.py
 
