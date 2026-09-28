@@ -1,3 +1,3 @@
-print('Ahoj svete')
-jmeno = input('David ')
+jmeno = input('Zadejte vaše jméno: ')
+jmeno = input('Zadejte vaše jméno: ')
 print(f'Ahoj, {jmeno}!')
