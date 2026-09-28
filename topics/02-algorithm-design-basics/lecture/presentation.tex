@@ -360,25 +360,29 @@ while n > 1:
   \]
 \end{frame}
 
-\begin{frame}{Big O: asymptotická horní mez}
-  \begin{block}{Definice}
-    \(T(n)\in O(g(n))\), pokud existují konstanty \(c>0\) a \(n_0\), že pro všechna \(n\geq n_0\) platí \(T(n)\leq c\,g(n)\).
-  \end{block}
+\begin{frame}{Jak číst Big O?}
   \begin{itemize}
-    \item Big O říká, že růst \(T\) není asymptoticky rychlejší než \(g\).
-    \item Formálně je \(3n+2\) také v \(O(n^2)\), ale těsnější mez je \(O(n)\).
-    \item V praxi se snažíme uvádět co nejtěsnější užitečnou mez.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Big O, Omega a Theta}
-  \begin{itemize}
-    \item \(O(g(n))\): asymptotická \textbf{horní} mez.
-    \item \(\Omega(g(n))\): asymptotická \textbf{dolní} mez.
-    \item \(\Theta(g(n))\): horní i dolní mez --- stejný řád růstu.
+    \item Big O popisuje, \textbf{jak roste množství práce}, když zvětšujeme vstup.
+    \item Neříká přesný počet sekund ani rychlost konkrétního počítače.
+    \item Zajímá nás hlavní trend, proto zanedbáváme konstanty a méně významné části.
   \end{itemize}
   \begin{block}{Příklad}
-    Pro \(T(n)=3n+2\) platí \(T(n)\in O(n)\), \(T(n)\in\Omega(n)\), tedy \(T(n)\in\Theta(n)\).
+    \(3n+7\) kroků zapisujeme jako \(O(n)\): s počtem prvků roste práce přibližně lineárně.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Tři jednoduché příklady}
+  \centering
+  \begin{tabular}{lll}
+    \textbf{Postup} & \textbf{Práce pro \(n\) prvků} & \textbf{Zápis} \\
+    \hline
+    přístup na známý index & jeden krok & \(O(1)\) \\
+    jeden průchod seznamem & nejvýše \(n\) kroků & \(O(n)\) \\
+    porovnání všech dvojic & přibližně \(n^2\) kroků & \(O(n^2)\) \\
+  \end{tabular}
+  \vspace{8mm}
+  \begin{block}{Otázka při odhadu}
+    Kolikrát se provede nejčastěji opakovaná operace, když má vstup \(n\) prvků?
   \end{block}
 \end{frame}
 
@@ -530,14 +534,11 @@ while n > 1:
     \node[flow,cylinder,shape border rotate=90,aspect=.3,minimum width=25mm] (db) {data};
     \node[flow,rectangle,double,double distance=1.5pt,
       minimum width=34mm,right=of db] (sub) {podprogram};
-    \node[flow,tape,tape bend bottom=out,tape bend top=none,
-      minimum width=28mm,right=of sub] (doc) {dokument};
   \end{tikzpicture}
   \vspace{7mm}
   \begin{itemize}
     \item Válec: uložená data nebo databáze.
     \item Obdélník s dvojitým okrajem: předem definovaný proces / podprogram.
-    \item Dokument: dokument nebo report.
     \item Pro jednoduché algoritmy obvykle stačí terminátor, proces, rozhodnutí, I/O a šipky.
   \end{itemize}
 \end{frame}
