@@ -55,3 +55,7 @@ Pokud vám zbude čas, věnujte ho pochopení a vylepšení programu výše.
 - [Dokumentace jazyka Python](https://docs.python.org/3/)
 - [Python Developer's Guide – compiler](https://devguide.python.org/internals/compiler/)
 - [GNU Compiler Collection – dokumentace](https://gcc.gnu.org/onlinedocs/)
+
+
+## app.py
+- Po spuštění pokračujte dle pokynů v příkazovém řadku. 
