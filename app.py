@@ -4,4 +4,4 @@ print (1)
 x = input()
 print(x)
 print("your age is " + x)
-
+print(2)
