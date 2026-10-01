@@ -5,3 +5,5 @@ x = input()
 print(x)
 print("your age is " + x)
 
+print(input("hii bye"))
+print(input("yes daddy"))
