@@ -15,4 +15,6 @@
 1. Sdílené proměnné a komunikace mezi částmi programu.
 1. Běžně používané datové typy a třídy.
 1. Analýza výstupů programu (profiling)
+## Spuštění programu
+Pro spuštění programu spusťte v terminálu příkaz: `python app.py`
 
