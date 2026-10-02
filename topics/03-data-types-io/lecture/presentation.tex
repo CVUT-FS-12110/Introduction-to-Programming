@@ -73,9 +73,6 @@
     \item Proměnná dovoluje hodnotu pojmenovat a později ji použít.
     \item Dnes se ptáme, \textbf{jaký význam hodnota má} a \textbf{jak je uložena}.
   \end{itemize}
-  \begin{alertblock}{Dnes neopakujeme řízení toku}
-    Podmínky a cykly procvičíme na navazujícím semináři a cvičení.
-  \end{alertblock}
 \end{frame}
 
 % 0:03--0:11
@@ -164,6 +161,38 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}{Stejné bity, jiný význam}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.58\textwidth}
+      \centering
+      \renewcommand{\arraystretch}{1.15}
+      \begin{tabular}{c|c|c}
+        \textbf{Bity} & \textbf{Bez znaménka} & \textbf{Dvojkový doplněk} \\
+        \hline
+        \texttt{000} & 0 & \textbf{0} \\
+        \texttt{001} & 1 & \textbf{+1} \\
+        \texttt{010} & 2 & \textbf{+2} \\
+        \texttt{011} & 3 & \textbf{+3} \\
+        \hline
+        \texttt{100} & 4 & \textbf{--4} \\
+        \texttt{101} & 5 & \textbf{--3} \\
+        \texttt{110} & 6 & \textbf{--2} \\
+        \texttt{111} & 7 & \textbf{--1} \\
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{block}{Tři bity}
+        \begin{itemize}
+          \item bez znaménka: 0 až 7,
+          \item dvojkový doplněk: --4 až +3.
+        \end{itemize}
+      \end{block}
+      \vspace{3mm}
+      Stejný zápis \texttt{100} tedy znamená buď \textbf{4}, nebo \textbf{--4} podle zvoleného typu.
+    \end{column}
+  \end{columns}
+\end{frame}
+
 \begin{frame}{Omezený počet bitů znamená omezený rozsah}
   \begin{itemize}
     \item Výsledek mimo rozsah pevného typu způsobí \term{přetečení} (overflow).
@@ -218,12 +247,12 @@
 \begin{frame}{Co jednotlivé části znamenají?}
   Pro běžná normalizovaná čísla zjednodušeně:
   \[
-    (-1)^{\text{znaménko}}\times 1{,}\text{zlomek}\times 2^{\text{posunutý exponent}}
+    (-1)^s \times (1 + \text{zlomková část}) \times 2^{E-\mathrm{bias}}
   \]
   \begin{itemize}
-    \item Znaménko volí kladnou nebo zápornou hodnotu.
-    \item Exponent určuje řád neboli přibližnou velikost.
-    \item Zlomková část nese významné binární číslice.
+    \item \(s\) je znaménkový bit: 0 pro kladnou a 1 pro zápornou hodnotu.
+    \item \(E\) je uložený exponent; \(\mathrm{bias}\) je pevný posun, který od něj odečteme.
+    \item Úvodní jednička se neukládá; zlomková část nese zbývající binární číslice.
   \end{itemize}
   \begin{alertblock}{Pro tento kurz}
     Důležitější než ruční kódování bitů je rozumět omezenému rozsahu a přesnosti.
