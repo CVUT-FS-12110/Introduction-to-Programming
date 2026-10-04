@@ -52,6 +52,8 @@ Pokud vám zbude čas, věnujte ho pochopení a vylepšení programu výše.
 ## Dodatečné materiály
 
 - [Shrnutí cvičení](additional_materials/summary.md)
+- [Úvod do WSL (Linux ve Windows)](additional_materials/wsl.md)
+- [Úvod do Bashe a práce v terminálu](additional_materials/bash.md)
 
 ## Zdroje
 

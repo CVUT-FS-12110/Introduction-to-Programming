@@ -38,6 +38,12 @@ zachytí pořadí kroků, rozhodování a případné opakování. Teprve potom 
 1. [Nakreslení přímky ze zadaného vektoru — rozšiřující úloha](lab/line_slope_ascii.md)
 
 
+## Dodatečné materiály
+
+- [Dokumentace jazyka Python](https://docs.python.org/3/) — oficiální dokumentace, včetně [Python Tutorialu](https://docs.python.org/3/tutorial/)
+- [LearnPython.org](https://www.learnpython.org/) — interaktivní kurz Pythonu v angličtině
+- [Nauč se Python – kurz PyLadies](https://naucse.python.cz/course/pyladies/) — český začátečnický kurz Pythonu od komunity PyLadies
+
 ## Zdroje
 
 - Introduction to Algorithms (CLRS) — vybrané kapitoly
