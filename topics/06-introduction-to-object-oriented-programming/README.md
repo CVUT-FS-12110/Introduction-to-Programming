@@ -23,7 +23,7 @@ V této lekci si ukážeme, jak takové objekty v Pythonu vytvářet.
 ## Přednáška
 
 - [Slajdy: Úvod do OOP](lecture/presentation.pdf)
-- [Komentované příklady](seminar/README.md)
+- [Komentované příklady](seminar/seminar.md)
 
 V komentovaných příkladech postupně vytvoříme třídu s konstruktorem,
 atributy a metodami, několik nezávislých objektů a jednoduchou dědičnost.
