@@ -22,7 +22,7 @@ se naučíme funkce psát, volat a rozumět tomu, **kde která proměnná platí
 ## Přednáška
 
 - [Slajdy: Funkce](lecture/presentation.pdf)
-- [Komentované příklady](seminar/README.md)
+- [Komentované příklady](seminar/seminar.md)
 
 V komentovaných příkladech rozdělíme delší program na funkce, porovnáme
 `print` a `return` a budeme sledovat lokální a globální rozsah platnosti.
