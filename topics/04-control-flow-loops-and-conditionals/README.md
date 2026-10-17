@@ -23,7 +23,7 @@ kterým převedeme algoritmus z papíru do funkčního kódu.
 ## Přednáška
 
 - [Slajdy: Podmínky a cykly](lecture/presentation.pdf)
-- [Komentované příklady](seminar/README.md)
+- [Komentované příklady](seminar/seminar.md)
 
 Komentované příklady se soustředí na volbu mezi `for` a `while`, průchod
 seznamy a slovníky a sledování mezivýsledků při ladění cyklu.
