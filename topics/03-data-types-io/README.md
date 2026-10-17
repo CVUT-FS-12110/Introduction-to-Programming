@@ -24,7 +24,7 @@ nabízí Python a jak program komunikuje s okolím pomocí vstupu a výstupu.
 ## Přednáška
 
 - [Slajdy: Datové typy a vstup/výstup](lecture/presentation.pdf)
-- [Komentované příklady](seminar/README.md)
+- [Komentované příklady](seminar/seminar.md)
 
 V komentovaných příkladech si vyzkoušíte celočíselné dělení,
 zaokrouhlovací chyby typu `float`, převody pomocí `int()`, `float()` a
