@@ -1,133 +1,201 @@
-# Cvičení: knihovny a dokumentování kódu
+# Cvičení: vlastní knihovna a její dokumentace
 
-Cvičení je **samostatná práce na 90 minut**. Úlohy na sebe navazují a staví
-jeden nástroj příkazové řádky. Základní části by měl zvládnout každý;
-poslední úlohy jsou rozšíření pro rychlejší studenty.
+Cvičení je **samostatná práce na 90 minut**. Všechny úlohy rozšiřují jeden
+projekt: vlastní knihovnu `textkit` pro jednoduchou analýzu textu. Nezakládejte
+pro každou úlohu nový program — pokračujte ve stejném projektu a průběžně
+upravujte jeho dokumentaci.
 
 | Obtížnost | Co znamená |
 |-----------|------------|
-| ★ | základní práce s prostředím a dokumentací |
-| ★★ | propojení knihovny s vlastními funkcemi |
-| ★★★ | samostatné dohledání rozhraní a ošetření chyb |
-| ★★★★ | návrh distribuovatelného projektu |
+| ★ | vytvoření balíčku a jednoduchých funkcí |
+| ★★ | spolupráce více modulů a návrh rozhraní |
+| ★★★ | dokumentace, externí knihovna a ošetření chyb |
+| ★★★★ | samostatné rozšíření a kontrola projektu |
 
 Pro celé cvičení platí:
 
-- pracujte v novém adresáři a aktivním prostředí `.venv`,
-- balíčky instalujte přes `python -m pip`,
-- `.venv` necommitujte; přidejte jej do `.gitignore`,
-- po změně závislostí aktualizujte `requirements.txt`,
-- program musí jít spustit z terminálu příkazem `python main.py ...`.
+- pracujte v jednom novém adresáři,
+- kód knihovny patří do balíčku `textkit`, uživatelské rozhraní do `main.py`,
+- funkce knihovny nesmějí používat `input()` ani přímo vypisovat,
+- veřejné funkce průběžně opatřujte typovými nápovědami a docstringy,
+- do `.gitignore` přidejte pomocné soubory vytvářené Pythonem,
+- po přidání závislosti aktualizujte `requirements.txt`.
+
+Výsledná struktura projektu bude postupně vypadat takto:
+
+```text
+text-analyzer/
+├── textkit/
+│   ├── __init__.py
+│   ├── core.py
+│   └── files.py
+├── main.py
+├── README.md
+├── requirements.txt
+└── .gitignore
+```
 
 ---
 
-## 1. Připravte reprodukovatelné prostředí ★
+## 1. Založte vlastní knihovnu ★
 
-Prozkoumejte repozitář knihovny [Click](https://github.com/pallets/click/)
-a její oficiální dokumentaci. Potom:
+Vytvořte adresář projektu a uvedenou základní strukturu. Soubory `core.py`
+a `files.py` mohou být zatím prázdné.
 
-1. zjistěte název balíčku na PyPI a podporované verze Pythonu,
-2. vytvořte a aktivujte `.venv`,
-3. nainstalujte knihovnu,
-4. ověřte instalaci příkazem
-   `python -c "from importlib.metadata import version; print(version('click'))"`,
-5. vytvořte `requirements.txt`, `.gitignore` a krátký `README.md`.
+Soubor `textkit/__init__.py` říká Pythonu, že adresář `textkit` tvoří balíček.
+Ověřte, že jej lze z kořene projektu importovat:
 
-Do README zapište přesné příkazy pro přípravu a spuštění projektu.
-
-## 2. První příkaz ★
-
-Napište `main.py`, který pomocí knihovny Click přijme volbu `--name`
-a vypíše pozdrav. Výchozí jméno je `World`.
-
-```text
-python main.py --name Pavel
-Hello, Pavel!
-
-python main.py
-Hello, World!
+```powershell
+python -c "import textkit; print(textkit.__file__)"
 ```
 
-Nápovědu hledejte v části Quickstart dokumentace. Ověřte také automaticky
-vytvořenou nápovědu příkazem `python main.py --help`.
+Do `.gitignore` zapište alespoň `__pycache__/` a `*.pyc`. Do README přidejte
+název projektu a jednu větu vysvětlující, k čemu knihovna slouží.
 
-## 3. Volby, typy a validace ★★
+## 2. První dvě funkce ★
 
-Přidejte volby:
-
-- `--count` — kladné celé číslo, výchozí hodnota `1`,
-- `--language` — jedna z hodnot `cs` nebo `en`,
-- `--loud` — přepínač, který převede pozdrav na velká písmena.
-
-Neplatné hodnoty má odmítnout Click, nikoli ručně napsaná podmínka po spuštění
-příkazu. Z dokumentace zjistěte, jak deklarovat rozsah čísla a výběr z hodnot.
-
-## 4. Oddělte rozhraní od logiky ★★
-
-Přesuňte tvorbu textu do běžné funkce:
+Do `textkit/core.py` implementujte:
 
 ```python
-def make_greeting(name: str, language: str = "en", loud: bool = False) -> str:
-    ...
+def normalize_whitespace(text: str) -> str:
+    """Nahradí skupiny bílých znaků jednou mezerou."""
+
+def count_words(text: str) -> int:
+    """Vrátí počet slov oddělených bílými znaky."""
 ```
 
-Funkce nesmí importovat Click ani vypisovat na obrazovku. Click příkaz pouze
-načte argumenty, zavolá funkci a vypíše návratovou hodnotu požadovaný početkrát.
-
-Doplňte docstring, který popisuje parametry, návratovou hodnotu a přípustné
-hodnoty `language`. Ověřte ho pomocí `help(make_greeting)`.
-
-## 5. Více příkazů ★★★
-
-Změňte aplikaci na skupinu se dvěma podpříkazy:
-
-- `greet` — dosavadní pozdrav,
-- `add` — přijme dvě celá čísla jako poziční argumenty a vypíše součet.
+Požadované chování:
 
 ```text
-python main.py greet --name Pavel --language cs
-Ahoj, Pavel!
-
-python main.py add 3 5
-8
+normalize_whitespace("  Ahoj\n  světe  ")  -> "Ahoj světe"
+count_words("  Ahoj\n  světe  ")          -> 2
+count_words("")                             -> 0
 ```
 
-Z dokumentace vyhledejte `click.group`, `click.command`, `click.option`
-a `click.argument`. Zkontrolujte nápovědu celé skupiny i obou příkazů.
+Funkce nesmějí načítat vstup od uživatele ani vypisovat. V `main.py` je
+importujte z `textkit.core` a ověřte na alespoň třech vlastních řetězcích.
 
-## 6. Vstupní a výstupní soubor ★★★
+## 3. Rozšiřte analýzu slov ★★
 
-Přidejte příkaz `stats INPUT`, který spočítá počet řádků, slov a znaků
-v textovém souboru. Volitelná volba `--output PATH` uloží výsledek do souboru;
-bez ní se výsledek vypíše do terminálu.
+Do stejného modulu přidejte:
 
-Použijte typy cest a souborů, které nabízí Click. Program má srozumitelně
-reagovat na neexistující vstup a nesmí omylem přepsat vstupní soubor.
-Samotný výpočet opět oddělte do běžné funkce nezávislé na Clicku.
+```python
+def word_frequencies(text: str) -> dict[str, int]:
+    """Vrátí četnosti slov bez ohledu na velikost písmen."""
 
-## 7. Dokumentaci ověřte na čistém prostředí ★★★
+def most_common_words(text: str, limit: int = 5) -> list[tuple[str, int]]:
+    """Vrátí nejčastější slova a jejich počty."""
+```
 
-Deaktivujte `.venv`, vytvořte nové prostředí `.venv-check` a postupujte pouze
-podle vlastního README:
+Při rozdělení textu nerozlišujte velikost písmen, z konců slov odstraňte
+znaky `.,!?;:` a prázdná slova ignorujte.
 
-1. nainstalujte závislosti z `requirements.txt`,
-2. spusťte všechny tři příkazy a jejich `--help`,
-3. zkontrolujte, že v README nechybí žádný krok,
-4. opravte dokumentaci podle skutečného průběhu.
+Pro `"Pes, kočka a pes!"` má funkce `word_frequencies()` vrátit:
 
-Po kontrole můžete `.venv-check` odstranit. Do repozitáře patří zdrojové
-soubory, README, `.gitignore` a `requirements.txt`, nikoli virtuální prostředí.
+```python
+{"pes": 2, "kočka": 1, "a": 1}
+```
 
-## 8. Vlastní knihovna podle dokumentace ★★★★
+Funkce `most_common_words()` výsledek seřadí nejprve podle četnosti sestupně
+a při shodě podle slova abecedně:
 
-Vyberte jednu knihovnu z domácí přípravy a přidejte nový příkaz, který ji
-smysluplně využije. Příkaz musí:
+```python
+[("pes", 2), ("a", 1), ("kočka", 1)]
+```
 
-- přijímat alespoň jeden vstup od uživatele,
-- využít veřejné API knihovny dohledané v dokumentaci,
-- ošetřit očekávatelnou chybu,
-- mít automatickou nápovědu a příklad použití v README,
-- mít závislost zaznamenanou v `requirements.txt`.
+Musí přitom využít `word_frequencies()`, ne znovu implementovat stejný výpočet.
 
-Na konec README přidejte odkaz na konkrétní stránku dokumentace, podle které
-jste postupovali, a dvě věty o tom, co jste z ní museli zjistit.
+## 4. Navrhněte veřejné rozhraní balíčku ★★
+
+Uživatel knihovny by neměl potřebovat vědět, ve kterém souboru funkce leží.
+V `textkit/__init__.py` proto zveřejněte vybrané funkce:
+
+```python
+from .core import count_words, most_common_words, normalize_whitespace
+from .core import word_frequencies
+```
+
+Upravte `main.py`, aby používal pouze veřejné rozhraní:
+
+```python
+from textkit import count_words, most_common_words
+```
+
+Ověřte import z kořene projektu a do README přidejte krátkou ukázku použití.
+Při přidání nové veřejné funkce od této chvíle aktualizujte také `__init__.py`.
+
+## 5. Přidejte práci se soubory ★★
+
+Knihovnu rozšiřte o modul `textkit/files.py`:
+
+```python
+from pathlib import Path
+
+def read_text(path: Path) -> str:
+    """Načte textový soubor v UTF-8."""
+
+def write_text(path: Path, content: str) -> None:
+    """Zapíše textový soubor v UTF-8."""
+```
+
+Obě funkce zveřejněte přes `textkit/__init__.py`. V `main.py` potom načtěte
+text, zavolejte analytické funkce, sestavte report a uložte jej pomocí
+`write_text()`.
+
+Ověřte chování pro běžný text, prázdný soubor a neexistující cestu. Knihovna
+nemá chybu skrývat; `main.py` ji má zachytit a uživateli srozumitelně oznámit.
+
+## 6. Zdokumentujte knihovnu jako její uživatel ★★★
+
+Každá veřejná funkce musí mít:
+
+- typy všech parametrů a návratové hodnoty,
+- jednovětý popis účelu,
+- vysvětlení parametrů a výsledku,
+- popis očekávatelné výjimky, pokud může nastat.
+
+Dokumentaci zobrazte bez čtení zdrojového kódu:
+
+```powershell
+python -m pydoc textkit
+python -c "from textkit import read_text; help(read_text)"
+```
+
+Do README doplňte přehled veřejných funkcí, krátký spustitelný příklad, formát
+reportu a chování při neexistujícím vstupu.
+
+## 7. Click jako rozhraní nad vlastní knihovnou ★★★
+
+Nainstalujte knihovnu Click a zaznamenejte závislosti:
+
+```powershell
+python -m pip install click
+python -m pip freeze > requirements.txt
+```
+
+Upravte `main.py` na příkazové rozhraní:
+
+```text
+python main.py sample.txt --top 3
+python main.py sample.txt --top 3 --output report.txt
+python main.py --help
+```
+
+Vstupní cesta je povinný argument, `--top` je kladné celé číslo a `--output`
+je volitelná cesta. Click se smí importovat pouze v `main.py`; balíček
+`textkit` na něm nesmí záviset.
+
+## 8. Vlastní rozšíření a závěrečná kontrola ★★★★
+
+Do knihovny přidejte jednu novou veřejnou funkci, například:
+
+- `unique_words(text)`,
+- `longest_words(text, limit=3)`,
+- `average_word_length(text)`.
+
+Funkci použijte v reportu, zveřejněte v `__init__.py` a zdokumentujte v README.
+Nakonec ověřte veřejné importy, výpis i uložení reportu, `--help` a úplnost
+`requirements.txt`.
+
+Do repozitáře patří balíček `textkit`, `main.py`, README, `.gitignore` a
+`requirements.txt`. Soubory `__pycache__` a `*.pyc` do něj nepatří.

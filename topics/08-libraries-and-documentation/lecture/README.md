@@ -1,4 +1,6 @@
 # Přednáška: knihovny a dokumentování kódu
 
-Podklady k přednášce se připravují. Aktuálně jsou k dispozici
-[komentované příklady](../seminar/seminar.md) a [zadání cvičení](../lab/assignment.md).
+- [Prezentace (PDF)](presentation.pdf)
+- [Zdroj prezentace](presentation.tex)
+- [Komentované příklady](../seminar/README.md)
+- [Zadání cvičení](../lab/assignment.md)

@@ -1,0 +1,485 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,babel}
+
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+\title{Knihovny, balíčky a dokumentace}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{} \institute{} \date{}
+\renewcommand{\headlineA}{} \renewcommand{\headlineB}{} \renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{CodeGreen}{RGB}{38,125,94}
+\definecolor{WarningRed}{RGB}{170,45,45}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\lstdefinestyle{python}{language=Python,basicstyle=\ttfamily\large,
+  keywordstyle=\color{CodeBlue}\bfseries,stringstyle=\color{CodeGreen},
+  commentstyle=\color{gray},showstringspaces=false,columns=fullflexible,keepspaces=true}
+\lstdefinestyle{pythonSmall}{style=python,basicstyle=\ttfamily\normalsize}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:04
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Rozlišit modul, balíček, knihovnu a závislost.
+    \item Rozdělit vlastní kód do importovatelných souborů a složek.
+    \item Navrhnout malé a srozumitelné veřejné rozhraní.
+    \item Popsat funkce docstringy a typovými anotacemi.
+    \item Najít, nainstalovat a zaznamenat externí knihovnu.
+    \item Oddělit knihovní logiku od programu pro uživatele.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na co navazujeme?}
+  \begin{itemize}
+    \item Funkce pojmenovávají opakovaný výpočet.
+    \item Třída spojuje data a operace nad nimi.
+    \item Výjimka oznamuje, že operaci nelze korektně dokončit.
+    \item Soubory ukládají data mimo běh programu.
+  \end{itemize}
+  \begin{block}{Nová otázka}
+    Jak uspořádat více funkcí a tříd tak, aby je mohly používat různé programy?
+  \end{block}
+\end{frame}
+
+\begin{frame}{Kopírování kódu přestává stačit}
+  \begin{itemize}
+    \item Opravu musíme ručně přenést do každé kopie.
+    \item Programy začnou používat různé verze stejné funkce.
+    \item Jeden dlouhý soubor se hůře čte, testuje a rozšiřuje.
+  \end{itemize}
+  \begin{block}{Lepší dohoda}
+    Kód uložíme na jednom místě, pojmenujeme jeho veřejné části a ostatní programy je importují.
+  \end{block}
+\end{frame}
+
+% 0:04--0:09
+\begin{frame}{Čtyři základní pojmy}
+  \begin{description}
+    \item[Modul] jeden importovatelný soubor, například \texttt{core.py}.
+    \item[Balíček] složka sdružující související moduly.
+    \item[Knihovna] znovupoužitelný kód nabízející určitou funkčnost.
+    \item[Závislost] cizí knihovna, kterou náš projekt potřebuje.
+  \end{description}
+  \vspace{2mm}
+  Knihovna může být tvořena jedním modulem i několika balíčky.
+\end{frame}
+
+\begin{frame}{Od projektu ke konkrétní funkci}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=4mm,font=\normalsize,
+      box/.style={draw,rounded corners,fill=SoftGray,minimum width=28mm,minimum height=11mm}]
+    \node[box] (project) {projekt};
+    \node[box,right=of project] (package) {balíček};
+    \node[box,right=of package] (module) {modul};
+    \node[box,right=of module] (object) {funkce / třída};
+    \draw[->,thick,CodeBlue] (project)--(package);
+    \draw[->,thick,CodeBlue] (package)--(module);
+    \draw[->,thick,CodeBlue] (module)--(object);
+  \end{tikzpicture}
+  \vspace{6mm}
+
+  \texttt{text-project} $\rightarrow$ \texttt{textkit} $\rightarrow$
+  \texttt{core} $\rightarrow$ \texttt{count\_words}
+\end{frame}
+
+\begin{frame}[fragile]{Nejjednodušší knihovna je modul}
+  \texttt{text\_tools.py}
+\begin{lstlisting}[style=python]
+def count_words(text: str) -> int:
+    return len(text.split())
+\end{lstlisting}
+  \texttt{main.py}
+\begin{lstlisting}[style=python]
+import text_tools
+
+print(text_tools.count_words("one two three"))
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Co udělá 	exttt{import}?}
+  \begin{enumerate}
+    \item Python modul najde.
+    \item Provede jeho příkazy shora dolů.
+    \item Vytvoří objekt modulu se jmény funkcí, tříd a proměnných.
+    \item Objekt zpřístupní pod jménem použitým v programu.
+  \end{enumerate}
+  \begin{block}{Praktický důsledek}
+    Modul nemá při importu nečekaně spouštět vstup, výpis nebo zápis do souboru.
+  \end{block}
+\end{frame}
+
+% 0:09--0:14
+\begin{frame}[fragile]{Tři běžné podoby importu}
+\begin{lstlisting}[style=pythonSmall]
+import math
+print(math.sqrt(9))
+
+from math import sqrt
+print(sqrt(9))
+
+import math as m
+print(m.sqrt(9))
+\end{lstlisting}
+  \texttt{import math} nejzřetelněji ukazuje, odkud jméno pochází. Alias používáme, jen když zlepšuje čitelnost.
+\end{frame}
+
+\begin{frame}{Import přidává jména}
+  \begin{itemize}
+    \item \texttt{math.sqrt} říká: \texttt{sqrt} patří modulu \texttt{math}.
+    \item \texttt{from math import sqrt} přidá přímo jméno \texttt{sqrt}.
+    \item Dvě importovaná jména se mohou přepsat nebo plést se jménem naším.
+  \end{itemize}
+  \begin{alertblock}{Raději nepoužívat}
+    \texttt{from math import *} skrývá původ jmen a zvyšuje riziko kolizí.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Modul může být i spustitelný program}
+\begin{lstlisting}[style=python]
+def main() -> None:
+    print("Running the application")
+
+
+if __name__ == "__main__":
+    main()
+\end{lstlisting}
+  Při importu se \texttt{main()} nespustí. Definice lze bezpečně použít z jiného modulu.
+\end{frame}
+
+\begin{frame}[fragile]{Když jeden soubor nestačí: balíček}
+\begin{lstlisting}[basicstyle=\ttfamily\large,columns=fullflexible]
+text-project/
+|-- textkit/
+|   |-- __init__.py
+|   |-- core.py
+|   `-- files.py
+`-- main.py
+\end{lstlisting}
+  Moduly dělíme podle odpovědnosti: \texttt{core.py} zpracovává text, \texttt{files.py} pracuje se soubory.
+\end{frame}
+
+% 0:14--0:20
+\begin{frame}{K čemu je 	exttt{\_\_init\_\_.py}?}
+  \begin{itemize}
+    \item Označuje adresář jako běžný Python balíček.
+    \item Spustí se při importu balíčku.
+    \item Může zůstat prázdný.
+    \item Může vybrat jména, která balíček nabízí uživatelům.
+  \end{itemize}
+  \begin{block}{Jeho úloha není „vložit sem vše“}
+    Má být krátký a především definovat pohodlné veřejné rozhraní.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Veřejné rozhraní balíčku}
+  \texttt{textkit/\_\_init\_\_.py}
+\begin{lstlisting}[style=python]
+from .core import count_words, normalize_whitespace
+\end{lstlisting}
+  Uživatel potom píše:
+\begin{lstlisting}[style=python]
+from textkit import count_words
+
+print(count_words("  one   two  "))
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Uživatel má znát rozhraní, ne vnitřnosti}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=10mm,font=\normalsize,
+      box/.style={draw,rounded corners,minimum width=38mm,minimum height=13mm}]
+    \node[box,fill=SoftGray] (app) {\texttt{main.py}};
+    \node[box,fill=CodeBlue!12,right=of app] (api) {\texttt{textkit}};
+    \node[box,fill=SoftGray,right=of api] (inside) {\texttt{core.py}, \texttt{files.py}};
+    \draw[->,very thick,CodeBlue] (app)--node[above]{veřejné API}(api);
+    \draw[->,thick,gray] (api)--node[above]{vnitřek}(inside);
+  \end{tikzpicture}
+  \vspace{6mm}
+
+  Vnitřní soubory lze přeuspořádat, pokud veřejná jména a jejich chování zůstanou stejné.
+\end{frame}
+
+\begin{frame}[fragile]{Tečka znamená import uvnitř balíčku}
+  \texttt{textkit/files.py}
+\begin{lstlisting}[style=python]
+from pathlib import Path
+
+from .core import normalize_whitespace
+
+def load_clean_text(path: Path) -> str:
+    text = path.read_text(encoding="utf-8")
+    return normalize_whitespace(text)
+\end{lstlisting}
+  \texttt{.core} znamená modul \texttt{core} ve stejném balíčku.
+\end{frame}
+
+\begin{frame}{Kde Python modul hledá?}
+  \begin{itemize}
+    \item Mezi vestavěnými moduly a ve standardní knihovně.
+    \item Ve složkách, které má pro import k dispozici.
+    \item Typicky také v projektu, ze kterého program správně spouštíme.
+  \end{itemize}
+  \begin{block}{Častý problém}
+    Vlastní \texttt{random.py}, \texttt{pathlib.py} nebo \texttt{click.py} může zastínit skutečnou knihovnu stejného jména.
+  \end{block}
+\end{frame}
+
+% 0:20--0:25
+\begin{frame}{Knihovna není uživatelské rozhraní}
+  \begin{columns}[T]
+    \begin{column}{.46\textwidth}
+      \begin{block}{Knihovna}
+        Přijímá argumenty, vrací hodnoty a při neplatném použití vyvolá konkrétní výjimku.
+      \end{block}
+    \end{column}
+    \begin{column}{.46\textwidth}
+      \begin{block}{Aplikace}
+        Čte \texttt{input()}, zpracuje argumenty příkazové řádky a vypisuje zprávy uživateli.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{4mm}
+  Stejnou knihovnu pak lze použít z terminálu, testu i jiného programu.
+\end{frame}
+
+\begin{frame}[fragile]{Neplatné použití oznamujeme výjimkou}
+\begin{lstlisting}[style=pythonSmall]
+def require_same_size(left: list[float],
+                      right: list[float]) -> None:
+    if len(left) != len(right):
+        raise ValueError("Dimensions must match")
+\end{lstlisting}
+  \begin{itemize}
+    \item Knihovna neví, zda aplikace chce zprávu vypsat, uložit nebo přeložit.
+    \item Volající se rozhodne, zda výjimku zachytí.
+    \item Chybu hlásíme co nejblíže místu, kde ji rozpoznáme.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Speciální metody tvoří přirozené API}
+\begin{lstlisting}[style=pythonSmall]
+class Vector:
+    def __add__(self, other: "Vector") -> "Vector":
+        ...
+
+    def __mul__(self, other: "Vector") -> float:
+        ...
+\end{lstlisting}
+  Uživatel může psát \texttt{a + b} a \texttt{a * b}. Operátor má odpovídat obvyklému významu a rozměry kontroluje třída.
+\end{frame}
+
+\begin{frame}{Odkud kód pochází?}
+  \begin{description}
+    \item[Vlastní modul] soubor, který je součástí našeho projektu.
+    \item[Standardní knihovna] dodává ji Python, například \texttt{math} nebo \texttt{pathlib}.
+    \item[Externí knihovna] instaluje se samostatně, například \texttt{click}.
+  \end{description}
+  \begin{block}{Závislost projektu}
+    Externí knihovna, bez které některá část projektu nefunguje.
+  \end{block}
+\end{frame}
+
+% 0:25--0:31
+\begin{frame}[fragile]{PyPI a 	exttt{pip}}
+  \begin{itemize}
+    \item PyPI je veřejný katalog distribuovaných Python projektů.
+    \item \texttt{pip} umí projekt podle jména stáhnout a nainstalovat.
+  \end{itemize}
+\begin{lstlisting}[basicstyle=\ttfamily\large,columns=fullflexible]
+python -m pip install click
+\end{lstlisting}
+  \begin{block}{Proč \texttt{python -m pip}?}
+    Je zřejmé, ke kterému spuštěnému Pythonu použitý \texttt{pip} patří.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Závislosti zapisujeme do souboru}
+  \texttt{requirements.txt}
+\begin{lstlisting}[basicstyle=\ttfamily\large,columns=fullflexible]
+click==8.3.0
+\end{lstlisting}
+  Instalace záznamu:
+\begin{lstlisting}[basicstyle=\ttfamily\large,columns=fullflexible]
+python -m pip install -r requirements.txt
+\end{lstlisting}
+  Soubor dává spolupracovníkům opakovatelný seznam požadavků. Verze omezuje rozdíly mezi instalacemi v různém čase.
+\end{frame}
+
+\begin{frame}{Než knihovnu přidáme}
+  \begin{enumerate}
+    \item Řeší náš problém a má srozumitelnou dokumentaci?
+    \item Je udržovaná a funguje s naší verzí Pythonu?
+    \item Jaké další závislosti přinese?
+    \item Jakou má licenci?
+    \item Dokážeme vytvořit nejmenší funkční příklad?
+  \end{enumerate}
+  \begin{block}{Cena závislosti}
+    Ušetřený vlastní kód výměnou za cizí rozhraní, aktualizace a možné změny chování.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Dokumentace má různé úlohy}
+  \begin{description}
+    \item[README] proč projekt existuje a jak jej rychle použít.
+    \item[Návod] provede konkrétním úkolem krok za krokem.
+    \item[Reference] přesně popíše veřejná jména a jejich chování.
+    \item[Příklad] ukáže typické použití v krátkém spustitelném kódu.
+  \end{description}
+  Jediný dlouhý text obvykle nenahradí všechny čtyři potřeby.
+\end{frame}
+
+% 0:31--0:38
+\begin{frame}[fragile]{Docstring dokumentuje objekt v kódu}
+\begin{lstlisting}[style=python]
+def count_words(text: str) -> int:
+    """Return the number of words in text."""
+    return len(text.split())
+\end{lstlisting}
+  \begin{itemize}
+    \item Je to první řetězec uvnitř modulu, třídy nebo funkce.
+    \item Popisuje veřejnou dohodu, ne každý krok implementace.
+    \item Nástroje jej zobrazí bez otevírání zdrojového souboru.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Složitější funkce potřebuje více informací}
+\begin{lstlisting}[style=pythonSmall]
+def most_common_words(text: str, count: int) -> list[tuple[str, int]]:
+    """Return at most count most frequent words.
+
+    Args:
+        text: Text to analyze.
+        count: Maximum number of returned items.
+
+    Raises:
+        ValueError: If count is negative.
+    """
+    ...
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Co patří do dokumentace funkce?}
+  \begin{itemize}
+    \item Co funkce dělá a jaký má výsledek.
+    \item Význam argumentů a návratové hodnoty.
+    \item Výjimky, které má volající očekávat.
+    \item Vedlejší účinky: změna objektu, zápis do souboru nebo výpis.
+  \end{itemize}
+  \begin{block}{Komentář není náhrada názvu}
+    Dobré pojmenování a jednoduchý návrh snižují množství nutného vysvětlování.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Dokumentaci zobrazí Python}
+\begin{lstlisting}[style=python]
+from textkit import count_words
+
+help(count_words)
+print(count_words.__doc__)
+\end{lstlisting}
+  V terminálu lze vytvořit textovou referenci:
+\begin{lstlisting}[basicstyle=\ttfamily\large,columns=fullflexible]
+python -m pydoc textkit
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Typová anotace je informace, ne zámek}
+  \begin{itemize}
+    \item Popisuje očekávané typy argumentů a výsledku.
+    \item Pomáhá čtenáři, editoru a nástrojům pro statickou kontrolu.
+    \item Python ji při běžném spuštění automaticky nevynucuje.
+    \item Nenahrazuje kontrolu hodnot, například kladnosti nebo shodných rozměrů.
+  \end{itemize}
+  \begin{block}{Dvě různé otázky}
+    Typ: „Je \texttt{count} celé číslo?“ Hodnota: „Je \texttt{count} nezáporné?“
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Anotace zpřesňuje strukturu dat}
+\begin{lstlisting}[style=python]
+def word_frequencies(text: str) -> dict[str, int]:
+    ...
+
+def read_text(path: str) -> str:
+    ...
+
+def top_words(text: str) -> list[tuple[str, int]]:
+    ...
+\end{lstlisting}
+  Typ popíše tvar hodnoty; docstring její význam a pravidla použití.
+\end{frame}
+
+% 0:38--0:45
+\begin{frame}{Časté chyby při návrhu knihovny}
+  \begin{itemize}
+    \item Modul při importu spustí \texttt{input()} nebo změní soubor.
+    \item Uživatel musí importovat z hlubokých vnitřních modulů.
+    \item Funkce místo výsledku jen vypisuje na obrazovku.
+    \item Veřejná funkce nemá vysvětlené chování při chybě.
+    \item Soubor má stejné jméno jako standardní nebo externí knihovna.
+    \item Závislost je použita v kódu, ale není zaznamenána.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rychlá kontrola porozumění}
+  \begin{enumerate}
+    \item Jaký je rozdíl mezi modulem a balíčkem?
+    \item Proč zveřejňovat jména přes \texttt{\_\_init\_\_.py}?
+    \item Co znamená tečka v \texttt{from .core import ...}?
+    \item Proč knihovna nemá při chybě volat \texttt{print()}?
+    \item Co umí typová anotace a co nekontroluje?
+    \item Kam zapíšeme externí závislost projektu?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Co navazuje po přednášce?}
+  \begin{columns}[T]
+    \begin{column}{.46\textwidth}
+      \begin{block}{Seminář: \texttt{vectorlib}}
+        Balíček s třídou \texttt{Vector}, sčítáním, skalárním součinem, kontrolou rozměrů a veřejným API.
+      \end{block}
+    \end{column}
+    \begin{column}{.46\textwidth}
+      \begin{block}{Cvičení: \texttt{textkit}}
+        Rozšiřovaná knihovna pro zpracování textu, soubory, dokumentaci a jednoduché CLI.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Shrnutí}
+  \begin{itemize}
+    \item Modul je soubor; balíček sdružuje moduly do jednoho prostoru jmen.
+    \item \texttt{\_\_init\_\_.py} může nabídnout malé a stabilní veřejné API.
+    \item Knihovna přijímá hodnoty, vrací výsledky a chyby oznamuje výjimkami.
+    \item Docstring vysvětluje význam a typová anotace tvar hodnot.
+    \item Externí knihovnu vybíráme vědomě a zaznamenáme jako závislost.
+    \item Dobrá struktura dovoluje měnit vnitřek bez změny kódu uživatele.
+  \end{itemize}
+\end{frame}
+
+\end{document}

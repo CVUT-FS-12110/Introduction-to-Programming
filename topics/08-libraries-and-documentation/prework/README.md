@@ -10,8 +10,7 @@ Vlastními slovy jednou větou vysvětlete:
 - modul,
 - balíček,
 - knihovna,
-- závislost,
-- virtuální prostředí.
+- závislost.
 
 U každého pojmu si připravte jeden příklad. Pokud si významem nejste jistí,
 poznamenejte si otázku k výkladu.
