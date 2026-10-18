@@ -1,0 +1,540 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,babel}
+
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+\title{Práce se soubory: čtení a zápis}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}
+\institute{}
+\date{}
+\renewcommand{\headlineA}{}
+\renewcommand{\headlineB}{}
+\renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{CodeGreen}{RGB}{38,125,94}
+\definecolor{WarningRed}{RGB}{170,45,45}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\lstdefinestyle{python}{language=Python,basicstyle=\ttfamily\large,
+  keywordstyle=\color{CodeBlue}\bfseries,stringstyle=\color{CodeGreen},
+  commentstyle=\color{gray},showstringspaces=false,columns=fullflexible,keepspaces=true}
+\lstdefinestyle{pythonSmall}{style=python,basicstyle=\ttfamily\normalsize}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:03
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Bezpečně otevřít a zavřít textový soubor pomocí \texttt{with}.
+    \item Zvolit režim čtení, zápisu, přidávání nebo binární režim.
+    \item Zpracovat velký soubor postupně po řádcích nebo blocích.
+    \item Vysvětlit význam UTF-8 a rozdíl mezi textem a bajty.
+    \item Pracovat s cestami pomocí \texttt{pathlib} a ošetřit běžné chyby.
+    \item Oddělit načtení, zpracování a uložení výsledků.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na co navazujeme?}
+  \begin{itemize}
+    \item Řetězce, seznamy a slovníky uchovávají data \term{za běhu programu}.
+    \item Funkce oddělují vstup, výpočet a výstup.
+    \item Výjimka umožňuje reagovat na očekávatelný neúspěch.
+    \item Objekt má stav a metody; otevřený soubor je také objekt.
+  \end{itemize}
+  \begin{block}{Nová otázka}
+    Jak data zachovat po ukončení programu nebo je předat jinému programu?
+  \end{block}
+\end{frame}
+
+% 0:03--0:07
+\begin{frame}{Paměť programu není trvalé úložiště}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=18mm,font=\large]
+    \node[draw,rounded corners,fill=SoftGray,minimum width=38mm,minimum height=14mm] (ram)
+      {proměnné v paměti};
+    \node[draw,rounded corners,fill=SoftGray,minimum width=38mm,minimum height=14mm,
+      right=30mm of ram] (disk) {soubor na disku};
+    \draw[->,thick,CodeBlue,bend left=15] (ram) to node[above]{zápis} (disk);
+    \draw[->,thick,CodeBlue,bend left=15] (disk) to node[below]{čtení} (ram);
+  \end{tikzpicture}
+  \vspace{5mm}
+
+  \begin{itemize}
+    \item Proměnné po skončení procesu zmizí.
+    \item Soubor má jméno, umístění a obsah, který může přetrvat.
+    \item Formát souboru je dohoda, jak obsah interpretovat.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Tři různé věci}
+  \begin{description}
+    \item[Cesta] určuje, kde soubor hledáme: \texttt{data/mereni.txt}.
+    \item[Soubor] je uložená posloupnost bajtů v souborovém systému.
+    \item[Souborový objekt] vznikne voláním \texttt{open()} a zprostředkuje práci se souborem.
+  \end{description}
+  \begin{block}{Pozor na časté nedorozumění}
+    Proměnná \texttt{file} neobsahuje celý soubor. Odkazuje na otevřený proud dat.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Životní cyklus práce se souborem}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=10mm,font=\large,
+      processbox/.style={draw,rounded corners,fill=SoftGray,minimum width=30mm,minimum height=11mm}]
+    \node[processbox] (open) {1. otevřít};
+    \node[processbox,right=of open] (use) {2. číst / psát};
+    \node[processbox,right=of use] (close) {3. zavřít};
+    \draw[->,thick,CodeBlue] (open)--(use);
+    \draw[->,thick,CodeBlue] (use)--(close);
+  \end{tikzpicture}
+  \vspace{5mm}
+
+  \begin{itemize}
+    \item Otevření může selhat: cesta neexistuje nebo chybí oprávnění.
+    \item Operace musí odpovídat zvolenému režimu.
+    \item Zavření uvolní prostředky a dokončí zápis.
+  \end{itemize}
+\end{frame}
+
+% 0:07--0:13
+\begin{frame}[fragile]{Soubor lze otevřít a zavřít ručně}
+\begin{lstlisting}[style=python]
+file = open("report.txt", "w", encoding="utf-8")
+file.write("Measurement complete.\n")
+file.close()
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{open()} vrátí objekt, přes který se souborem pracujeme.
+    \item \texttt{write()} zapíše data a \texttt{close()} práci dokončí.
+    \item Pokud mezi otevřením a zavřením nastane chyba, \texttt{close()} se nemusí provést.
+  \end{itemize}
+  \begin{block}{Proto obvykle používáme \texttt{with}}
+    Zajišťuje zavření automaticky a nemusíme na něj pamatovat v každé větvi programu.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{První bezpečný zápis}
+\begin{lstlisting}[style=python]
+with open("report.txt", "w", encoding="utf-8") as file:
+    file.write("Measurement complete.\n")
+
+print("File is already closed here.")
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{open()} vytvoří souborový objekt.
+    \item \texttt{as file} uloží odkaz do proměnné.
+    \item Konec bloku \texttt{with} soubor automaticky zavře i při chybě.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Režim otevření je součást zadání}
+  \centering
+  \begin{tabular}{c l l}
+    \textbf{Režim} & \textbf{Význam} & \textbf{Když soubor neexistuje} \\
+    \hline
+    \texttt{"r"} & čtení & chyba \\
+    \texttt{"w"} & zápis od začátku & vytvoří se \\
+    \texttt{"a"} & přidávání na konec & vytvoří se \\
+    \texttt{"x"} & vytvoření nového & vytvoří se \\
+    \texttt{"b"} & přepnutí na bajty & záleží na kombinaci \\
+  \end{tabular}
+  \vspace{5mm}
+
+  Režimy lze kombinovat, například \texttt{"rb"} nebo \texttt{"wb"}.
+\end{frame}
+
+\begin{frame}{Nejnebezpečnější písmeno je \textcolor{WarningRed}{\texttt{w}}}
+  \begin{alertblock}{Otevření v režimu \texttt{"w"} zkrátí existující soubor na nulu}
+    Původní obsah zmizí už při otevření, ještě před prvním voláním \texttt{write()}.
+  \end{alertblock}
+  \begin{itemize}
+    \item \texttt{"w"}: vytváříme nový úplný obsah.
+    \item \texttt{"a"}: zachováváme obsah a přidáváme další záznam.
+    \item \texttt{"x"}: chceme odmítnout náhodné přepsání existujícího souboru.
+  \end{itemize}
+  \vspace{2mm}
+  \centering
+  \term{Režim vybíráme podle zamýšlené změny, ne podle zvyku.}
+\end{frame}
+
+\begin{frame}[fragile]{Trvalý deník používá přidávání}
+\begin{lstlisting}[style=pythonSmall]
+from datetime import datetime
+
+message = input("Note: ")
+timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+with open("journal.txt", "a", encoding="utf-8") as file:
+    file.write(f"{timestamp} | {message}\n")
+\end{lstlisting}
+  Každé spuštění přidá jeden samostatný záznam a zachová starší data.
+\end{frame}
+
+% 0:13--0:19
+\begin{frame}[fragile]{Tři způsoby čtení}
+\begin{lstlisting}[style=pythonSmall]
+with open("data.txt", "r", encoding="utf-8") as file:
+    all_text = file.read()       # zbytek souboru jako str
+    one_line = file.readline()   # jeden dalsi radek
+    all_lines = file.readlines() # zbytek jako list[str]
+\end{lstlisting}
+  \begin{itemize}
+    \item Každá operace pokračuje z \term{aktuální pozice} v souboru.
+    \item Po \texttt{read()} jsme obvykle na konci; další čtení vrátí prázdný výsledek.
+    \item Na velká data je bezpečnější postupné zpracování.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Soubor lze procházet po řádcích}
+\begin{lstlisting}[style=python]
+with open("measurements.txt", "r", encoding="utf-8") as file:
+    for line_number, line in enumerate(file, start=1):
+        print(line_number, line.rstrip("\n"))
+\end{lstlisting}
+  \begin{itemize}
+    \item V paměti je vždy jen malá část souboru.
+    \item Číslo řádku pomůže vysvětlit chybu ve vstupu.
+    \item Stejný princip funguje i pro soubor s miliony řádků.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Konec řádku je také znak}
+  Soubor s obsahem
+  \begin{center}
+    \texttt{08:00;21.4}\quad\texttt{\textbackslash n}\quad
+    \texttt{09:00;22.1}\quad\texttt{\textbackslash n}
+  \end{center}
+  vrací řádky včetně konce řádku.
+  \begin{itemize}
+    \item \texttt{rstrip("\textbackslash n")} odstraní pouze znak nového řádku.
+    \item \texttt{strip()} odstraní i mezery a tabulátory na obou koncích.
+    \item Volba záleží na tom, zda jsou mezery součástí dat.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Prázdný řádek přeskočíme vědomě}
+\begin{lstlisting}[style=python]
+with open("measurements.txt", encoding="utf-8") as file:
+    for line_number, line in enumerate(file, start=1):
+        cleaned = line.strip()
+        if not cleaned:
+            continue
+
+        print(line_number, cleaned)
+\end{lstlisting}
+  \begin{block}{Důležitý návrh}
+    Rozhodněte, zda je prázdný řádek chyba, oddělovač, nebo položka k přeskočení.
+  \end{block}
+\end{frame}
+
+% 0:19--0:24
+\begin{frame}{Text a bajty nejsou totéž}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=20mm,font=\large]
+    \node[draw,rounded corners,fill=SoftGray,minimum width=33mm,minimum height=13mm] (text)
+      {text \texttt{str}};
+    \node[draw,rounded corners,fill=SoftGray,minimum width=33mm,minimum height=13mm,
+      right=34mm of text] (bytes) {bajty \texttt{bytes}};
+    \draw[->,thick,CodeBlue,bend left=15] (text) to node[above]{kódování} (bytes);
+    \draw[->,thick,CodeBlue,bend left=15] (bytes) to node[below]{dekódování} (text);
+  \end{tikzpicture}
+  \vspace{5mm}
+
+  \begin{itemize}
+    \item Disk ukládá bajty, Python nám v textovém režimu vrací řetězce.
+    \item \texttt{encoding="utf-8"} určuje pravidla převodu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Stejný znak může zabrat více bajtů}
+\begin{lstlisting}[style=python]
+text = "caf\u00e9"
+data = text.encode("utf-8")
+
+print(len(text))  # 4 znaky
+print(len(data))  # 5 bajtu
+\end{lstlisting}
+  Zápis \texttt{\textbackslash u00e9} představuje znak \texttt{é}.
+  \begin{itemize}
+    \item Délka řetězce není obecně velikost souboru.
+    \item Čtenář i zapisovatel se musí shodnout na kódování.
+    \item UTF-8 je běžná přenositelná volba pro text.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Kódování je součást formátu}
+  \begin{itemize}
+    \item Bez informace o kódování nelze obecné bajty jednoznačně převést na text.
+    \item Chybné kódování může způsobit \texttt{UnicodeDecodeError} nebo pokažené znaky.
+    \item \texttt{encoding="utf-8"} uvádějte explicitně při čtení i zápisu textu.
+  \end{itemize}
+  \begin{block}{Textový soubor}
+    Není „jen text“. Je to posloupnost bajtů interpretovaná podle dohodnutého kódování a formátu.
+  \end{block}
+\end{frame}
+
+% 0:24--0:29
+\begin{frame}{Práce se souborem může selhat}
+  \begin{description}
+    \item[\texttt{FileNotFoundError}] vstupní cesta neexistuje.
+    \item[\texttt{PermissionError}] proces nemá potřebné oprávnění.
+    \item[\texttt{IsADirectoryError}] místo souboru jsme otevřeli složku.
+    \item[\texttt{UnicodeDecodeError}] bajty neodpovídají zvolenému kódování.
+    \item[\texttt{ValueError}] obsah existuje, ale má neplatný formát pro převod.
+  \end{description}
+  \term{Chyba prostředí a chyba obsahu jsou odlišné problémy.}
+\end{frame}
+
+\begin{frame}[fragile]{Ošetřujeme očekávatelnou chybu}
+\begin{lstlisting}[style=pythonSmall]
+try:
+    with open("measurements.txt", encoding="utf-8") as file:
+        first_line = file.readline()
+except FileNotFoundError:
+    print("Input file does not exist.")
+else:
+    print(first_line.rstrip("\n"))
+\end{lstlisting}
+  \begin{itemize}
+    \item Blok \texttt{try} držte co nejmenší.
+    \item Zachytávejte konkrétní výjimku, kterou umíte smysluplně řešit.
+    \item \texttt{except Exception} často skryje chybu v programu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Chybný řádek nemusí ukončit celý import}
+\begin{lstlisting}[style=pythonSmall]
+try:
+    temperature = float(value_text)
+except ValueError:
+    invalid_lines.append(line_number)
+    continue
+
+measurements.append((time_text, temperature))
+\end{lstlisting}
+  \begin{itemize}
+    \item Program zachová platná měření.
+    \item Report zároveň uvede, které řádky přeskočil.
+    \item Tiché ignorování chyb by znehodnotilo výsledek.
+  \end{itemize}
+\end{frame}
+
+% 0:29--0:34
+\begin{frame}[fragile]{Cesty skládáme pomocí \texttt{pathlib}}
+\begin{lstlisting}[style=python]
+from pathlib import Path
+
+output_dir = Path("outputs")
+report_path = output_dir / "report.txt"
+
+output_dir.mkdir(parents=True, exist_ok=True)
+report_path.write_text("Done\n", encoding="utf-8")
+\end{lstlisting}
+  Operátor \texttt{/} skládá části cesty přenositelně a čitelně.
+\end{frame}
+
+\begin{frame}{Relativní vůči čemu?}
+  \begin{itemize}
+    \item \texttt{Path("data.txt")} je relativní k \term{aktuální pracovní složce}.
+    \item Pracovní složka nemusí být složka, ve které leží skript.
+    \item \texttt{Path.cwd()} ukáže, odkud se relativní cesta vyhodnocuje.
+    \item \texttt{path.resolve()} pomůže při diagnostice zobrazit úplnou cestu.
+  \end{itemize}
+  \begin{block}{Při chybě „soubor neexistuje“}
+    Nejdříve vypište cestu, kterou program skutečně používá.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Cesta umí popsat soubor}
+\begin{lstlisting}[style=pythonSmall]
+from pathlib import Path
+
+path = Path("photos") / "IMG_0042.JPG"
+
+print(path.name)          # IMG_0042.JPG
+print(path.stem)          # IMG_0042
+print(path.suffix.lower())# .jpg
+print(path.exists())
+print(path.is_file())
+\end{lstlisting}
+  Metody pouze zjišťují stav; samy obsah nemění.
+\end{frame}
+
+\begin{frame}[fragile]{Složku lze procházet bezpečně}
+\begin{lstlisting}[style=pythonSmall]
+from pathlib import Path
+
+for path in Path("photos").iterdir():
+    if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg"}:
+        print(path)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{iterdir()} prochází jednu složku.
+    \item \texttt{glob("*.txt")} vybírá podle vzoru.
+    \item \texttt{rglob("*")} prochází i podsložky.
+  \end{itemize}
+\end{frame}
+
+% 0:34--0:39
+\begin{frame}{Oddělte načtení, zpracování a zápis}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=12mm,font=\large,
+      processbox/.style={draw,rounded corners,fill=SoftGray,minimum width=34mm,minimum height=12mm}]
+    \node[processbox] (load) {\texttt{load\_data()}};
+    \node[processbox,right=of load] (process) {\texttt{summarize()}};
+    \node[processbox,right=of process] (write) {\texttt{write\_report()}};
+    \draw[->,thick,CodeBlue] (load)--node[above]{data}(process);
+    \draw[->,thick,CodeBlue] (process)--node[above]{souhrn}(write);
+  \end{tikzpicture}
+  \vspace{5mm}
+
+  \begin{itemize}
+    \item Každá funkce má jednu odpovědnost.
+    \item Výpočet nezávisí na \texttt{input()} ani \texttt{print()}.
+    \item Stejná data lze zapsat jako textový report nebo SVG.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Řádek nejprve rozložíme, potom převádíme}
+\begin{lstlisting}[style=python]
+time_text, value_text = cleaned.split(";", maxsplit=1)
+temperature = float(value_text)
+measurement = (time_text, temperature)
+\end{lstlisting}
+  Pro vstup \texttt{08:00;21.4} vznikne \texttt{("08:00", 21.4)}.
+  \begin{itemize}
+    \item Oddělovač je součást dohody o formátu.
+    \item Počet částí i převod mohou selhat.
+    \item Validaci děláme dříve, než hodnotu použijeme ve výpočtu.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Formát je rozhraní mezi programy}
+  \begin{columns}[T]
+    \begin{column}{.46\textwidth}
+      \begin{block}{Producent}
+        Zapíše data podle pravidel: oddělovače, pořadí, jednotky, kódování.
+      \end{block}
+    \end{column}
+    \begin{column}{.46\textwidth}
+      \begin{block}{Spotřebitel}
+        Čte podle stejných pravidel a odmítá neplatný obsah.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{4mm}
+  CSV, SVG, HTML i konfigurační soubor jsou příklady takové dohody.
+\end{frame}
+
+\begin{frame}[fragile]{Program může vygenerovat SVG}
+\begin{lstlisting}[style=pythonSmall]
+points = "40,140 120,105 200,70 280,90"
+svg = f"""<svg xmlns="http://www.w3.org/2000/svg"
+                  width="320" height="180">
+  <polyline points="{points}" fill="none" stroke="#26537d" />
+</svg>
+"""
+
+Path("chart.svg").write_text(svg, encoding="utf-8")
+\end{lstlisting}
+  Prohlížeč přečte text, protože odpovídá formátu SVG.
+\end{frame}
+
+% 0:39--0:43
+\begin{frame}{Binární režim pracuje s bajty}
+  \begin{itemize}
+    \item \texttt{"rb"} a \texttt{"wb"} neprovádějí převod kódování.
+    \item Čtení vrací \texttt{bytes}, zápis očekává \texttt{bytes}.
+    \item Obrázky, archivy nebo vlastní číselný formát nejsou obecný text.
+  \end{itemize}
+  \begin{block}{Stejné médium, jiná interpretace}
+    Textový i binární soubor jsou na disku bajty. Liší se dohodou, jak je číst.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Číslo lze uložit do pevného počtu bajtů}
+\begin{lstlisting}[style=python]
+number = 1000
+data = number.to_bytes(2, byteorder="little", signed=False)
+
+with open("number.bin", "wb") as file:
+    file.write(data)
+
+restored = int.from_bytes(data, byteorder="little", signed=False)
+\end{lstlisting}
+  Čtenář musí znát počet bajtů, pořadí bajtů a znaménkovost.
+\end{frame}
+
+% 0:43--0:45
+\begin{frame}{Časté chyby}
+  \begin{itemize}
+    \item Otevření existujícího vstupu omylem v režimu \texttt{"w"}.
+    \item Chybějící \texttt{encoding="utf-8"} u textového souboru.
+    \item Načtení velkého souboru jedním \texttt{read()} bez potřeby.
+    \item Záměna relativní cesty za cestu relativní ke skriptu.
+    \item \texttt{strip()} odstraní mezery, které mohly být součástí dat.
+    \item Zachycení všech výjimek bez informace o chybném souboru či řádku.
+    \item Smíchání načítání, výpočtu, výpisu a uživatelského vstupu v jedné funkci.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rychlá kontrola porozumění}
+  \begin{enumerate}
+    \item Kdy zvolíte \texttt{"w"} a kdy \texttt{"a"}?
+    \item Proč soubor procházíme po řádcích místo \texttt{readlines()}?
+    \item Co přesně dělá \texttt{encoding="utf-8"}?
+    \item Vůči čemu se vyhodnocuje relativní cesta?
+    \item Jaký typ vrací čtení v režimu \texttt{"rb"}?
+    \item Kde má být \texttt{try}, pokud může být chybné jen jedno číslo na řádku?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Co využijete na cvičení?}
+  \begin{itemize}
+    \item Čtení po řádcích a statistika textu.
+    \item Přidávání záznamů do trvalého deníku.
+    \item Validace měření a vytvoření reportu.
+    \item Bezpečné cesty a dávkové přejmenování fotografií.
+    \item Uložení čísel v textové a binární podobě.
+    \item Sloučení a seřazení měření z více vstupních souborů.
+    \item Generování SVG grafu jako rozšiřující výzva.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Shrnutí}
+  \begin{itemize}
+    \item \texttt{with} bezpečně spravuje životní cyklus otevřeného souboru.
+    \item Režim určuje povolené operace i riziko přepsání dat.
+    \item Text převádíme mezi \texttt{str} a bajty pomocí kódování.
+    \item Velká data zpracováváme postupně po řádcích nebo blocích.
+    \item \texttt{pathlib} skládá cesty a zpřístupňuje informace o souborech.
+    \item Robustní program oddělí načtení, zpracování a zápis a hlásí chyby s kontextem.
+  \end{itemize}
+\end{frame}
+
+\end{document}

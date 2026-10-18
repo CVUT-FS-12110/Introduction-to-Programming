@@ -23,8 +23,7 @@ kódování, cesty a základní ošetření chyb.
 
 ## Přednáška
 
-Slajdy zatím nejsou k dispozici.
-
+- [Slajdy: práce se soubory](lecture/presentation.pdf)
 - [Komentované příklady: práce se soubory](seminar/seminar.md)
 
 Komentované příklady procházejí životní cyklus souboru, režimy otevření,
@@ -38,7 +37,8 @@ vytvoří jednoduchý deník a textový výstup pro jiný program.
 ## Cvičení
 
 Samostatná práce začíná analýzou textu a postupně přechází k deníku,
-zpracování měření, bezpečným cestám, generování SVG a práci s binárními daty.
+zpracování měření, bezpečným cestám, binárním datům, slučování souborů
+a závěrečné výzvě s generováním SVG.
 
 [Zadání cvičení](lab/assignment.md)
 

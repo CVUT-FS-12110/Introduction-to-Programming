@@ -358,6 +358,6 @@ Na cvičení na tento základ navážete úlohami, kde budete:
 - analyzovat textový soubor,
 - vytvářet jednoduchý deník,
 - zpracovávat měření a bezpečně pracovat s cestami,
-- generovat SVG výstup,
 - porovnávat textové a binární soubory,
-- testovat souborové funkce pomocí virtuálních souborů.
+- slučovat a řadit měření z více vstupních souborů,
+- generovat SVG výstup jako rozšiřující výzvu.

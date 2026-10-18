@@ -281,21 +281,50 @@ for account in accounts:
 
 \begin{frame}{Sekvenční diagram: pořadí volání}
   \centering
-  \vspace{5mm}
+  \vspace{2mm}
 
-  \begin{tikzpicture}[>=Latex,scale=.76,transform shape]
-    \node (u) at (0,0) {program};
-    \node (e) at (4,0) {\texttt{eva:BankAccount}};
-    \node (p) at (8,0) {\texttt{petr:BankAccount}};
-    \draw[dashed] (u)--(0,-4.1); \draw[dashed] (e)--(4,-4.1); \draw[dashed] (p)--(8,-4.1);
-    \draw[->] (0,-.8)--node[above]{\texttt{transfer\_to(petr, 300)}}(4,-.8);
-    \draw[->] (4,-1.7)--node[above]{\texttt{withdraw(300)}}(4,-2.4);
-    \draw[->] (4,-3.0)--node[above]{\texttt{deposit(300)}}(8,-3.0);
-    \draw[->,dashed] (8,-3.5)--node[above]{návrat}(4,-3.5);
+  \begin{tikzpicture}[
+      >=Latex,
+      scale=.82,
+      transform shape,
+      font=\small,
+      participant/.style={draw=CodeBlue,thick,rounded corners=2pt,
+        fill=SoftGray,minimum height=8mm,align=center},
+      lifeline/.style={densely dashed,gray!75},
+      activation/.style={draw=CodeBlue,fill=CodeBlue!16,
+        minimum width=2.2mm,inner sep=0pt},
+      message/.style={->,thick,CodeBlue},
+      return/.style={->,densely dashed,gray!85},
+      label/.style={fill=white,inner xsep=2pt,inner ysep=1pt}
+    ]
+    \node[participant,minimum width=26mm] (u) at (0,0) {program};
+    \node[participant,minimum width=38mm] (e) at (5,0) {\texttt{eva:BankAccount}};
+    \node[participant,minimum width=38mm] (p) at (10,0) {\texttt{petr:BankAccount}};
+
+    \draw[lifeline] (u.south)--++(0,-4.75);
+    \draw[lifeline] (e.south)--++(0,-4.75);
+    \draw[lifeline] (p.south)--++(0,-4.75);
+
+    \draw[activation] (4.88,-1.05) rectangle (5.12,-4.25);
+    \draw[activation] (5.12,-2.35) rectangle (5.36,-2.85);
+    \draw[activation] (9.88,-3.25) rectangle (10.12,-3.95);
+
+    \draw[message] (0,-1.15)--node[label,above=1pt]
+      {\textcolor{CodeBlue}{\textbf{1}}\enspace\texttt{transfer\_to(petr, 300)}}(4.88,-1.15);
+
+    % Samovolání se kreslí jako smyčka, ne jako svislá šipka po lifeline.
+    \draw[message] (5.12,-1.85)--(6.55,-1.85)--(6.55,-2.60)--(5.36,-2.60);
+    \node[label,anchor=south] at (5.84,-1.85)
+      {\textcolor{CodeBlue}{\textbf{2}}\enspace\texttt{withdraw(300)}};
+
+    \draw[message] (5.12,-3.35)--node[label,above=1pt]
+      {\textcolor{CodeBlue}{\textbf{3}}\enspace\texttt{deposit(300)}}(9.88,-3.35);
+    \draw[return] (9.88,-3.85)--node[label,above=1pt]{návrat}(5.12,-3.85);
+    \draw[return] (4.88,-4.20)--node[label,above=1pt]{návrat}(0,-4.20);
   \end{tikzpicture}
-  \par\vspace{2mm}
+  \par\vspace{1mm}
 
-  Diagram zachycuje, kdo komu a v jakém pořadí posílá volání.
+  Čas plyne shora dolů; smyčka značí, že objekt volá vlastní metodu.
 \end{frame}
 
 \begin{frame}{Diagram tříd vs. sekvenční diagram}

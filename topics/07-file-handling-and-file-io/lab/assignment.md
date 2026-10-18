@@ -91,7 +91,86 @@ s kopiemi nebo prázdnými zkušebními soubory.
 
 **Rozšíření:** Uložte změny do `rename.log` a umožněte jejich vrácení.
 
-## 5. Generátor SVG grafu ★★★
+## 5. Textový a binární soubor ★★★
+
+Uložte celá čísla 0 až 65 535 jednou jako text (jedno číslo na řádku)
+a podruhé jako dva bajty bez znaménka pomocí `int.to_bytes()`.
+
+1. Porovnejte velikosti souborů pomocí `Path.stat().st_size`.
+2. Oba soubory znovu načtěte.
+3. Ověřte, že obnovené seznamy jsou stejné.
+4. Vysvětlete, proč binární soubor není čitelný v běžném editoru.
+
+**Rozšíření:** Prozkoumejte pořadí bajtů `"little"` a `"big"`.
+
+## 6. Sloučení měření z více souborů ★★★★
+
+Vedle programu vytvořte pouze dva vstupní soubory. Do
+`measurements_a.txt` zkopírujte:
+
+```text
+2026-09-15 08:00;20.4
+2026-09-15 16:00;22.1
+2026-09-16 08:00;20.8
+```
+
+Do `measurements_b.txt` zkopírujte:
+
+```text
+2026-09-15 12:00;21.7
+2026-09-16 12:00;23.1
+2026-09-16 16:00;chyba
+2026-09-16 20:00;19.7
+```
+
+Každý platný řádek tedy obsahuje datum, čas, středník a teplotu. Protože datum
+i čas mají pevný formát od největší jednotky k nejmenší, řetězce jako
+`2026-09-16 08:00` lze řadit přímo chronologicky.
+
+Vytvořte program, který:
+
+1. postupně načte `measurements_a.txt` a `measurements_b.txt`,
+2. spojí platná měření z obou souborů do jednoho seznamu,
+3. seřadí je podle data a času,
+4. uloží je do `combined_measurements.txt`,
+5. pro každý den vypočítá minimum, maximum a průměr,
+6. vytvoří `import_report.txt` se souhrny a seznamem chybných vstupů.
+
+U každého chybného vstupu uveďte soubor, číslo řádku a důvod. Chybou může být
+například chybějící oddělovač nebo hodnota, kterou nelze převést na `float`.
+Jeden chybný řádek nesmí zastavit zpracování ostatních dat.
+
+Rozdělte řešení alespoň do funkcí:
+
+```python
+def load_file(path):
+    """Načte platná měření a chyby z jednoho souboru."""
+
+def merge_measurements(paths):
+    """Spojí a seřadí měření ze zadaných souborů."""
+
+def summarize_by_day(measurements):
+    """Vrátí statistiky pro jednotlivé dny."""
+
+def write_outputs(measurements, summaries, errors):
+    """Zapíše spojená data a report o importu."""
+```
+
+Příklad části reportu:
+
+```text
+2026-09-16: min 19.7 °C, max 23.1 °C, průměr 21.2 °C
+
+Přeskočené vstupy:
+measurements_b.txt, řádek 3: neplatná teplota "chyba"
+```
+
+Vstupní soubory program nesmí měnit ani přepisovat.
+
+**Rozšíření:** Umožněte uživateli zadat libovolný počet vstupních souborů
+místo dvou pevně určených názvů.
+
+## 7. Generátor SVG grafu ★★★★
 
 Navazujte na měření z úlohy 3. Vytvořte `temperature_chart.svg`, který lze
 otevřít v prohlížeči a obsahuje název, osy, bod pro každé platné měření
@@ -106,32 +185,3 @@ a lomenou čáru spojující body.
 Souřadnice měření převeďte do prostoru obrázku pomocí samostatných funkcí.
 
 **Rozšíření:** Vyznačte minimum, maximum a čáru průměru.
-
-## 6. Textový a binární soubor ★★★
-
-Uložte celá čísla 0 až 65 535 jednou jako text (jedno číslo na řádku)
-a podruhé jako dva bajty bez znaménka pomocí `int.to_bytes()`.
-
-1. Porovnejte velikosti souborů pomocí `Path.stat().st_size`.
-2. Oba soubory znovu načtěte.
-3. Ověřte, že obnovené seznamy jsou stejné.
-4. Vysvětlete, proč binární soubor není čitelný v běžném editoru.
-
-**Rozšíření:** Prozkoumejte pořadí bajtů `"little"` a `"big"`.
-
-## 7. Virtuální soubor a testování ★★★★
-
-Upravte `text_statistics`, aby místo cesty přijímala libovolný otevřený
-textový soubor. V `main()` jí předejte skutečný soubor a potom stejné chování
-ověřte bez disku pomocí `io.StringIO`:
-
-```python
-from io import StringIO
-
-sample = StringIO("první řádek\n\ndruhý řádek\n")
-```
-
-Připravte alespoň čtyři testovací vstupy: prázdný text, jeden řádek,
-prázdné řádky a text s českými znaky. Pro každý uveďte očekávaný výsledek.
-
-**Rozšíření:** Napište obdobnou funkci pro `io.BytesIO`.
