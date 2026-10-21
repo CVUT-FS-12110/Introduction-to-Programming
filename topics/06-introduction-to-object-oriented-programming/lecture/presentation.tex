@@ -51,6 +51,7 @@
     \item Rozlišit třídu, objekt a instanci.
     \item Vytvořit třídu s atributy, konstruktorem a metodami.
     \item Vysvětlit roli \texttt{self} a sledovat změny stavu objektu.
+    \item Rozlišit sdílený odkaz, mělkou kopii a hlubokou kopii.
     \item Číst jednoduchý diagram tříd a sekvenční diagram.
     \item Použít dědičnost, přepsání metody a polymorfismus.
   \end{itemize}
@@ -180,7 +181,7 @@ print(a.balance, b.balance)  # 900 700
   Proměnné \texttt{a} a \texttt{b} odkazují na dva různé objekty.
 \end{frame}
 
-% 0:16--0:23
+% 0:16--0:27 (včetně opakování referencí a kopií)
 \begin{frame}[fragile]{Metoda může vracet hodnotu}
 \begin{lstlisting}[style=python]
 class BankAccount:
@@ -234,6 +235,86 @@ eva.transfer_to(petr, 300)
   \end{alertblock}
 \end{frame}
 
+\begin{frame}[fragile]{Opakování: přiřazení a neměnné hodnoty}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\normalsize]
+a = 10
+b = a
+b += 5
+print(a, b)                 # 10 15
+\end{lstlisting}
+  \begin{itemize}
+    \item Proměnná je jméno odkazující na objekt; \texttt{b = a} objekt nekopíruje.
+    \item \texttt{int}, \texttt{float}, \texttt{bool} a \texttt{str} jsou \term{neměnné} typy.
+    \item \texttt{b += 5} zde naváže jméno \texttt{b} na výsledek výpočtu; hodnotu \texttt{a} nezmění.
+  \end{itemize}
+  Chování připomíná kopii hodnoty, ale pravidlo přiřazení je pro všechny typy stejné.
+\end{frame}
+
+\begin{frame}[fragile]{Opakování: seznam a objekt lze měnit}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\normalsize]
+items = [10]
+alias = items
+alias.append(20)
+print(items)               # [10, 20]
+a = BankAccount("Eva", 700)
+b = a
+b.deposit(100)
+print(a.balance, a is b)    # 800 True
+\end{lstlisting}
+  \texttt{list}, \texttt{dict} i naše účty jsou \term{měnitelné}.
+  \texttt{is} porovnává totožnost objektů; \texttt{==} porovnává jejich hodnoty.
+\end{frame}
+
+\begin{frame}[fragile]{Mělká kopie (shallow copy)}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\normalsize]
+original = [[1, 2], [3, 4]]
+shallow = original.copy()
+shallow.append([5, 6])
+print(len(original))       # 2
+shallow[0].append(99)
+print(original[0])         # [1, 2, 99]
+\end{lstlisting}
+  \begin{itemize}
+    \item Vznikne nový vnější seznam, ale odkazy na jeho prvky se sdílejí.
+    \item Vnořený seznam proto změnou zasáhneme i přes kopii.
+    \item Pro seznam má stejný účinek \texttt{original[:]} nebo \texttt{list(original)}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Hluboká kopie (deep copy)}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\normalsize]
+from copy import deepcopy
+original = [[1, 2], [3, 4]]
+deep = deepcopy(original)
+deep[0].append(99)
+print(original[0])         # [1, 2]
+print(deep[0])             # [1, 2, 99]
+print(deep[0] is original[0])  # False
+\end{lstlisting}
+  \begin{itemize}
+    \item Rekurzivně kopíruje i vnořené měnitelné objekty.
+    \item Neměnné hodnoty mohou zůstat sdílené; jejich obsah nelze změnit.
+    \item Použijeme ji, když potřebujeme nezávisle měnit i vnitřní data.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Kopírování vlastních objektů}
+\begin{lstlisting}[style=python,basicstyle=\ttfamily\normalsize]
+from copy import copy, deepcopy
+accounts = [BankAccount("Eva", 700)]
+shallow = copy(accounts)
+deep = deepcopy(accounts)
+shallow[0].deposit(100)
+deep[0].deposit(50)
+print(accounts[0].balance, deep[0].balance)  # 800 750
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{copy(obj)} vytvoří mělkou kopii i běžné vlastní instance: atributy sdílí.
+    \item \texttt{deepcopy(obj)} kopíruje i objekty v jejích atributech.
+    \item Kopírujeme data, která mají být nezávislá; sdílené účty obvykle chceme sdílet dál.
+  \end{itemize}
+\end{frame}
+
 \begin{frame}[fragile]{Kdy třída pomáhá?}
 \begin{lstlisting}[style=python]
 accounts = [
@@ -248,7 +329,7 @@ for account in accounts:
   Třída dává všem prvkům stejné rozhraní a každému vlastní stav.
 \end{frame}
 
-% 0:23--0:30
+% 0:27--0:32
 \begin{frame}{UML diagram třídy}
   \centering
   \begin{tikzpicture}
@@ -342,7 +423,7 @@ for account in accounts:
   \end{columns}
 \end{frame}
 
-% 0:30--0:38
+% 0:32--0:39
 \begin{frame}{Dědičnost: specializace existující třídy}
   \begin{block}{Dědičnost}
     Potomek přebírá chování rodiče a může ho rozšířit nebo upravit.
@@ -431,7 +512,7 @@ for payment in [CashPayment(), CardPayment()]:
   Kód používá společné rozhraní a nemusí větvit podle konkrétního typu.
 \end{frame}
 
-% 0:38--0:42
+% 0:39--0:43
 \begin{frame}{Kompozice: objekt obsahuje jiné objekty}
   \begin{itemize}
     \item \texttt{Warehouse} uchovává seznam objektů \texttt{Item}.
@@ -469,7 +550,7 @@ print(Vector2D(3, 4))    # (3, 4)
   \end{block}
 \end{frame}
 
-% 0:42--0:45
+% 0:43--0:45
 \begin{frame}{Časté chyby}
   \begin{itemize}
     \item Chybí dvojtečka za \texttt{class} nebo \texttt{def}.
@@ -486,6 +567,7 @@ print(Vector2D(3, 4))    # (3, 4)
     \item Jaký je rozdíl mezi třídou a objektem?
     \item Na co odkazuje \texttt{self} při \texttt{a.deposit(100)}?
     \item Proč mají dva účty rozdílný zůstatek?
+    \item Kdy nestačí mělká kopie seznamu objektů?
     \item Co ukazuje diagram tříd a co sekvenční diagram?
     \item Co se stane, když potomek definuje metodu stejného jména jako rodič?
   \end{enumerate}
