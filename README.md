@@ -12,7 +12,7 @@
 1. [Používání knihoven a dokumentování kódu](topics/08-libraries-and-documentation/README.md)
 1. [Ukládání a serializace dat](topics/09-data-storage-and-serialization/README.md)
 1. [Základní principy testování](topics/10-testing-fundamentals/README.md)
-1. Sdílené proměnné a komunikace mezi částmi programu.
+1. [Sdílené proměnné a komunikace mezi částmi programu](topics/shared-variables-and-communication/README.md)
 1. Běžně používané datové typy a třídy.
 1. Analýza výstupů programu (profiling)
 
