@@ -1,8 +1,27 @@
-# Úkoly na cvičení
+# Cvičení: ukládání dat a serializace
 
-Úlohy jsou seřazené od jednodušších k náročnějším. Začněte první a pokračujte dál podle času.
+Cvičení je **samostatná práce na 90 minut**. Úlohy na sebe tematicky
+navazují a jsou seřazené od nejjednodušších po nejtěžší. Nečeká se, že
+stihnete všechny; pokračujte podle času a jistoty v předchozích krocích.
 
-## Úloha 1 — Uložení a načtení JSONu
+| Obtížnost | Co znamená |
+|-----------|------------|
+| ★ | přímé procvičení JSONu z přednášky |
+| ★★ | propojení více operací a obnova datových typů |
+| ★★★ | práce s vnořenou strukturou a vlastní rozklad problému |
+| ★★★★ | rozšiřující úloha s návrhem vztahů mezi tabulkami |
+
+Pro celé cvičení platí:
+
+- pracujte v jednom novém adresáři a pro každou úlohu použijte samostatný
+  program,
+- soubory otevírejte pomocí `with`, textové formáty s
+  `encoding="utf-8"` a CSV také s `newline=""`,
+- vstupní soubor nepřepisujte, pokud to zadání výslovně nepožaduje,
+- načtení, převod dat a zápis rozdělte do samostatných funkcí,
+- po načtení ověřte nejen vypsanou hodnotu, ale také její datový typ.
+
+## Úloha 1 — Uložení a načtení JSONu ★
 
 Máte data:
 
@@ -28,7 +47,7 @@ Napište program, který:
 
 ---
 
-## Úloha 2 — Úprava dat v JSONu
+## Úloha 2 — Úprava dat v JSONu ★
 
 Navazujte na soubor `games.json`.
 
@@ -48,7 +67,7 @@ Napište program, který:
 
 ---
 
-## Úloha 3 — CSV katalog produktů
+## Úloha 3 — CSV katalog produktů ★★
 
 Máte data:
 
@@ -78,7 +97,7 @@ Napište program, který:
 
 ---
 
-## Úloha 4 — Převod plochých dat mezi CSV a JSON
+## Úloha 4 — Převod plochých dat mezi CSV a JSON ★★
 
 Vytvořte program `convert_products.py`, který:
 
@@ -96,7 +115,7 @@ Vytvořte program `convert_products.py`, který:
 
 ---
 
-## Úloha 5 — Vnořená data v JSONu
+## Úloha 5 — Vnořená data v JSONu ★★★
 
 Máte data o školních třídách:
 
@@ -138,7 +157,7 @@ Napište program, který:
 
 ---
 
-## Úloha 6 — Jedna vnořená struktura, dvě CSV tabulky
+## Úloha 6 — Jedna vnořená struktura, dvě CSV tabulky ★★★★
 
 Máte data o strojích a uživatelích:
 

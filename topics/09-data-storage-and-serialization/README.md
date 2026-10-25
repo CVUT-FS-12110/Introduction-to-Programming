@@ -12,13 +12,13 @@ Soubory, IO, JSON, CSV
 
 ## Přednáška
 
-Slajdy zatím nejsou k dispozici.
+- [Slajdy: ukládání a serializace dat](lecture/presentation.pdf)
 
 Přehled serializace dat pro ukládání a přenos: JSON, CSV a jednoduché
 binární formáty. Studenti se naučí ukládat strukturovaná data,
 znovu je načítat a uvažovat o kompromisu mezi čitelností a velikostí dat.
 
-- [Komentované příklady: ukládání dat a serializace](seminar.md)
+- [Komentované příklady: ukládání dat a serializace](seminar/seminar.md)
 
 ### Osnova
 
@@ -28,11 +28,13 @@ znovu je načítat a uvažovat o kompromisu mezi čitelností a velikostí dat.
 4. Výkonnostní a bezpečnostní aspekty
 5. Kdy použít který formát
 
+## Domácí příprava
+
+[Zadání domácí přípravy: uložení knih do JSONu a CSV](prework/assignment.md)
+
 ## Cvičení
 
-Úkol pro domácí přípravu je [zde](assignment.md).
-
-Úkoly pro samostatnou práci na cvičení jsou [zde](tasks.md).
+[Zadání cvičení](lab/assignment.md)
 
 
 Příklad: uložení a načtení JSON
@@ -52,5 +54,7 @@ print(loaded)
 
 ## Zdroje
 
-- Specifikace a tutoriály k JSON
-- Dokumentace modulů `json` a `csv` v Pythonu
+- [Python dokumentace: JSON](https://docs.python.org/3/library/json.html)
+- [Python dokumentace: CSV](https://docs.python.org/3/library/csv.html)
+- [Python dokumentace: pickle](https://docs.python.org/3/library/pickle.html)
+- [RFC 8259 — The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc8259)

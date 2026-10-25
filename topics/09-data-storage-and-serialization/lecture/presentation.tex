@@ -1,0 +1,523 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[czech]{babel}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,babel}
+
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+\newcommand{\LANG}{CZ}
+\newcommand{\FRONTPAGE}{dark}
+\title{Ukládání a serializace dat}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{} \institute{} \date{}
+\renewcommand{\headlineA}{} \renewcommand{\headlineB}{} \renewcommand{\headlineC}{}
+
+\definecolor{CodeBlue}{RGB}{38,83,125}
+\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{CodeGreen}{RGB}{38,125,94}
+\definecolor{WarningRed}{RGB}{170,45,45}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\lstdefinestyle{python}{language=Python,basicstyle=\ttfamily\large,
+  keywordstyle=\color{CodeBlue}\bfseries,stringstyle=\color{CodeGreen},
+  commentstyle=\color{gray},showstringspaces=false,columns=fullflexible,keepspaces=true}
+\lstdefinestyle{pythonSmall}{style=python,basicstyle=\ttfamily\normalsize}
+\lstdefinestyle{data}{basicstyle=\ttfamily\normalsize,showstringspaces=false,
+  columns=fullflexible,keepspaces=true}
+
+\begin{document}
+
+% 0:00--0:01
+\begin{frame}
+  \clearpage\thispagestyle{empty}\titlepage
+\end{frame}
+
+% 0:01--0:04
+\begin{frame}{Co si dnes odnesete?}
+  \begin{itemize}
+    \item Vysvětlit serializaci a deserializaci.
+    \item Rozlišit datový model, formát a soubor.
+    \item Uložit a načíst data pomocí modulů \texttt{json} a \texttt{csv}.
+    \item Předpovědět, které datové typy se při převodu zachovají.
+    \item Zvolit formát podle tvaru dat, příjemce a důvěryhodnosti zdroje.
+    \item Bezpečně posoudit použití binárního formátu \texttt{pickle}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na co navazujeme?}
+  \begin{itemize}
+    \item Slovníky a seznamy nesou strukturovaná data v paměti.
+    \item \texttt{with open(...)} bezpečně spravuje otevřený soubor.
+    \item UTF-8 převádí text na bajty a zpět.
+    \item Moduly standardní knihovny importujeme a používáme přes jejich API.
+    \item Očekávatelné chyby umíme zachytit pomocí \texttt{try}/\texttt{except}.
+  \end{itemize}
+  \begin{block}{Z domácí přípravy}
+    Proč se po načtení knih z CSV změnily \texttt{year} a \texttt{available} na řetězce?
+  \end{block}
+\end{frame}
+
+\begin{frame}{Objekt v paměti po ukončení programu zmizí}
+  \begin{itemize}
+    \item Python pracuje s objekty: seznamy, slovníky, čísly a instancemi tříd.
+    \item Soubor nebo síť přenáší pouze posloupnost znaků či bajtů.
+    \item Příští spuštění programu potřebuje strukturu z této posloupnosti obnovit.
+  \end{itemize}
+  \begin{block}{Otázka}
+    Jak zapíšeme strukturu dat tak, aby její význam znal i budoucí program?
+  \end{block}
+\end{frame}
+
+% 0:04--0:08
+\begin{frame}{Serializace je převod reprezentace}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=18mm,font=\normalsize,
+      box/.style={draw,rounded corners,fill=SoftGray,minimum width=28mm,minimum height=12mm,align=center}]
+    \node[box] (object) {Python objekty\\\texttt{list}, \texttt{dict}, \texttt{int}};
+    \node[box,right=of object] (encoded) {text nebo bajty\\podle formátu};
+    \node[box,right=of encoded] (restored) {nové Python\\objekty};
+    \draw[->,thick,CodeBlue] (object)--node[above,font=\small]{serializace}(encoded);
+    \draw[->,thick,CodeBlue] (encoded)--node[above,font=\small]{deserializace}(restored);
+  \end{tikzpicture}
+  \vspace{7mm}
+
+  \term{Deserializace nevzkřísí původní objekt.} Vytvoří nové objekty z uložené reprezentace.
+\end{frame}
+
+\begin{frame}{Formát není totéž co místo uložení}
+  \begin{description}
+    \item[Datový model] Jaké hodnoty a vztahy potřebujeme vyjádřit?
+    \item[Formát] Jak budou data zapsána? JSON, CSV, binární formát.
+    \item[Médium] Kde reprezentace leží? Soubor, databáze, síťová zpráva.
+    \item[Kódování] Jak se text převede na bajty? Typicky UTF-8.
+  \end{description}
+  \begin{alertblock}{Přípona nestačí}
+    Soubor pojmenovaný \texttt{books.json} nemusí obsahovat platný JSON ani očekávaná data.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Formát vybíráme podle budoucího čtenáře}
+  \begin{enumerate}
+    \item Je struktura plochá tabulka, nebo obsahuje vnoření?
+    \item Musí data číst člověk, tabulkový procesor, Python, nebo více jazyků?
+    \item Potřebujeme zachovat čísla, logické hodnoty a chybějící hodnotu?
+    \item Jak velká data budou a musíme je zpracovávat postupně?
+    \item Je zdroj důvěryhodný a jak dlouho mají data vydržet?
+  \end{enumerate}
+  \vspace{2mm}
+  \term{Nejdřív požadavky, potom formát.}
+\end{frame}
+
+% 0:08--0:19
+\begin{frame}{JSON má malý přenositelný datový model}
+  \begin{description}
+    \item[objekt] dvojice klíč--hodnota; klíč je řetězec,
+    \item[pole] uspořádaná posloupnost hodnot,
+    \item[skalární hodnoty] řetězec, číslo, \texttt{true}, \texttt{false}, \texttt{null}.
+  \end{description}
+  \begin{block}{JSON není Python}
+    Podobná syntaxe neznamená stejné typy: JSON nezná n-tici, množinu, datum ani vlastní třídu.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Základní mapování typů}
+  \centering
+  \begin{tabular}{lll}
+    \textbf{Python} & \textbf{JSON} & \textbf{po načtení} \\
+    \hline
+    \texttt{dict} se stringovými klíči & object & \texttt{dict} \\
+    \texttt{list} & array & \texttt{list} \\
+    \texttt{tuple} & array & \texttt{list} \\
+    \texttt{str} & string & \texttt{str} \\
+    \texttt{int}, \texttt{float} & number & číslo \\
+    \texttt{True}, \texttt{False} & true, false & \texttt{bool} \\
+    \texttt{None} & null & \texttt{None} \\
+  \end{tabular}
+  \vspace{5mm}
+
+  „Lze zapsat“ neznamená vždy „vrátí se přesně stejný typ“.
+\end{frame}
+
+\begin{frame}[fragile]{Ne každý Python objekt projde beze změny}
+\begin{lstlisting}[style=pythonSmall]
+import json
+
+data = {
+    "position": (10, 20),
+    "tags": {"python", "data"},
+}
+
+text = json.dumps(data)  # TypeError kvuli set
+\end{lstlisting}
+  \begin{itemize}
+    \item N-tice by se po načtení vrátila jako seznam.
+    \item Množina není součástí datového modelu JSON.
+    \item Datum či vlastní objekt musíme převést podle vlastní dohody.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{json.dump} zapisuje do otevřeného souboru}
+\begin{lstlisting}[style=pythonSmall]
+import json
+
+with open("books.json", "w", encoding="utf-8") as file:
+    json.dump(
+        books,
+        file,
+        ensure_ascii=False,
+        indent=2,
+    )
+\end{lstlisting}
+  \begin{itemize}
+    \item Režim \texttt{"w"} původní obsah přepíše.
+    \item \texttt{json.dump} očekává textový soubor, ne binární.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{json.load} obnoví data ze souboru}
+\begin{lstlisting}[style=python]
+import json
+
+with open("books.json", encoding="utf-8") as file:
+    loaded_books = json.load(file)
+
+print(type(loaded_books))            # list
+print(type(loaded_books[0]["year"])) # int
+\end{lstlisting}
+  Načtený seznam je nový objekt. Změna \texttt{loaded\_books} sama o sobě soubor nezmění.
+\end{frame}
+
+\begin{frame}{Dvě souborové a dvě řetězcové funkce}
+  \centering
+  \begin{tabular}{lll}
+    \textbf{Funkce} & \textbf{Vstup nebo výstup} & \textbf{Použití} \\
+    \hline
+    \texttt{json.dump(data, file)} & otevřený soubor & zápis \\
+    \texttt{json.load(file)} & otevřený soubor & čtení \\
+    \texttt{json.dumps(data)} & vrací \texttt{str} & text, síť, log \\
+    \texttt{json.loads(text)} & přijímá \texttt{str} & text v paměti \\
+  \end{tabular}
+  \vspace{6mm}
+
+  Písmeno \texttt{s} můžeme číst jako \emph{string}.
+\end{frame}
+
+\begin{frame}[fragile]{Čitelnost mění zápis, ne význam dat}
+\begin{lstlisting}[style=pythonSmall]
+compact = json.dumps(books, ensure_ascii=False)
+readable = json.dumps(
+    books,
+    ensure_ascii=False,
+    indent=2,
+)
+\end{lstlisting}
+  \begin{description}
+    \item[\texttt{ensure\_ascii=False}] ponechá české znaky čitelné.
+    \item[\texttt{indent=2}] přidá odsazení a nové řádky.
+  \end{description}
+  Čitelnější soubor bývá větší; po načtení však dostaneme stejná data.
+\end{frame}
+
+\begin{frame}[fragile]{Poškozený JSON je očekávatelná chyba vstupu}
+\begin{lstlisting}[style=pythonSmall]
+import json
+
+try:
+    with open("books.json", encoding="utf-8") as file:
+        books = json.load(file)
+except FileNotFoundError:
+    print("Soubor neexistuje.")
+except json.JSONDecodeError as error:
+    print("Neplatny JSON:", error)
+\end{lstlisting}
+  Zachytáváme konkrétní chyby, kterým rozumíme. Chybu v dalším zpracování neskrýváme širokým \texttt{except Exception}.
+\end{frame}
+
+\begin{frame}{Platný JSON ještě nemusí mít správný obsah}
+  Oba texty jsou syntakticky platný JSON:
+  \begin{columns}[T]
+    \begin{column}{.44\textwidth}
+      \begin{block}{Očekáváme}
+        seznam knih se jmény polí \texttt{title}, \texttt{author}, \texttt{year}
+      \end{block}
+    \end{column}
+    \begin{column}{.44\textwidth}
+      \begin{alertblock}{Můžeme dostat}
+        číslo \texttt{42}, prázdný objekt nebo knihu bez roku
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+  \vspace{5mm}
+
+  Po deserializaci kontrolujeme \term{strukturu, povinná pole, typy a povolené hodnoty}.
+\end{frame}
+
+% 0:19--0:31
+\begin{frame}{CSV popisuje posloupnost řádků a polí}
+  \begin{itemize}
+    \item První řádek může obsahovat názvy sloupců.
+    \item Každý další řádek představuje jeden záznam.
+    \item Oddělovačem nemusí být vždy čárka; běžný je i středník.
+    \item Uvozovky dovolují uložit oddělovač nebo nový řádek uvnitř pole.
+  \end{itemize}
+  \begin{block}{Důležitý důsledek}
+    CSV přirozeně vyjadřuje plochou tabulku, ale samo nenese datové typy ani vztahy mezi tabulkami.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{DictWriter} mapuje slovník na řádek}
+\begin{lstlisting}[style=pythonSmall]
+import csv
+
+fields = ["title", "author", "year", "available"]
+
+with open("books.csv", "w", encoding="utf-8",
+          newline="") as file:
+    writer = csv.DictWriter(file, fieldnames=fields)
+    writer.writeheader()
+    writer.writerows(books)
+\end{lstlisting}
+  \texttt{fieldnames} určuje sloupce i jejich pořadí.
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{DictReader} mapuje řádek na slovník}
+\begin{lstlisting}[style=python]
+import csv
+
+with open("books.csv", encoding="utf-8",
+          newline="") as file:
+    reader = csv.DictReader(file)
+    loaded_books = list(reader)
+
+print(loaded_books[0])
+\end{lstlisting}
+  Názvy klíčů převezme z hlavičky. Iterátor lze zpracovávat i postupně bez převodu na seznam.
+\end{frame}
+
+\begin{frame}[fragile]{CSV vrací pole jako řetězce}
+\begin{lstlisting}[style=python]
+book = loaded_books[0]
+
+print(book["year"], type(book["year"]))
+# 1965 <class 'str'>
+
+print(book["available"],
+      type(book["available"]))
+# True <class 'str'>
+\end{lstlisting}
+  CSV neví, zda \texttt{1965} znamená rok, identifikátor, nebo text. Význam sloupců je součástí naší dohody.
+\end{frame}
+
+\begin{frame}[fragile]{Typy obnovujeme explicitně}
+\begin{lstlisting}[style=pythonSmall,basicstyle=\ttfamily\small]
+def parse_bool(text):
+    normalized = text.strip().lower()
+    if normalized == "true":
+        return True
+    if normalized == "false":
+        return False
+    raise ValueError("Expected true or false")
+
+for book in loaded_books:
+    book["year"] = int(book["year"])
+    book["available"] = parse_bool(book["available"])
+\end{lstlisting}
+  Převod je dobré soustředit na jedno místo a při neplatném vstupu selhat srozumitelně.
+\end{frame}
+
+\begin{frame}[fragile]{Častá past: \texttt{bool("False")} je \texttt{True}}
+\begin{lstlisting}[style=python]
+print(bool(""))       # False
+print(bool("False"))  # True
+print(bool("0"))      # True
+\end{lstlisting}
+  \begin{block}{Proč?}
+    \texttt{bool} u řetězce testuje, zda je neprázdný. Neinterpretuje jeho textový obsah.
+  \end{block}
+  Pro CSV proto používáme jasně definovaný převod povolených hodnot.
+\end{frame}
+
+\begin{frame}[fragile]{CSV neskládáme ručně pomocí \texttt{split}}
+\begin{lstlisting}[style=data]
+title,author,note
+Duna,Frank Herbert,"science fiction, classic"
+\end{lstlisting}
+  \begin{itemize}
+    \item Čárka uvnitř poznámky není nový sloupec, protože pole je v uvozovkách.
+    \item Modul \texttt{csv} řeší uvozovky, oddělovače i konce řádků.
+    \item Soubor otevíráme s \texttt{newline=""}, aby konce řádků spravoval modul.
+  \end{itemize}
+  \term{CSV je jednoduché na pohled, ale má pravidla.}
+\end{frame}
+
+\begin{frame}{Stejné knihy, jiná dohoda}
+  \centering
+  \begin{tabular}{lll}
+    & \textbf{JSON} & \textbf{CSV} \\
+    \hline
+    tvar & seznam slovníků & tabulka \\
+    čísla a boolean & zachová & načte jako text \\
+    vnoření & přirozené & nepohodlné \\
+    tabulkový editor & méně pohodlný & přirozený \\
+    čtení po řádcích & ne běžný JSON dokument & přirozené \\
+    schéma & mimo formát & mimo formát \\
+  \end{tabular}
+  \vspace{5mm}
+
+  Ani jeden formát není obecně lepší. Každý zpřístupňuje jiné kompromisy.
+\end{frame}
+
+% 0:31--0:36
+\begin{frame}[fragile]{Vnořená data patří přirozeně do JSONu}
+\begin{lstlisting}[style=pythonSmall]
+course = {
+    "name": "Programovani",
+    "students": [
+        {"name": "Anna", "score": 92},
+        {"name": "Petr", "score": 71},
+    ],
+}
+\end{lstlisting}
+  Objekt obsahuje pole dalších objektů. V JSONu zůstane vztah viditelný přímo ve struktuře.
+\end{frame}
+
+\begin{frame}{Tabulky vyjadřují vztah pomocí identifikátoru}
+  \centering
+  \begin{tikzpicture}[>=Latex,node distance=18mm,font=\normalsize,
+      box/.style={draw,rounded corners,fill=SoftGray,minimum width=45mm,minimum height=22mm,align=left}]
+    \node[box] (machines) {\textbf{machines.csv}\\id, hostname, location\\101, alpha, Lab A};
+    \node[box,right=of machines] (users) {\textbf{users.csv}\\id, name, machine\_id\\1, Anna, 101};
+    \draw[<->,thick,CodeBlue] (machines)--node[above]{\texttt{machine\_id}}(users);
+  \end{tikzpicture}
+  \vspace{6mm}
+
+  Vnořenou strukturu lze rozdělit do více tabulek. Vazbu musíme při načtení znovu spojit a ověřit, že odkazované ID existuje.
+\end{frame}
+
+% 0:36--0:40
+\begin{frame}{Binární formát ukládá bajty, ne čitelný text}
+  \begin{itemize}
+    \item Může být kompaktní nebo rychlý pro konkrétní účel.
+    \item Člověk jej obvykle nezkontroluje v textovém editoru.
+    \item Čtenář musí přesně znát formát a jeho verzi.
+    \item „Binární“ samo o sobě neznamená menší, rychlejší ani bezpečnější.
+  \end{itemize}
+  \begin{block}{Příklady}
+    Obrázky, komprimované archivy, databázové soubory a Python \texttt{pickle}.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{pickle} pohodlně uloží Python objekty}
+\begin{lstlisting}[style=python]
+import pickle
+
+with open("books.pkl", "wb") as file:
+    pickle.dump(books, file)
+
+with open("books.pkl", "rb") as file:
+    loaded_books = pickle.load(file)
+\end{lstlisting}
+  Používá binární režimy \texttt{"wb"} a \texttt{"rb"} a je úzce spojený s Pythonem.
+\end{frame}
+
+\begin{frame}{Nedůvěryhodný \texttt{pickle} nikdy nenačítáme}
+  \begin{alertblock}{Bezpečnostní hranice}
+    \texttt{pickle.load} může při načítání spustit libovolný kód. Soubor od cizího člověka, z webu nebo z neověřeného úložiště proto nenačítáme.
+  \end{alertblock}
+  \begin{itemize}
+    \item \texttt{pickle} není bezpečný výměnný formát.
+    \item Není vhodný pro komunikaci mezi různými jazyky.
+    \item Pro dlouhodobá data může být citlivý na změny tříd a programu.
+  \end{itemize}
+  Pro výměnu běžných dat preferujeme explicitní formát, například JSON.
+\end{frame}
+
+% 0:40--0:43
+\begin{frame}{Velikost a rychlost nejdřív měříme}
+  \begin{itemize}
+    \item Odsazený JSON je větší než kompaktní JSON.
+    \item CSV může být úsporné pro plochá data, protože neopakuje názvy polí.
+    \item Komprese může rozdíl mezi textovým a binárním formátem zásadně změnit.
+    \item Čas často spotřebuje disk, síť nebo další zpracování, ne parser.
+  \end{itemize}
+  \begin{block}{Praktické pravidlo}
+    Nejprve volte podle správnosti, přenositelnosti a jednoduchosti. Optimalizujte až podle měření na skutečných datech.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Velká data nechceme vždy načíst celá}
+  \begin{description}
+    \item[CSV] \texttt{DictReader} lze procházet řádek po řádku.
+    \item[JSON] Jeden velký objekt či pole \texttt{json.load} běžně načte do paměti celé.
+    \item[JSON Lines] Každý řádek je samostatný JSON objekt; lze jej zpracovat postupně.
+  \end{description}
+  \begin{alertblock}{Pozor}
+    JSON Lines je jiná dohoda než jeden běžný JSON dokument. Odesílatel i příjemce ji musí znát.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Rozhodovací mapa}
+  \centering
+  \begin{tabular}{ll}
+    \textbf{Potřeba} & \textbf{Rozumný výchozí formát} \\
+    \hline
+    jednoduchá tabulka & CSV \\
+    otevření v tabulkovém procesoru & CSV \\
+    vnořená struktura a běžné typy & JSON \\
+    výměna mezi různými jazyky & JSON \\
+    postupné zpracování záznamů & CSV nebo JSON Lines \\
+    vlastní důvěryhodný Python mezivýsledek & někdy \texttt{pickle} \\
+    dlouhodobá či důležitá data & dokumentovaný stabilní formát \\
+  \end{tabular}
+\end{frame}
+
+% 0:43--0:45
+\begin{frame}{Časté chyby}
+  \begin{itemize}
+    \item Přepsání jediného zdrojového souboru režimem \texttt{"w"} před ověřením výsledku.
+    \item Záměna \texttt{dump}/\texttt{dumps} nebo \texttt{load}/\texttt{loads}.
+    \item Předpoklad, že CSV obnoví čísla a logické hodnoty samo.
+    \item Použití \texttt{bool(text)} pro převod textové logické hodnoty.
+    \item Ruční rozdělování CSV pomocí \texttt{split(",")}.
+    \item Důvěra v příponu souboru bez ověření obsahu.
+    \item Načtení nedůvěryhodného souboru pomocí \texttt{pickle}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rychlá kontrola porozumění}
+  \begin{enumerate}
+    \item Jaký je rozdíl mezi serializací a zápisem souboru?
+    \item Co vrátí JSON po uložení a načtení n-tice?
+    \item Proč je rok načtený přes \texttt{DictReader} řetězec?
+    \item Proč \texttt{bool("False")} nepřevede text podle očekávání?
+    \item Kdy je přirozenější CSV a kdy JSON?
+    \item Za jakých podmínek lze bezpečně použít \texttt{pickle.load}?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Shrnutí}
+  \begin{itemize}
+    \item Serializace převádí datový model na text nebo bajty; deserializace vytváří nové objekty.
+    \item JSON zachovává běžné typy a přirozeně vyjadřuje vnoření.
+    \item CSV je přirozená tabulka, ale typy sloupců obnovujeme sami.
+    \item Formát volíme podle tvaru dat, příjemce, velikosti a důvěryhodnosti.
+    \item Platná syntaxe nezaručuje správný obsah; načtená data validujeme.
+    \item Nedůvěryhodný \texttt{pickle} nikdy nenačítáme.
+  \end{itemize}
+  \begin{block}{Navazující komentované příklady}
+    Porovnáme JSON a CSV nad stejnými daty, obnovíme typy a převedeme tabulku do vnořené struktury.
+  \end{block}
+\end{frame}
+
+\end{document}
