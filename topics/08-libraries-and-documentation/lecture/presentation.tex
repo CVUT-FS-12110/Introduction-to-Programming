@@ -215,8 +215,8 @@ print(count_words("  one   two  "))
     \node[box,fill=SoftGray] (app) {\texttt{main.py}};
     \node[box,fill=CodeBlue!12,right=of app] (api) {\texttt{textkit}};
     \node[box,fill=SoftGray,right=of api] (inside) {\texttt{core.py}, \texttt{files.py}};
-    \draw[->,very thick,CodeBlue] (app)--node[above]{veřejné API}(api);
-    \draw[->,thick,gray] (api)--node[above]{vnitřek}(inside);
+    \draw[->,very thick,CodeBlue] (app)--node[above=7mm,font=\small]{veřejné API}(api);
+    \draw[->,thick,gray] (api)--node[above=7mm,font=\small]{vnitřek}(inside);
   \end{tikzpicture}
   \vspace{6mm}
 
@@ -454,21 +454,6 @@ def top_words(text: str) -> list[tuple[str, int]]:
     \item Co umí typová anotace a co nekontroluje?
     \item Kam zapíšeme externí závislost projektu?
   \end{enumerate}
-\end{frame}
-
-\begin{frame}{Co navazuje po přednášce?}
-  \begin{columns}[T]
-    \begin{column}{.46\textwidth}
-      \begin{block}{Seminář: \texttt{vectorlib}}
-        Balíček s třídou \texttt{Vector}, sčítáním, skalárním součinem, kontrolou rozměrů a veřejným API.
-      \end{block}
-    \end{column}
-    \begin{column}{.46\textwidth}
-      \begin{block}{Cvičení: \texttt{textkit}}
-        Rozšiřovaná knihovna pro zpracování textu, soubory, dokumentaci a jednoduché CLI.
-      \end{block}
-    \end{column}
-  \end{columns}
 \end{frame}
 
 \begin{frame}{Shrnutí}
