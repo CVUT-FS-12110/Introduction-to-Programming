@@ -27,6 +27,7 @@ a jak zkontrolovat, že vygenerovaný kód opravdu dělá, co má.
 
 ## Přednáška
 
+- [Slajdy: Základní principy testování](lecture/presentation.pdf)
 - [Výkladový notebook](lecture/testing-fundamentals.ipynb) — od `assert`
 přes pytest, edge cases, výjimky a testování tříd až po fixtures.
 Slouží i k samostudiu před cvičením.

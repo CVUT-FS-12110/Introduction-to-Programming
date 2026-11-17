@@ -1,0 +1,326 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX\usepackage[T1]{fontenc}\usepackage{lmodern}\fi
+\usepackage[czech]{babel}
+\usepackage{listings}
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]
+\beamertemplatenavigationsymbolsempty
+\newcommand{\LANG}{CZ}\newcommand{\FRONTPAGE}{dark}
+\title{Základní principy testování}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}\institute{}\date{}
+\renewcommand{\headlineA}{}\renewcommand{\headlineB}{}\renewcommand{\headlineC}{}
+\definecolor{CodeBlue}{RGB}{38,83,125}\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{CodeGreen}{RGB}{38,125,94}\definecolor{WarningRed}{RGB}{170,45,45}
+\setbeamerfont{normal text}{size=\large}\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}
+\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\lstdefinestyle{python}{language=Python,basicstyle=\ttfamily\normalsize,
+ keywordstyle=\color{CodeBlue}\bfseries,stringstyle=\color{CodeGreen},
+ commentstyle=\color{gray},showstringspaces=false,columns=fullflexible,keepspaces=true}
+\begin{document}
+\begin{frame}\clearpage\thispagestyle{empty}\titlepage\end{frame}
+
+\begin{frame}{Co si dnes odnesete?}
+\begin{itemize}
+\item Vysvětlit, co test ověřuje a co naopak nezaručuje.
+\item Psát malé testy pomocí \texttt{assert} a frameworku pytest.
+\item Navrhovat běžné, hraniční i chybové případy.
+\item Testovat výjimky, desetinná čísla a stav objektů.
+\item Používat testy jako spustitelnou specifikaci.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Proč nestačí program jednou spustit?}
+\begin{itemize}
+\item Jeden běh pokryje jen jednu cestu programem.
+\item Ruční kontrola se špatně opakuje po každé změně.
+\item Chyba se často projeví až na hranici nebo neobvyklém vstupu.
+\item Výstup, který vypadá rozumně, nemusí být správný.
+\end{itemize}
+\begin{block}{Cíl testování}Rychle získat důvěryhodnou informaci o konkrétním očekávaném chování.\end{block}
+\end{frame}
+
+\begin{frame}{Test je příklad i kontrola}
+\begin{itemize}
+\item Připraví vstup a počáteční stav.
+\item Spustí jednu část programu.
+\item Porovná skutečný výsledek s očekáváním.
+\item Selže čitelným způsobem, pokud se chování liší.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Nejmenší kontrola: \texttt{assert}}
+\begin{lstlisting}[style=python]
+def area(width, height):
+    return width * height
+
+assert area(3, 4) == 12
+assert area(0, 4) == 0
+\end{lstlisting}
+\begin{block}{Význam}Pokud je výraz nepravdivý, Python vyvolá \texttt{AssertionError}.\end{block}
+\end{frame}
+
+\begin{frame}{Co patří do testu?}
+\begin{description}
+\item[Arrange] Připrav data, objekty a závislosti.
+\item[Act] Proveď právě testovanou operaci.
+\item[Assert] Ověř pozorovatelný výsledek.
+\end{description}
+\begin{block}{Arrange--Act--Assert}Struktura pomáhá rychle poznat, proč test selhal.\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Testovací funkce v pytestu}
+\begin{lstlisting}[style=python]
+from geometry import area
+
+def test_area_of_rectangle():
+    width, height = 3, 4       # Arrange
+    result = area(width, height)  # Act
+    assert result == 12        # Assert
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Jak pytest testy najde?}
+\begin{itemize}
+\item Soubory obvykle pojmenujeme \texttt{test\_*.py}.
+\item Testovací funkce začínají \texttt{test\_}.
+\item Příkaz \texttt{pytest} provede sběr a spuštění testů.
+\item Výstup ukáže místo selhání i porovnávané hodnoty.
+\end{itemize}
+\begin{lstlisting}[basicstyle=\ttfamily\large]
+python -m pytest
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Testovací sada není důkaz bezchybnosti}
+\begin{itemize}
+\item Úspěch znamená jen: prošly všechny napsané testy.
+\item Nenapsaný případ nebyl ověřen.
+\item Chybný test může potvrzovat chybné očekávání.
+\item Důležitější než počet testů je volba případů.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Tři skupiny vstupů}
+\begin{description}
+\item[Běžné] Reprezentativní hodnoty z normálního provozu.
+\item[Hraniční] Nula, minimum, maximum, prázdná kolekce, přechod pásem.
+\item[Chybové] Neplatný typ, formát nebo hodnota.
+\end{description}
+\end{frame}
+
+\begin{frame}{Hranice rozděluje chování}
+\begin{itemize}
+\item Pro podmínku \texttt{x < 10} testujeme 9, 10 a 11.
+\item Pro interval testujeme oba kraje i hodnoty těsně vedle.
+\item U kolekce testujeme prázdnou, jednoprvkovou a vícepoložkovou.
+\item U textu testujeme prázdný řetězec a zvláštní znaky.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Výjimka může být správný výsledek}
+\begin{lstlisting}[style=python]
+import pytest
+
+def test_division_by_zero_is_rejected():
+    with pytest.raises(ZeroDivisionError):
+        divide(10, 0)
+\end{lstlisting}
+\begin{block}{Pozor}Test má ověřit konkrétní očekávanou výjimku, ne libovolnou chybu.\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Desetinná čísla porovnáváme s tolerancí}
+\begin{lstlisting}[style=python]
+import pytest
+
+def test_average():
+    result = average([0.1, 0.2])
+    assert result == pytest.approx(0.15)
+\end{lstlisting}
+\begin{itemize}
+\item Binární reprezentace nemusí být matematicky přesná.
+\item Tolerance musí odpovídat významu výpočtu.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Jeden test, jedna hlavní myšlenka}
+\begin{itemize}
+\item Název testu popisuje očekávané chování.
+\item Při selhání má být zřejmé, co se porušilo.
+\item Nesouvisející scénáře patří do samostatných testů.
+\item Několik kontrol jednoho výsledku může být v jednom testu.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Testujeme rozhraní, ne vnitřnosti}
+\begin{itemize}
+\item Ověřujeme návratovou hodnotu, výjimku nebo veřejný stav.
+\item Soukromé pomocné kroky se mohou při refaktoringu změnit.
+\item Test nemá bránit změně implementace se stejným chováním.
+\end{itemize}
+\begin{block}{Dobrá otázka}Co může uživatel funkce nebo objektu pozorovat?\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Test objektu sleduje změnu stavu}
+\begin{lstlisting}[style=python]
+def test_deposit_increases_balance():
+    account = Account(balance=100)
+    account.deposit(50)
+    assert account.balance == 150
+\end{lstlisting}
+\begin{itemize}\item Každý test vytváří vlastní čerstvý objekt.\end{itemize}
+\end{frame}
+
+\begin{frame}{Izolace testů}
+\begin{itemize}
+\item Pořadí spuštění nemá ovlivnit výsledek.
+\item Testy nemají sdílet měnitelný globální stav.
+\item Dočasná data se připraví a po testu uklidí.
+\item Selhání jednoho testu nemá rozbít další testy.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Fixture připravuje opakovaný kontext}
+\begin{itemize}
+\item Fixture poskytuje testovací data nebo objekt.
+\item Pytest ji předá testu podle názvu parametru.
+\item Snižuje duplicitu, ale nesmí skrývat podstatný scénář.
+\item Vhodná je například dočasná složka \texttt{tmp\_path}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Parametrizace: stejné pravidlo, více příkladů}
+\begin{itemize}
+\item Jeden testovací postup dostane několik dvojic vstup--výstup.
+\item Každý případ je ve výsledku veden samostatně.
+\item Tabulka případů zpřehlední hranice a ekvivalenční třídy.
+\item Nepoužívejme parametrizaci pro zásadně odlišné scénáře.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Regresní test zachytí nalezenou chybu}
+\begin{enumerate}
+\item Chybu nejprve reprodukujeme testem.
+\item Ověříme, že test na starém kódu selže.
+\item Opravíme implementaci.
+\item Test ponecháme jako ochranu před návratem chyby.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Testy a změna programu}
+\begin{itemize}
+\item Refaktoring mění strukturu, ale zachovává chování.
+\item Procházející testy dávají rychlou zpětnou vazbu.
+\item Změna požadavku obvykle vyžaduje změnu testu i kódu.
+\item Testovací sada je živá součást programu.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Test jako specifikace pro AI}
+\begin{itemize}
+\item Příklady zpřesňují slovní zadání.
+\item Hraniční případy omezují nežádoucí interpretace.
+\item Vygenerovaný kód se hodnotí podle chování, ne dojmu.
+\item Testy vytvořené stejným modelem je nutné kriticky zkontrolovat.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Časté chyby v testech}
+\begin{itemize}
+\item Test jen zopakuje implementovaný výpočet.
+\item Chybí hranice a chybové stavy.
+\item Test závisí na čase, síti nebo pořadí spuštění.
+\item Název neříká, jaké chování se očekává.
+\item Příliš mnoho scénářů způsobí nečitelný neúspěch.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Pracovní postup}
+\begin{enumerate}
+\item Popište očekávané chování konkrétním příkladem.
+\item Zvolte běžné, hraniční a chybové případy.
+\item Napište malý čitelný test a spusťte ho.
+\item Opravte příčinu, nikoli pouze příznak selhání.
+\item Spusťte celou sadu po každé změně.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Odkud vezmeme očekávaný výsledek?}
+\begin{itemize}
+\item Ze zadání, dokumentace nebo doménového pravidla.
+\item Z ručně spočítaného jednoduchého příkladu.
+\item Z nezávislé referenční implementace.
+\item Z vlastnosti, která musí platit pro mnoho vstupů.
+\end{itemize}
+\begin{block}{Testovací orákulum}Zdroj, podle kterého rozhodneme, zda je výsledek správný.\end{block}
+\end{frame}
+
+\begin{frame}{Ekvivalenční třídy vstupů}
+\begin{itemize}
+\item Vstupy rozdělíme podle očekávaného chování.
+\item Z každé skupiny vybereme reprezentativní příklad.
+\item Hranice mezi skupinami ověříme zvlášť.
+\item Nezkoušíme všechny hodnoty, ale systematicky pokrýváme pravidla.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Úrovně testování}
+\begin{description}
+\item[Jednotkový test] Ověřuje malou část programu izolovaně.
+\item[Integrační test] Ověřuje spolupráci několika částí.
+\item[Systémový test] Ověřuje celý pracovní postup jako celek.
+\end{description}
+\begin{itemize}\item Různé úrovně hledají různé druhy problémů.\end{itemize}
+\end{frame}
+
+\begin{frame}{Rychlost a rozsah testů}
+\begin{itemize}
+\item Malých rychlých testů může běžet mnoho po každé změně.
+\item Integrační testy jsou pomalejší, ale ověřují skutečné propojení.
+\item Několik systémových testů chrání nejdůležitější scénáře.
+\item Pomalý test se spouští méně často a dává pozdější zpětnou vazbu.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Deterministický test}
+\begin{itemize}
+\item Za stejných podmínek vždy dopadne stejně.
+\item Náhodnost řídíme pevným seedem nebo ji předáme jako závislost.
+\item Aktuální čas nepoužíváme skrytě uvnitř testované logiky.
+\item Síťové služby a cizí data mohou způsobit nestabilní testy.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Pokrytí kódu je mapa, ne cíl}
+\begin{itemize}
+\item Pokrytí ukazuje, které řádky či větve testy navštívily.
+\item Navštívený řádek ještě nemusí být dobře ověřen.
+\item Nízké pokrytí odhalí zjevně netestované oblasti.
+\item Vysoké procento nenahrazuje kvalitní očekávání a případy.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Když test selže}
+\begin{enumerate}
+\item Přečteme první relevantní chybovou zprávu.
+\item Ověříme, zda je správný test i jeho očekávání.
+\item Zmenšíme problém na nejjednodušší reprodukci.
+\item Opravíme příčinu a spustíme nejprve dotčený test.
+\item Nakonec spustíme celou sadu kvůli regresím.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Shrnutí}
+\begin{itemize}
+\item Test je opakovatelná kontrola očekávaného chování.
+\item Arrange--Act--Assert odděluje přípravu, akci a kontrolu.
+\item Kvalitu sady určují především dobře zvolené případy.
+\item Pytest podporuje výjimky, aproximace, fixtures i parametrizaci.
+\item Úspěšné testy zvyšují důvěru, ale nejsou důkazem bezchybnosti.
+\end{itemize}
+\end{frame}
+\end{document}

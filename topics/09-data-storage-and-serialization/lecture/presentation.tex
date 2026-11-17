@@ -394,7 +394,7 @@ course = {
 
 \begin{frame}{Tabulky vyjadřují vztah pomocí identifikátoru}
   \centering
-  \begin{tikzpicture}[>=Latex,node distance=18mm,font=\normalsize,
+  \begin{tikzpicture}[>=Latex,node distance=32mm,font=\normalsize,
       box/.style={draw,rounded corners,fill=SoftGray,minimum width=45mm,minimum height=22mm,align=left}]
     \node[box] (machines) {\textbf{machines.csv}\\id, hostname, location\\101, alpha, Lab A};
     \node[box,right=of machines] (users) {\textbf{users.csv}\\id, name, machine\_id\\1, Anna, 101};
@@ -511,13 +511,9 @@ with open("books.pkl", "rb") as file:
     \item Serializace převádí datový model na text nebo bajty; deserializace vytváří nové objekty.
     \item JSON zachovává běžné typy a přirozeně vyjadřuje vnoření.
     \item CSV je přirozená tabulka, ale typy sloupců obnovujeme sami.
-    \item Formát volíme podle tvaru dat, příjemce, velikosti a důvěryhodnosti.
     \item Platná syntaxe nezaručuje správný obsah; načtená data validujeme.
     \item Nedůvěryhodný \texttt{pickle} nikdy nenačítáme.
   \end{itemize}
-  \begin{block}{Navazující komentované příklady}
-    Porovnáme JSON a CSV nad stejnými daty, obnovíme typy a převedeme tabulku do vnořené struktury.
-  \end{block}
 \end{frame}
 
 \end{document}

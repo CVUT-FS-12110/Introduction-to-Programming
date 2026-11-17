@@ -1,0 +1,344 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX\usepackage[T1]{fontenc}\usepackage{lmodern}\fi
+\usepackage[czech]{babel}\usepackage{listings}
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]\beamertemplatenavigationsymbolsempty
+\newcommand{\LANG}{CZ}\newcommand{\FRONTPAGE}{dark}
+\title{Sdílené proměnné a komunikace mezi částmi programu}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}\institute{}\date{}
+\renewcommand{\headlineA}{}\renewcommand{\headlineB}{}\renewcommand{\headlineC}{}
+\definecolor{CodeBlue}{RGB}{38,83,125}\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{CodeGreen}{RGB}{38,125,94}\definecolor{WarningRed}{RGB}{170,45,45}
+\setbeamerfont{normal text}{size=\large}\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\lstdefinestyle{python}{language=Python,basicstyle=\ttfamily\normalsize,
+ keywordstyle=\color{CodeBlue}\bfseries,stringstyle=\color{CodeGreen},
+ commentstyle=\color{gray},showstringspaces=false,columns=fullflexible,keepspaces=true}
+\begin{document}
+\begin{frame}\clearpage\thispagestyle{empty}\titlepage\end{frame}
+
+\begin{frame}{Co si dnes odnesete?}
+\begin{itemize}
+\item Rozlišit lokální, globální a sdílený stav.
+\item Předávat data explicitně mezi funkcemi.
+\item Předvídat změny sdílených mutabilních objektů.
+\item Vyhnout se skrytým závislostem a mutabilním výchozím hodnotám.
+\item Zapouzdřit související stav a chování do objektu.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Co je stav programu?}
+\begin{itemize}
+\item Hodnoty, které program v daném okamžiku uchovává.
+\item Lokální proměnné právě volaných funkcí.
+\item Obsah objektů, kolekcí, souborů nebo databáze.
+\item Stav ovlivňuje výsledek dalších operací.
+\end{itemize}
+\begin{block}{Příklad}Zůstatek účtu před výběrem je součástí stavu.\end{block}
+\end{frame}
+
+\begin{frame}{Komunikace mezi částmi programu}
+\begin{itemize}
+\item Parametry nesou vstupy do funkce.
+\item Návratová hodnota nese výsledek ven.
+\item Objekt může nést související stav mezi voláními metod.
+\item Soubor, fronta nebo databáze propojuje vzdálenější části.
+\item Globální proměnná je pouze jedna z možností --- často problematická.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Lokální proměnná patří jednomu volání}
+\begin{lstlisting}[style=python]
+def calculate_price(amount, unit_price):
+    subtotal = amount * unit_price
+    return subtotal
+
+price = calculate_price(3, 120)
+\end{lstlisting}
+\begin{itemize}\item \texttt{subtotal} po návratu funkce není zvenku dostupná.\end{itemize}
+\end{frame}
+
+\begin{frame}{Rozsah platnosti jména}
+\begin{description}
+\item[Local] Jména uvnitř aktuální funkce.
+\item[Enclosing] Jména v obalujících funkcích.
+\item[Global] Jména na úrovni modulu.
+\item[Built-in] Vestavěná jména, například \texttt{len}.
+\end{description}
+\begin{block}{LEGB}Python hledá jméno v tomto pořadí.\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Čtení globální hodnoty}
+\begin{lstlisting}[style=python]
+VAT_RATE = 0.21
+
+def price_with_vat(price):
+    return price * (1 + VAT_RATE)
+\end{lstlisting}
+\begin{itemize}
+\item Konstantní konfigurace může být na úrovni modulu čitelná.
+\item Funkce však má skrytou závislost na \texttt{VAT\_RATE}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Zápis do globální proměnné}
+\begin{lstlisting}[style=python]
+score = 0
+
+def add_point():
+    global score
+    score += 1
+\end{lstlisting}
+\begin{itemize}
+\item \texttt{global} říká, že zápis míří do jména modulu.
+\item Výsledek funkce závisí na historii předchozích volání.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Proč měnitelný globální stav bolí?}
+\begin{itemize}
+\item Závislost není vidět v parametrech funkce.
+\item Na pořadí volání záleží.
+\item Testy si mohou navzájem měnit prostředí.
+\item Změnu může provést mnoho míst programu.
+\item Chyba se projeví daleko od svého původu.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Explicitní předání stavu}
+\begin{lstlisting}[style=python]
+def add_point(score):
+    return score + 1
+
+score = 0
+score = add_point(score)
+\end{lstlisting}
+\begin{block}{Výhoda}Vstup i výstup jsou vidět v rozhraní funkce.\end{block}
+\end{frame}
+
+\begin{frame}{Čistá funkce}
+\begin{itemize}
+\item Výsledek závisí pouze na argumentech.
+\item Nemění stav mimo své lokální prostředí.
+\item Pro stejné vstupy vrací stejný výsledek.
+\item Snadno se testuje a skládá s dalšími funkcemi.
+\item Ne každá užitečná funkce může být čistá, ale čisté jádro pomáhá.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Vedlejší účinek}
+\begin{itemize}
+\item Změna objektu předaného argumentem.
+\item Zápis do souboru nebo databáze.
+\item Výpis na obrazovku či komunikace po síti.
+\item Změna globálního stavu.
+\end{itemize}
+\begin{block}{Není automaticky špatně}Vedlejší účinek má být záměrný, pojmenovaný a oddělený.\end{block}
+\end{frame}
+
+\begin{frame}{Jméno odkazuje na objekt}
+\begin{itemize}
+\item Při přiřazení se objekt obvykle nekopíruje.
+\item Dvě jména mohou odkazovat na tentýž objekt.
+\item Změna mutabilního objektu je viditelná přes všechny odkazy.
+\item Nové přiřazení jména není totéž jako změna objektu.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Dvě jména, jeden seznam}
+\begin{lstlisting}[style=python]
+first = [1, 2]
+second = first
+second.append(3)
+
+print(first)   # [1, 2, 3]
+\end{lstlisting}
+\begin{itemize}\item \texttt{first is second} má hodnotu \texttt{True}.\end{itemize}
+\end{frame}
+
+\begin{frame}{Mutabilní a imutabilní objekty}
+\begin{description}
+\item[Mutabilní] Seznam, slovník, množina a většina vlastních instancí.
+\item[Imutabilní] Číslo, řetězec, \texttt{tuple} z imutabilních prvků.
+\end{description}
+\begin{itemize}
+\item U imutabilní hodnoty operace vytvoří nový objekt.
+\item U mutabilní hodnoty může operace změnit existující objekt.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Argument se předává jako odkaz na objekt}
+\begin{lstlisting}[style=python]
+def add_item(items, item):
+    items.append(item)
+
+values = [1, 2]
+add_item(values, 3)
+print(values)  # [1, 2, 3]
+\end{lstlisting}
+\begin{itemize}\item Funkce i volající vidí tentýž seznam.\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Nové přiřazení argumentu objekt nezmění}
+\begin{lstlisting}[style=python]
+def replace(items):
+    items = [0]
+
+values = [1, 2]
+replace(values)
+print(values)  # [1, 2]
+\end{lstlisting}
+\begin{itemize}\item Změnilo se pouze lokální jméno \texttt{items}.\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Past: mutabilní výchozí argument}
+\begin{lstlisting}[style=python]
+def remember(value, history=[]):
+    history.append(value)
+    return history
+
+remember("A")  # ["A"]
+remember("B")  # ["A", "B"]
+\end{lstlisting}
+\begin{itemize}\item Výchozí objekt vznikne jednou při definici funkce.\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Bezpečný vzor s \texttt{None}}
+\begin{lstlisting}[style=python]
+def remember(value, history=None):
+    if history is None:
+        history = []
+    history.append(value)
+    return history
+\end{lstlisting}
+\begin{itemize}\item Každé volání bez argumentu vytvoří nový seznam.\end{itemize}
+\end{frame}
+
+\begin{frame}{Kopírování není vždy jednoduché}
+\begin{itemize}
+\item Mělká kopie vytvoří novou vnější kolekci.
+\item Vnořené objekty mohou zůstat sdílené.
+\item Hluboká kopie kopíruje i vnořenou strukturu, ale je dražší.
+\item Lepší než kopírovat vše je určit jasného vlastníka dat.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Jasné vlastnictví stavu}
+\begin{itemize}
+\item Jedna část programu odpovídá za změny konkrétních dat.
+\item Ostatní části žádají o operaci přes definované rozhraní.
+\item Pravidla změny jsou soustředěna na jednom místě.
+\item Stav se lépe validuje, testuje a ladí.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Objekt jako nosič stavu}
+\begin{lstlisting}[style=python]
+class ScoreTracker:
+    def __init__(self):
+        self.score = 0
+
+    def add_point(self):
+        self.score += 1
+\end{lstlisting}
+\begin{itemize}\item Stav je stále měnitelný, ale má konkrétního vlastníka.\end{itemize}
+\end{frame}
+
+\begin{frame}{Oddělme výpočet od vstupu a výstupu}
+\begin{itemize}
+\item Čisté funkce provádějí transformace dat.
+\item Okraj programu čte vstupy a zapisuje výsledky.
+\item Stavový objekt koordinuje související operace.
+\item Menší počet míst s vedlejšími účinky zjednodušuje testy.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Sdílený stav a souběžnost}
+\begin{itemize}
+\item Dvě činnosti mohou stav číst a měnit současně.
+\item Výsledek pak může záviset na pořadí kroků.
+\item Synchronizace řeší přístup, ale přidává složitost.
+\item I v jednovláknovém programu pomáhá sdílení omezovat.
+\end{itemize}
+\begin{block}{Nad rámec tématu}Vlákna a asynchronní programování mají další pravidla.\end{block}
+\end{frame}
+
+\begin{frame}{Rozhodovací vodítko}
+\begin{enumerate}
+\item Stačí hodnota pro jeden výpočet? Použijte parametr a návrat.
+\item Patří stav a operace k sobě? Zvažte objekt.
+\item Musí data přežít běh programu? Použijte soubor či databázi.
+\item Je globální stav opravdu nutný? Omezte zápis a jasně jej pojmenujte.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Modul je také hranice}
+\begin{itemize}
+\item Modul může skrýt pomocná jména a nabídnout veřejné funkce.
+\item Import modulu nevytváří novou kopii jeho globálního stavu.
+\item Změna modulu je viditelná všem jeho uživatelům v procesu.
+\item Veřejné rozhraní má být menší než vnitřní implementace.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Více hodnot předáme jako celek}
+\begin{itemize}
+\item Několik souvisejících výsledků může vrátit \texttt{tuple}.
+\item Slovník pojmenuje položky, ale dovoluje snadné překlepy.
+\item Datová třída dává hodnotám názvy a jasný společný typ.
+\item Volba struktury vyjadřuje význam předávaných dat.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Rovnost a totožnost}
+\begin{description}
+\item[\texttt{==}] Mají objekty stejnou hodnotu?
+\item[\texttt{is}] Jde o tentýž objekt?
+\end{description}
+\begin{itemize}
+\item Dva různé seznamy mohou být hodnotově stejné.
+\item \texttt{is} používáme typicky pro porovnání s \texttt{None}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Imutabilní návrh omezuje překvapení}
+\begin{itemize}
+\item Místo změny existující hodnoty vytvoříme hodnotu novou.
+\item Původní stav zůstane dostupný ostatním částem programu.
+\item Tok změn je vidět v přiřazení návratové hodnoty.
+\item Cena může být vyšší spotřeba paměti nebo kopírování.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Závislost lze předat parametrem}
+\begin{itemize}
+\item Funkce nemusí sama hledat globální konfiguraci nebo službu.
+\item Volající předá potřebnou hodnotu či spolupracující objekt.
+\item V testu lze předat jednoduchou kontrolovanou náhradu.
+\item Rozhraní jasně ukazuje, co funkce potřebuje ke své práci.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Kdo smí stav měnit?}
+\begin{itemize}
+\item Čtení lze nabídnout široce, zápis omezit na několik operací.
+\item Validace proběhne před každou povolenou změnou.
+\item Metoda pojmenovává záměr lépe než přímý zápis atributu.
+\item Audit změn je snazší, když vedou přes jedno rozhraní.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Shrnutí}
+\begin{itemize}
+\item Explicitní tok dat usnadňuje porozumění i testování.
+\item Globální měnitelný stav vytváří skryté závislosti.
+\item Sdílený mutabilní objekt se mění přes všechny své odkazy.
+\item Výchozí mutabilní hodnoty nahrazujeme vzorem s \texttt{None}.
+\item Objekt může být jasným vlastníkem souvisejícího stavu.
+\end{itemize}
+\end{frame}
+\end{document}

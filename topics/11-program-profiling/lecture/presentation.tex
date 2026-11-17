@@ -1,0 +1,328 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{iftex}
+\ifPDFTeX\usepackage[T1]{fontenc}\usepackage{lmodern}\fi
+\usepackage[czech]{babel}\usepackage{listings}
+\newcommand{\CVUTTemplatePath}{../../../utils/presentation-template}
+\usepackage{\CVUTTemplatePath/beamerthemeCVUT}
+\setbeamertemplate{footline}[frame number]\beamertemplatenavigationsymbolsempty
+\newcommand{\LANG}{CZ}\newcommand{\FRONTPAGE}{dark}
+\title{Analýza výstupů programu (profiling)}
+\subtitle{Základy programování\\Matouš Cejnek\\U12110, FS, ČVUT v Praze}
+\author{}\institute{}\date{}
+\renewcommand{\headlineA}{}\renewcommand{\headlineB}{}\renewcommand{\headlineC}{}
+\definecolor{CodeBlue}{RGB}{38,83,125}\definecolor{SoftGray}{RGB}{242,244,247}
+\definecolor{CodeGreen}{RGB}{38,125,94}\definecolor{WarningRed}{RGB}{170,45,45}
+\setbeamerfont{normal text}{size=\large}\setbeamerfont{frametitle}{size=\LARGE}
+\setbeamercolor{block title}{fg=white,bg=CodeBlue}\setbeamercolor{block body}{fg=black,bg=SoftGray}
+\newcommand{\term}[1]{\textcolor{CodeBlue}{\textbf{#1}}}
+\lstdefinestyle{python}{language=Python,basicstyle=\ttfamily\normalsize,
+ keywordstyle=\color{CodeBlue}\bfseries,stringstyle=\color{CodeGreen},
+ commentstyle=\color{gray},showstringspaces=false,columns=fullflexible,keepspaces=true}
+\begin{document}
+\begin{frame}\clearpage\thispagestyle{empty}\titlepage\end{frame}
+
+\begin{frame}{Co si dnes odnesete?}
+\begin{itemize}
+\item Rozlišit pozorování, benchmark a profilování.
+\item Připravit opakovatelné měření výkonu.
+\item Použít \texttt{timeit}, \texttt{cProfile} a \texttt{pstats}.
+\item Najít úzké hrdlo podle naměřených dat.
+\item Ověřit, že optimalizace zachovala správnost.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Proč program působí pomalu?}
+\begin{itemize}
+\item Výpočet provádí příliš mnoho práce.
+\item Čeká na disk, síť, uživatele nebo jiný proces.
+\item Opakovaně převádí či kopíruje stejná data.
+\item Většina času může být ukryta v jediné funkci.
+\end{itemize}
+\begin{block}{Zásada}Nejprve měřit, potom měnit.\end{block}
+\end{frame}
+
+\begin{frame}{Tři odlišné otázky}
+\begin{description}
+\item[Měření] Jak dlouho trval tento běh?
+\item[Benchmark] Která varianta je za daných podmínek rychlejší?
+\item[Profilování] Ve kterých částech programu se spotřeboval čas?
+\end{description}
+\end{frame}
+
+\begin{frame}{Výkon není jen čas}
+\begin{itemize}
+\item Doba odezvy: jak dlouho čeká uživatel.
+\item Propustnost: kolik úloh program zpracuje za čas.
+\item Paměť: kolik prostoru program potřebuje.
+\item I/O: kolik dat čte, zapisuje nebo přenáší.
+\item Vždy měříme veličinu důležitou pro konkrétní použití.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Co ovlivňuje naměřený čas?}
+\begin{itemize}
+\item Velikost a tvar vstupních dat.
+\item Zahřívání cache a předchozí běhy.
+\item Zatížení operačního systému a jiných procesů.
+\item Verze Pythonu, knihoven a hardware.
+\item Náhodnost, síť a stav souborového systému.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Korektní experiment}
+\begin{enumerate}
+\item Formulujeme konkrétní otázku a metriku.
+\item Připravíme reprezentativní vstup.
+\item Měníme jednu věc a ostatní podmínky držíme stejné.
+\item Měření opakujeme a uchováme více výsledků.
+\item Výsledek popíšeme spolu s podmínkami.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Hrubé měření celého úseku}
+\begin{lstlisting}[style=python]
+from time import perf_counter
+
+start = perf_counter()
+result = solve(data)
+elapsed = perf_counter() - start
+print(f"{elapsed:.3f} s")
+\end{lstlisting}
+\begin{block}{\texttt{perf\_counter}}Monotónní hodiny s vysokým rozlišením pro měření intervalu.\end{block}
+\end{frame}
+
+\begin{frame}{Jeden běh může klamat}
+\begin{itemize}
+\item Malý rozdíl může být pouze šum měření.
+\item První běh může načítat data a vytvářet cache.
+\item Extrémní hodnota může zkreslit průměr.
+\item Sledujeme více opakování, často minimum nebo medián.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{timeit}: malé opakované měření}
+\begin{lstlisting}[style=python]
+from timeit import repeat
+
+times = repeat(
+    "sum(values)",
+    setup="values = list(range(1000))",
+    number=10_000,
+    repeat=5,
+)
+print(min(times))
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Co z měření vyjmout?}
+\begin{itemize}
+\item Přípravu dat oddělíme, pokud není součástí otázky.
+\item Výpis do terminálu bývá pomalejší než vlastní výpočet.
+\item Naopak načtení souboru ponecháme, měříme-li celý pracovní postup.
+\item Hranice měřeného úseku musí odpovídat rozhodnutí, které děláme.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Asymptotická složitost a skutečný čas}
+\begin{itemize}
+\item Big O popisuje růst nákladů s velikostí vstupu.
+\item Neříká přesný čas ani konstantní režii.
+\item Pomáhá předvídat chování pro velká data.
+\item Profilování ukazuje konkrétní běh na konkrétním systému.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Kdy je optimalizace důležitá?}
+\begin{itemize}
+\item Když měření ukáže problém vzhledem k požadavku.
+\item Když program blokuje uživatele nebo nezvládá objem dat.
+\item Když cena prostředků nebo energie není přijatelná.
+\item Neoptimalizujeme automaticky každý krátký a čitelný úsek.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Profil ukazuje rozdělení práce}
+\begin{itemize}
+\item Kolikrát byla funkce zavolána.
+\item Kolik času strávila ve vlastním těle.
+\item Kolik času spotřebovala včetně volaných funkcí.
+\item Které volání přispívá k celkové době nejvíce.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Spuštění programu přes \texttt{cProfile}}
+\begin{lstlisting}[basicstyle=\ttfamily\large]
+python -m cProfile -o profile.prof app.py
+\end{lstlisting}
+\begin{itemize}
+\item Program se spustí běžným způsobem.
+\item Profil se uloží do souboru pro další analýzu.
+\item Profilování přidává režii; časy nejsou čistý benchmark.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Jak číst tabulku profileru?}
+\begin{description}
+\item[\texttt{ncalls}] Počet volání funkce.
+\item[\texttt{tottime}] Čas ve funkci bez podvolání.
+\item[\texttt{cumtime}] Čas ve funkci včetně podvolání.
+\item[\texttt{percall}] Přepočet času na jedno volání.
+\end{description}
+\end{frame}
+
+\begin{frame}{Vlastní a kumulativní čas}
+\begin{itemize}
+\item Vysoký \texttt{tottime}: drahá práce přímo ve funkci.
+\item Vysoký \texttt{cumtime}, nízký \texttt{tottime}: drahé podvolání.
+\item Velký počet levných volání může být významný dohromady.
+\item Řazení podle různých sloupců odpovídá různým otázkám.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Třídění statistik}
+\begin{lstlisting}[style=python]
+from pstats import Stats
+
+(
+    Stats("profile.prof")
+    .strip_dirs()
+    .sort_stats("cumulative")
+    .print_stats(15)
+)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Úzké hrdlo}
+\begin{itemize}
+\item Část systému, která omezuje výkon celku.
+\item Nemusí to být nejdelší funkce zdrojového kódu.
+\item Po optimalizaci se úzké hrdlo může přesunout jinam.
+\item Zaměřujeme se na významný podíl celkového času.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Typické zdroje zbytečné práce}
+\begin{itemize}
+\item Opakovaný výpočet stejné hodnoty uvnitř cyklu.
+\item Lineární hledání tam, kde se hodí množina nebo slovník.
+\item Zbytečné kopírování velkých kolekcí.
+\item Mnoho malých zápisů místo dávkového zpracování.
+\item Načítání stejných dat znovu a znovu.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Optimalizační cyklus}
+\begin{enumerate}
+\item Stanovíme základní měření a testy správnosti.
+\item Profilujeme reprezentativní scénář.
+\item Zvolíme jedno významné úzké hrdlo.
+\item Provedeme malou srozumitelnou změnu.
+\item Znovu spustíme testy, benchmark i profil.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Rychlejší, ale stále správně}
+\begin{itemize}
+\item Optimalizace nesmí změnit požadovaný výsledek.
+\item Automatické testy chrání běžné i hraniční případy.
+\item U přibližných algoritmů měříme také kvalitu výsledku.
+\item Porovnáváme výkon až po ověření korektnosti variant.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Čitelnost je také náklad}
+\begin{itemize}
+\item Složitější kód se hůře udržuje a testuje.
+\item Mikrooptimalizace může přinést zanedbatelnou úsporu.
+\item Dobrou optimalizaci doložíme měřením a vysvětlením.
+\item Často nejvíce pomůže vhodnější algoritmus nebo datová struktura.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Časté chyby při profilování}
+\begin{itemize}
+\item Měření nereprezentativních nebo příliš malých dat.
+\item Porovnání jediného běhu bez opakování.
+\item Záměna profileru za přesný benchmark.
+\item Optimalizace malé položky bez vlivu na celek.
+\item Chybějící kontrola správnosti po změně.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Čas procesoru a skutečný čas}
+\begin{description}
+\item[Wall time] Doba, kterou pozoruje uživatel od začátku do konce.
+\item[CPU time] Doba, kdy procesor skutečně provádí instrukce programu.
+\end{description}
+\begin{itemize}
+\item Při čekání na disk či síť roste wall time, ale CPU time téměř ne.
+\item Volba metriky závisí na otázce, kterou řešíme.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Výpočet versus čekání}
+\begin{description}
+\item[CPU-bound] Výkon omezuje množství výpočtů.
+\item[I/O-bound] Výkon omezuje čekání na vstup či výstup.
+\end{description}
+\begin{itemize}
+\item Rychlejší algoritmus pomůže hlavně výpočetně náročné úloze.
+\item Dávkování a omezení čekání pomáhá u I/O operací.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Profilujeme správný scénář?}
+\begin{itemize}
+\item Start aplikace a dlouhý provoz mohou mít jiná úzká hrdla.
+\item Malý testovací soubor nemusí reprezentovat skutečná data.
+\item Vzácná pomalá operace může být pro uživatele zásadní.
+\item Profilujeme konkrétní pracovní postup, který chceme zlepšit.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Jak výkon roste se vstupem?}
+\begin{itemize}
+\item Změříme několik velikostí vstupu, ne pouze jednu.
+\item Sledujeme tvar růstu času a paměti.
+\item Zdvojnásobení dat může odhalit kvadratický algoritmus.
+\item Jednorázová režie dominuje hlavně u malých vstupů.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Volací strom}
+\begin{itemize}
+\item Tabulka ukáže drahé funkce, strom ukáže cestu k nim.
+\item Stejná funkce může být volána z několika míst.
+\item Kontext volání pomáhá zvolit místo vhodné změny.
+\item Optimalizace volajícího může odstranit mnoho podvolání najednou.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Paměť a výkon}
+\begin{itemize}
+\item Velké kolekce zabírají paměť a zvyšují režii kopírování.
+\item Generátor zpracovává hodnoty postupně místo uložení všech.
+\item Cache šetří výpočet za cenu dodatečné paměti.
+\item Sledujeme špičkovou spotřebu i životnost objektů.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Výsledek měření}
+\begin{itemize}
+\item Uvedeme verzi kódu, prostředí a velikost vstupu.
+\item Zapíšeme metriku, počet opakování a způsob agregace.
+\item Porovnáme výchozí a upravenou variantu stejným postupem.
+\item Zaznamenáme také dopad na čitelnost a spotřebu paměti.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Shrnutí}
+\begin{itemize}
+\item Výkon vyhodnocujeme podle konkrétního požadavku a metriky.
+\item \texttt{timeit} porovnává malé varianty opakovaným měřením.
+\item \texttt{cProfile} a \texttt{pstats} ukazují rozdělení času mezi funkce.
+\item Optimalizujeme naměřené úzké hrdlo, ne dojem ze zdrojového kódu.
+\item Každou změnu ověříme testy a novým měřením.
+\end{itemize}
+\end{frame}
+\end{document}
