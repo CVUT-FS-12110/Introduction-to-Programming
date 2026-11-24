@@ -1,53 +1,86 @@
 # Základní principy testování
 
-Kód, který funguje „na první pohled", ještě nemusí být správný. Tato lekce
-ukazuje, jak správnost **ověřovat automaticky** — pomocí testů. V době AI
-je to dvojnásob důležité: testy jsou způsob, jak zadat AI přesnou specifikaci
-a jak zkontrolovat, že vygenerovaný kód opravdu dělá, co má.
-
 ## Prerekvizity
 
-- Funkce — definice, volání, výjimky
-  ([téma Funkce](../05-functions-definition-invocation-and-scope/README.md))
-- Základy objektově orientovaného programování
-  ([téma Úvod do OOP](../06-introduction-to-object-oriented-programming/README.md))
+- Funkce, výjimky a třídy
+  ([Funkce](../05-functions-definition-invocation-and-scope/README.md),
+  [Úvod do OOP](../06-introduction-to-object-oriented-programming/README.md))
 - Práce se soubory a instalace knihoven přes pip
   ([Práce se soubory](../07-file-handling-and-file-io/README.md),
   [Používání knihoven](../08-libraries-and-documentation/README.md))
 
 ## Cíle
 
-- Napsat kontrolní výraz pomocí `assert` a spustit testy pytestem.
-- Strukturovat test podle vzoru Arrange–Act–Assert.
-- Navrhnout testy pro hraniční případy (prázdné vstupy, nuly, hranice pásem).
-- Otestovat chybové stavy pomocí `pytest.raises`.
-- Porovnávat desetinná čísla pomocí `pytest.approx`.
-- Otestovat třídu včetně změn jejího stavu.
-- Použít testy jako specifikaci pro AI a posoudit kvalitu vygenerovaného kódu.
+- Oddělit logiku programu od vstupu a výstupu, aby šla testovat.
+- Napsat test podle vzoru Arrange–Act–Assert a spustit ho pytestem.
+- Navrhnout běžné, hraniční a chybové případy a zapsat je parametrizací.
+- Otestovat výjimky (`pytest.raises`), desetinná čísla (`pytest.approx`)
+  a stav objektu.
+- Zachytit nalezenou chybu regresním testem.
+- Posoudit, co testy dokazují a co ne, zejména u kódu vygenerovaného AI.
+
+## Klíčová slova
+
+pytest, assert, Arrange–Act–Assert, hraniční případy, parametrizace,
+regresní test, fixture, testovací orákulum, mutační testování
 
 ## Přednáška
 
 - [Slajdy: Základní principy testování](lecture/presentation.pdf)
-- [Výkladový notebook](lecture/testing-fundamentals.ipynb) — od `assert`
-přes pytest, edge cases, výjimky a testování tříd až po fixtures.
-Slouží i k samostudiu před cvičením.
 
-- [Komentované příklady](seminar/README.md)
+Úvod do automatického testování: co test ověřuje a co nezaručuje, jak
+volit případy, jak testovat výjimky, desetinná čísla a objekty, a k čemu
+jsou testy při práci s AI.
+
+- [Komentované příklady: testování](seminar/seminar.md)
+
+Kód ze společného průchodu je ve složce `seminar/sample_work/`.
+K samostudiu slouží také
+[výkladový notebook](lecture/testing-fundamentals.ipynb).
+
+### Osnova
+
+1. Program, který nejde otestovat: oddělení logiky od vstupu a výstupu
+2. První test, čtení výpisu pytestu, Arrange–Act–Assert
+3. Odkud se bere očekávaná hodnota (testovací orákulum)
+4. Běžné, hraniční a chybové případy, `pytest.raises`, `pytest.approx`,
+   parametrizace
+5. Nalezená chyba a regresní test
+6. Testy, kterými projde i špatný kód; testy jako zadání pro AI
+7. Test se souborem (`tmp_path`), stav objektu a fixture (podle času)
 
 ## Domácí příprava
 
-[Pre-work notebook](prework/prework.ipynb) — 4 úkoly (40–50 minut).
-Výstupem je soubor `test_prework.py`, který se odevzdává do Moodlu
-před začátkem cvičení.
+[Zadání domácí přípravy: první testy v pytestu](prework/assignment.md)
 
 ## Cvičení
 
-Kolektivní Red Team: celá skupina nejprve prolamuje záměrně slabou testovací
-sadu, pak ji společně zpevňuje a nakonec dokončuje třídu `ScoreTracker`
-z domácí přípravy.
+[Zadání cvičení](lab/assignment.md)
 
-[Notebook na cvičení](lab/lab-session.ipynb) —
-pro vyučující je k dispozici [průvodce cvičením](TEACHING-GUIDE.md).
+Příklad: test s tabulkou případů
+
+```python
+import pytest
+
+from average import average
+
+
+@pytest.mark.parametrize(
+    "numbers, expected",
+    [
+        ([2, 4, 6], 4),
+        ([7], 7),
+        ([-2, -4], -3),
+    ],
+)
+def test_average_cases(numbers, expected):
+    assert average(numbers) == expected
+
+
+def test_average_of_empty_list_raises():
+    with pytest.raises(ValueError):
+        average([])
+```
 
 ## Zdroje
 
